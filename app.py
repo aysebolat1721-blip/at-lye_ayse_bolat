@@ -218,9 +218,9 @@ elif st.session_state.stage == 2:
             rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor, çenem kasılıyor...")
             rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun ve ben senin yanındayım.")
             
-            if st.form_submit_button("RAIN Egzersizini Tamamla 🌧️", type="primary"):
+            if st.form_submit_button("RAIN Egzersizini Kaydet 🌧️", type="primary"):
                 if rain_r and rain_a and rain_i and rain_n:
-                    st.success("Tebrikler! Tara Brach'in RAIN Metodunu başarıyla uyguladın! Şefkat kasın güçlendi.")
+                    st.success("RAIN Metodu Pratiği Kaydedildi: Tara Brach'in 4 adımlı zihinsel farkındalık süreci tamamlandı.")
                 else:
                     st.warning("Lütfen 4 adımı da doldurun.")
 
@@ -230,34 +230,33 @@ elif st.session_state.stage == 2:
         st.markdown("""
         <div class='theory-box'>
         Evrimsel Psikolog Prof. Paul Gilbert'e göre beynimizde 3 temel duygu düzenleme sistemi bulunur:
-        <br>🔴 <b>Tehdit Sistemi:</b> Korku, panik, öz-eleştiri ("Mahvoldum, kesin kaybedeceğim")
-        <br>🔵 <b>Güdü/Başarı Sistemi:</b> Hırs, kazanma odaklılık, sürüklenme ("Ne pahasına olursa olsun yenmeliyim")
-        <br>🟢 <b>Yatıştırıcı/Şefkat Sistemi:</b> Güven, sakinlik, öz-şefkat ("Hata yapabilirim, ben güvendeyim")
+        <br>🔴 <b>Tehdit Sistemi:</b> Tehdit ve tehlike anlarında devreye girer. (Korku, kaygı, öz-eleştiri)
+        <br>🔵 <b>Güdü/Başarı Sistemi:</b> Hedef odaklılık ve arzuda devreye girer. (Hırs, kazanma odaklılık)
+        <br>🟢 <b>Yatıştırıcı/Şefkat Sistemi:</b> Güven, rahatlama ve kabulde devreye girer. (Öz-şefkat, zihinsel denge)
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("#### 🎯 Taekwondo Durum Testi: Hangi Sistemdesin?")
+        st.markdown("#### 🎯 Taekwondo Durum İncelemesi: Kuramsal Karşılık")
         q_gilbert = st.radio(
-            "Seçme maçında rakibin senden 4 puan öne geçti. O an içindeki ses en çok hangisine yakın?",
+            "Seçme maçında rakibin senden 4 puan öne geçti. O anki düşüncen en çok hangi kuramsal sisteme örnektir?",
             [
-                "🔴 Tehdit Sistemi: 'Eyvah bittim ben! Rezil olacağım, antrenörüm bana çok kızacak!'",
-                "🔵 Güdü Sistemi: 'Gözüm hiçbir şey görmüyor, şu an saldırıp ne pahasına olursa olsun puan almalıyım!'",
-                "🟢 Şefkat/Yatıştırma Sistemi: 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
+                "🔴 Tehdit Sistemi Örneği: 'Eyvah bittim ben! Rezil olacağım, antrenörüm bana çok kızacak!'",
+                "🔵 Güdü Sistemi Örneği: 'Gözüm hiçbir şey görmüyor, şu an saldırıp ne pahasına olursa olsun puan almalıyım!'",
+                "🟢 Şefkat/Yatıştırma Sistemi Örneği: 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
             ]
         )
-        if st.button("Sistemini Analiz Et 🧠"):
+        if st.button("Kuramsal Analizi Gör 🧠"):
             if q_gilbert.startswith("🔴"):
-                st.markdown("<div class='alert-box'>🔴 <b>Tehdit Sistemindesin:</b> Beynin kortizol üretiyor. Kendini eleştirmek yerine 🟢 Yatıştırıcı sisteme geçmek için derin nefes al.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu modelleşme, tehdit anında beynin koruma ve tehlike uyarısını temsil eder. Teoriye göre bu sistemi fark etmek duygu düzenlemenin ilk adımıdır.</div>", unsafe_allow_html=True)
             elif q_gilbert.startswith("🔵"):
-                st.markdown("<div class='card-box'>🔵 <b>Güdü/Başarı Sistemindesin:</b> Hırsın yüksek ama dikkat et! Kontrolsüz hırs hata yaptırabilir. Araya 🟢 Şefkat ekleyerek odağını koru.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu modelleşme, hedefe ulaşma ve kazanma güdüsüyle ilişkilidir. Spor performansında motivasyon sağlar; ancak yatıştırıcı sistemle dengelendiğinde odaklanmayı artırır.</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='success-box'>🟢 <b>Harika! Yatıştırıcı Şefkat Sistemindesin:</b> Zihnin dengede, spor performansın için en verimli moddasın! (+100 Puan)</div>", unsafe_allow_html=True)
-                st.balloons()
+                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu modelleşme, zihinsel güvenlik, sakinlik ve öz-şefkat alanını temsil eder. Gilbert'e göre sporcunun baskı anında performansını korumasını destekler.</div>", unsafe_allow_html=True)
 
     # MODÜL 3: KRISTIN NEFF - KRIZ SENARYO BANKASI
     with game_tab3:
         st.markdown("### 🛡️ Kristin Neff'in 3 Boyutlu Kriz Simülatörü")
-        st.write("Aşağıdaki taekwondo kriz durumlarında doğru zihinsel şefkat tepkisini ver.")
+        st.write("Aşağıdaki taekwondo kriz durumlarında Öz Şefkat Kuramına uyan seçeneği inceleyin.")
         
         senaryo_secim = st.selectbox("Bir Kriz Senaryosu Seç:", [
             "Senaryo 1: Kuşak sınavında hareketi unuttun.",
@@ -267,55 +266,55 @@ elif st.session_state.stage == 2:
         
         if "Senaryo 1" in senaryo_secim:
             st.markdown("<div class='card-box'>🥋 <b>Kuşak sınavında poomsae çizerken adımı unuttun ve salondaki herkes sana bakıyor.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepkin:", [
+            ans = st.radio("Zihinsel Tepki Seçeneği:", [
                 "A) 'Rezil oldum, benden hiçbir şey olmaz.' (Öz Yargılama)",
                 "B) 'Derin bir nefes alıyorum. Heyecandan unutmak her sporcunun başına gelebilir, yalnız değilim. Baştan devam ediyorum.' (Öz Şefkat)"
             ])
-            if st.button("Tepkiyi Kontrol Et 1"):
+            if st.button("Kuramsal Çerçeveyi İncele 1"):
                 if ans.startswith("B)"):
-                    st.success("Tebrikler! Ortak İnsanlık ve Farkındalık boyutunu mükemmel kullandın!")
+                    st.success("Kuramsal Uygunluk: Bu seçenek Kristin Neff'in (2003) Ortak İnsanlık ve Bilinçli Farkındalık boyutlarıyla örtüşmektedir.")
                 else:
-                    st.error("Bu tepki Öz-Yargılama içeriyor. Kendine yüklenmek yerine nazik olmalısın.")
+                    st.info("Kuramsal Analiz: Bu seçenek Neff'in (2003) 'Öz-Yargılama' boyutuna örnektir. Kurama göre zorlu anlarda durum kabul edilip anlayış gösterilmelidir.")
                     
         elif "Senaryo 2" in senaryo_secim:
             st.markdown("<div class='card-box'>🥋 <b>Çok güvendiğin Dollyo Chagi tekmende puan alamadın ve kontradan kafana tekme yedin.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepkin:", [
+            ans = st.radio("Zihinsel Tepki Seçeneği:", [
                 "A) 'Şu an canım yanıyor ve üzgünüm ama bu bir deneyim. Bir sonraki rauntta mesafemi ayarlayacağım.' (Öz Şefkat)",
                 "B) 'Ben aptalım, bunu nasıl yerim!' (Aşırı Özdeşleşme)"
             ])
-            if st.button("Tepkiyi Kontrol Et 2"):
+            if st.button("Kuramsal Çerçeveyi İncele 2"):
                 if ans.startswith("A)"):
-                    st.success("Tebrikler! Farkındalık ve Kendine Nezaket boyutunu kullandın!")
+                    st.success("Kuramsal Uygunluk: Bu seçenek Neff'in (2003) Bilinçli Farkındalık ve Kendine Nezaket boyutlarına örnektir.")
                 else:
-                    st.error("Bu tepki Aşırı Özdeşleşme içeriyor.")
+                    st.info("Kuramsal Analiz: Bu seçenek 'Aşırı Özdeşleşme' boyutuna örnektir. Hatanın genel sporcu kimliğiyle özdeşleştirilmeden değerlendirilmesi hedeflenir.")
                     
         else:
             st.markdown("<div class='card-box'>🥋 <b>Şampiyonaya 2 gün kala bileğin burkuldu ve doktor turnuvadan çekilmeni söyledi.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepkin:", [
+            ans = st.radio("Zihinsel Tepki Seçeneği:", [
                 "A) 'Bütün emeklerim çöp oldu, dünya üzerimdeki en şanssız insanım.' (İzolasyon)",
                 "B) 'Çok üzgünüm ama sağlığım her şeyden önemli. Birçok sporcu sakatlık yaşar, iyileşip daha güçlü döneceğim.' (Öz Şefkat)"
             ])
-            if st.button("Tepkiyi Kontrol Et 3"):
+            if st.button("Kuramsal Çerçeveyi İncele 3"):
                 if ans.startswith("B)"):
-                    st.success("Tebrikler! Ortak İnsanlık boyutunu harika uyguladın!")
+                    st.success("Kuramsal Uygunluk: Bu seçenek Neff'in (2003) Ortak İnsanlık boyutuna uygun bir yaklaşımdır.")
                 else:
-                    st.error("Bu tepki İzolasyon içeriyor.")
+                    st.info("Kuramsal Analiz: Bu seçenek 'İzolasyon' boyutuna örnektir. Benzer zorlukların tüm sporcular için ortak bir insanlık deneyimi olduğu vurgulanır.")
 
     # MODÜL 4: GERMER & NEFF - ŞEFKATLİ MEKTUP
     with game_tab4:
         st.markdown("### ✉️ Germer & Neff Şefkatli Mektup Egzersizi")
-        st.write("Kendine, seni koşulsuz seven ve anlayan bilge bir şampiyon antrenör gözüyle bir mektup yaz.")
+        st.write("Kendine, nesnel ve destekleyici bir sporcu perspektifinden bir mektup yaz.")
         
         with st.form("letter_form"):
-            letter_text = st.text_area("Kendine Şefkatli Mektubun:", placeholder="Sevgili [Adın], son maçta istediğin sonucu alamadığını biliyorum ama sen antrenmanlarda harika işler çıkardın...")
+            letter_text = st.text_area("Şefkatli Mektup Metni:", placeholder="Sevgili [Adın], son maçta istediğin sonucu alamadığını biliyorum ama antrenmanlardaki çabaların değerli...")
             if st.form_submit_button("Mektubu Analiz Et & Gönder ✉️", type="primary"):
                 if letter_text:
-                    with st.spinner("AI Veri Asistanı mektuptaki şefkat unsurlarını analiz ediyor..."):
+                    with st.spinner("Yapay Zeka Veri Asistanı mektuptaki duygu öğelerini kategorize ediyor..."):
                         res = analyze_self_talk("Şefkatli Mektup Egzersizi", letter_text)
-                    st.markdown(f"<div class='analysis-box'><b>🤖 Mektup Analizi:</b><br>{res}</div>", unsafe_allow_html=True)
-                    st.success("Mektubun kaydedildi! Şefkat kasın tavan yaptı!")
+                    st.markdown(f"<div class='analysis-box'><b>🤖 Veri Analitiği Raporu:</b><br>{res}</div>", unsafe_allow_html=True)
+                    st.success("Mektup metni başarıyla kaydedildi.")
                 else:
-                    st.warning("Lütfen mektubunuzu yazın.")
+                    st.warning("Lütfen mektup metnini doldurun.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
     st.markdown("#### Bütün modülleri ve egzersizleri denediysen bir sonraki aşamaya geçebilirsin!")
