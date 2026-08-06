@@ -187,39 +187,49 @@ elif st.session_state.stage == 1:
 
 # STAGE 2: GELİŞİM OYUNU
 elif st.session_state.stage == 2:
-    st.markdown("<div class='stage-title'>Aşama 2: İçindeki Eleştirmeni Yen (Oyun)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='stage-title'>Aşama 2: İçindeki Eleştirmeni Yen (Öz Şefkat Pratiği)</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Zihnimizdeki ses bazen en zorlu rakibimizdir. Şimdi, geçmişte yaşadığın bir hayal kırıklığını (maç kaybı, antrenman hatası) düşün.
+    Zihnimizdeki ses bazen en zorlu rakibimizdir. Öz şefkati geliştirmek için 3 adımlı bir zihinsel antrenman yapacağız. Şimdi, geçmişte taekwondoda yaşadığın büyük bir hayal kırıklığını (maç kaybı, antrenman hatası vb.) düşün.
     </div>
     """, unsafe_allow_html=True)
     
     with st.form("game_form"):
-        negative = st.text_area("❌ O an kendine içinden ne söyledin? (Eski Ses)", placeholder="Örn: Benden hiçbir şey olmaz, yine batırdım...")
-        positive = st.text_area("💚 Eğer bu hatayı sevdiğin bir takım arkadaşın yapsaydı, ona nasıl destek olurdun? (Şimdi bu sözleri KENDİNE söyle)", placeholder="Örn: Herkes hata yapabilir, önemli olan ayağa kalkmak...")
+        st.markdown("#### Adım 1: Farkındalık (Mindfulness)")
+        negative = st.text_area("O an kendine içinden ne söyledin? (Duygularını ve acımasız eleştirilerini filtresiz yaz)", placeholder="Örn: Benden hiçbir şey olmaz, yine aynı hatayı yaptım, çok kötüyüm...")
         
-        if st.form_submit_button("Sesi Dönüştür 🔄", type="primary"):
-            if negative and positive:
+        st.markdown("#### Adım 2: Ortak İnsanlık (Common Humanity)")
+        common = st.text_area("Sence dünyadaki diğer taekwondocular da benzer hatalar yapıyor mu? Bunu kendine hatırlatan bir cümle yaz.", placeholder="Örn: Olimpiyat şampiyonları bile maç kaybediyor, hata yapmak insan olmanın doğasında var...")
+        
+        st.markdown("#### Adım 3: Kendine Nezaket (Self-Kindness)")
+        positive = st.text_area("Eğer bu hatayı senin en sevdiğin takım arkadaşın yapsaydı, ona nasıl destek olurdun? (Şimdi bu sözleri KENDİNE söyle)", placeholder="Örn: Sorun değil, antrenmanlarda çok çalıştığını biliyorum. Ayağa kalk ve devam et...")
+        
+        if st.form_submit_button("Zihnimi Dönüştür 🔄", type="primary"):
+            if negative and common and positive:
                 st.session_state.neg = negative
+                st.session_state.common = common
                 st.session_state.pos = positive
-                with st.spinner("AI Veri Asistanı dönüşümü analiz ediyor..."):
-                    st.session_state.analysis = analyze_self_talk(negative, positive)
+                with st.spinner("Yapay Zeka Veri Asistanı dönüşümü analiz ediyor..."):
+                    # Analiz için negative ve (common+positive) gönderiyoruz
+                    st.session_state.analysis = analyze_self_talk(negative, f"Ortak İnsanlık: {common} | Nezaket: {positive}")
                 st.session_state.game_played = True
                 st.rerun()
             else:
-                st.warning("Lütfen her iki kutuyu da doldurun.")
+                st.warning("Lütfen üç adımı da eksiksiz doldurun.")
                 
     if st.session_state.get('game_played', False):
         st.markdown("### Dönüşüm Raporu")
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f"<div class='alert-box'><b>Eski Ses:</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='alert-box'><b>Farkındalık (Eski Ses):</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
         with col2:
-            st.markdown(f"<div class='success-box'><b>Yeni Ses:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='analysis-box'><b>Ortak İnsanlık:</b><br>{st.session_state.common}</div>", unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"<div class='success-box'><b>Kendine Nezaket:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
             
-        st.markdown(f"<div class='analysis-box'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='analysis-box' style='background-color: #F3E8FF; border-left: 5px solid #A855F7; color: #6B21A8;'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
         
-        st.success("Tebrikler! Şefkat Kuşağını kazandın! Sonraki aşamaya geçebilirsin.")
+        st.success("Tebrikler! 3 Adımlı Şefkat Antrenmanını tamamlayarak Şefkat Kuşağını kazandın! Sonraki aşamaya geçebilirsin.")
         if st.button("Aşama 3'e Geç ➡️"):
             next_stage()
             st.rerun()
