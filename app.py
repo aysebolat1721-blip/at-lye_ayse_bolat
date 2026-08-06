@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 import json
-import altair as alt
 
 # -----------------
 # 1. AYARLAR & CSS
@@ -110,6 +109,10 @@ if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
+if 'athlete_age' not in st.session_state:
+    st.session_state.athlete_age = 15
+if 'athlete_gender' not in st.session_state:
+    st.session_state.athlete_gender = "Belirtmek İstemiyorum"
 
 def next_stage():
     st.session_state.stage += 1
@@ -123,11 +126,17 @@ def reset_game():
 # 4. ARAYÜZ (UI)
 # -----------------
 with st.sidebar:
-    st.markdown("## 🥋 Ayarlar & Bilgi")
-    st.markdown(f"**Aşama:** {st.session_state.stage}/4")
+    st.markdown("## 🥋 Atölye Paneli")
+    st.markdown("Gruplar 8-15 kişi olacak şekilde tasarlandığında herkes kendi telefonundan bu adımları takip edebilir.")
+    st.markdown(f"**Güncel Aşama:** {st.session_state.stage}/4")
     st.progress(st.session_state.stage / 4)
     
-    st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+    if st.session_state.athlete_name:
+        st.markdown(f"👤 **Oyuncu:** {st.session_state.athlete_name}")
+        st.markdown(f"🎂 **Yaş:** {st.session_state.athlete_age}")
+        st.markdown(f"⚧ **Cinsiyet:** {st.session_state.athlete_gender}")
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("""
         <div class="sidebar-footer">
             <b>Tasarım ve Geliştirme:</b><br> Ayşe Bolat<br><br>
@@ -140,16 +149,27 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 # STAGE 0: GİRİŞ
 if st.session_state.stage == 0:
     st.markdown("<div class='stage-title'>Hoş Geldin Sporcu!</div>", unsafe_allow_html=True)
-    st.markdown("<div class='card-box'>Bu atölyede zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla, kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='card-box'>Bu etkileşimli atölyede zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla, kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
     
-    name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
-    if st.button("Oyuna Başla 🚀", type="primary"):
-        if name:
-            st.session_state.athlete_name = name
-            next_stage()
-            st.rerun()
-        else:
-            st.warning("Lütfen bir isim veya rumuz giriniz.")
+    with st.form("login_form"):
+        st.markdown("#### Kendini Tanıt")
+        name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
+        col1, col2 = st.columns(2)
+        with col1:
+            age = st.number_input("Yaşın:", min_value=6, max_value=60, value=12, step=1)
+        with col2:
+            gender = st.selectbox("Cinsiyetin:", ["Kadın", "Erkek", "Belirtmek İstemiyorum"])
+            
+        submitted = st.form_submit_button("Oyuna Başla 🚀", type="primary")
+        if submitted:
+            if name:
+                st.session_state.athlete_name = name
+                st.session_state.athlete_age = age
+                st.session_state.athlete_gender = gender
+                next_stage()
+                st.rerun()
+            else:
+                st.warning("Lütfen başlamadan önce bir rumuz veya isim giriniz.")
 
 # STAGE 1: ÖN TEST
 elif st.session_state.stage == 1:
@@ -182,7 +202,7 @@ elif st.session_state.stage == 2:
             if negative and positive:
                 st.session_state.neg = negative
                 st.session_state.pos = positive
-                with st.spinner("Yapay Zeka Veri Asistanı dönüşümü analiz ediyor..."):
+                with st.spinner("AI Veri Asistanı dönüşümü analiz ediyor..."):
                     st.session_state.analysis = analyze_self_talk(negative, positive)
                 st.session_state.game_played = True
                 st.rerun()
@@ -236,21 +256,33 @@ elif st.session_state.stage == 4:
     else:
         st.markdown(f"<div class='card-box'>Öz şefkat seviyeniz aynı kaldı. Gelişim sürekli bir antrenmandır.</div>", unsafe_allow_html=True)
     
-    # Grafik
-    df = pd.DataFrame({
-        'Aşama': ['Ön Test', 'Son Test'],
-        'Öz Şefkat Skoru (%)': [pre, post]
-    })
+    st.markdown("#### Öz Şefkat Skoru Değişimi (%)")
     
-    chart = alt.Chart(df).mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
-        x=alt.X('Aşama', sort=None),
-        y=alt.Y('Öz Şefkat Skoru (%)', scale=alt.Scale(domain=[0, 100])),
-        color=alt.Color('Aşama', scale=alt.Scale(range=['#EF4444', '#10B981']), legend=None)
-    ).properties(height=400)
+    # Harici kütüphane (Altair vb.) çökme hatasını %100 önlemek için saf HTML/CSS bar grafik kullanıldı.
+    st.markdown(f"""
+        <div style="margin-bottom: 20px; font-family: sans-serif;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-weight: 600; color: #111827;">Ön Test (Aşama 1)</span>
+                <span style="font-weight: 600; color: #111827;">{pre}%</span>
+            </div>
+            <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                <div style="background-color: #3B82F6; width: {pre}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; transition: width 1s ease-in-out;">
+                </div>
+            </div>
+        </div>
+        <div style="margin-bottom: 30px; font-family: sans-serif;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-weight: 600; color: #111827;">Son Test (Aşama 3)</span>
+                <span style="font-weight: 600; color: #111827;">{post}%</span>
+            </div>
+            <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                <div style="background-color: #10B981; width: {post}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; transition: width 1s ease-in-out;">
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    st.altair_chart(chart, use_container_width=True)
-    
-    if st.button("Oyunu Baştan Başlat 🔄"):
+    if st.button("Oyunu Baştan Başlat 🔄", type="primary"):
         reset_game()
 
 # Sayfanın en altındaki Footer
