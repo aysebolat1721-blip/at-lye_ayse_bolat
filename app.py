@@ -1,17 +1,19 @@
 import streamlit as st
+import pandas as pd
 import requests
 import json
-import random
+import altair as alt
 
-# Sayfa Ayarları
+# -----------------
+# 1. AYARLAR & CSS
+# -----------------
 st.set_page_config(
-    page_title="🥋 Sporcularda Öz Şefkat Oyun Alanı",
+    page_title="🥋 Öz Şefkat Gelişim Oyunu",
     page_icon="🥋",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Özel CSS Stilleri
 st.markdown("""
     <style>
     .main-header { font-size: 2.5rem; color: #1E3A8A; font-weight: 700; text-align: center; margin-bottom: 2rem; }
@@ -21,84 +23,62 @@ st.markdown("""
     .analysis-box { background-color: #EFF6FF; color: #1E3A8A; border-radius: 10px; padding: 15px; border-left: 5px solid #60A5FA; margin-top: 10px; font-weight: 500; }
     .footer { position: fixed; left: 0; bottom: 0; width: 100%; background-color: #1F2937; color: white; text-align: center; padding: 12px 0; font-size: 0.95rem; font-weight: 600; z-index: 1000; }
     .sidebar-footer { margin-top: auto; padding-top: 20px; font-size: 0.9rem; color: #4B5563; text-align: center; border-top: 1px solid #E5E7EB; }
+    .stage-title { font-size: 1.8rem; color: #2563EB; font-weight: 600; border-bottom: 2px solid #BFDBFE; padding-bottom: 10px; margin-bottom: 20px;}
     </style>
 """, unsafe_allow_html=True)
 
-# API Ayarları
+# API
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except:
     GROQ_API_KEY = "gsk_" + "v58LoWEAqYd61eK5NkC6WGdyb3FYC4ygvwblvUAyeV5wK1ajk5bz"
 
-# SABİT SENARYOLAR (Yapay Zeka olmadan rastgele çekilir)
-SCENARIOS = {
-    "Kendine Nezaket (Öz Yargılamaya Karşı)": [
-        {
-            "scenario": "Bölge şampiyonasında, uzun süredir çalıştığın favori tekmende (Dollyo Chagi) puan alamadın ve rakibin sana kontradan puan aldı. Antrenörün kenardan sana sesleniyor ama o an sadece kendi hatana odaklandığın için onu duymuyorsun.",
-            "task": "DUR VE NEFES AL. İçindeki yargılayıcı sesi sustur. Kendine, 'Bu tekniği mükemmel yapmak zorunda değilim, herkes hata yapabilir. Şimdi antrenörüme odaklanıp bir sonraki pozisyona hazırlanacağım' de."
-        },
-        {
-            "scenario": "Antrenmanda esneklik (spagat) çalışırken, senden daha alt kuşaktaki bir sporcunun senden çok daha iyi açtığını gördün. Birden yetersizlik hissi geldi.",
-            "task": "KENDİNE ŞEFKAT GÖSTER. Başkalarıyla kıyaslamak yerine kendi bedenine saygı duy. 'Benim bedenimin sınırları ve yolculuğu farklı. Ben elimden geleni yapıyorum' diyerek çalışmana devam et."
-        },
-        {
-            "scenario": "Maçta önde giderken son 10 saniyede konsantrasyon kaybı yaşadın ve kafana tekme yiyerek maçı kaybettin. Kendine 'Ben aptalım, bunu nasıl yaparım!' diyorsun.",
-            "task": "KENDİNE ARKADAŞIN GİBİ DAVRAN. Sevdiğin bir takım arkadaşın aynı şeyi yaşasa ona 'Aptal' demezdin. Kendine 'Çok iyi mücadele ettin, o an bir anlık dalgınlık oldu ama bu senin kötü bir sporcu olduğun anlamına gelmez' de."
-        }
-    ],
-    "Ortak İnsanlık (İzolasyona Karşı)": [
-        {
-            "scenario": "Maça çıkmadan hemen önce karnına ağrılar girdi, kalbin çok hızlı atıyor. Etrafındaki diğer sporculara bakıyorsun ve sanki bir tek sen heyecanlıymışsın, herkes çok rahatmış gibi hissediyorsun.",
-            "task": "ORTAK İNSANLIĞI HATIRLA. Çevrene bak ve içinden şunu tekrarla: 'Buradaki herkes şu an stresli. Olimpiyat şampiyonları bile bu mindere çıkarken heyecanlanır. Heyecanlanmak benim zayıf olduğumu değil, insan olduğumu gösterir.'"
-        },
-        {
-            "scenario": "Önemli bir seçme maçında son saniyede kyongo (ceza) alarak maçı kaybettin. Minderden inerken dünyadaki en şanssız ve başarısız insanmışsın gibi hissediyorsun.",
-            "task": "BİRLİKTELİK HİSSİ. 'Sporda kazanmak kadar kaybetmek de oyunun doğal bir parçası. Dünyadaki tüm büyük taekwondocular benzer yenilgiler yaşadı. Yalnız değilim' diyerek takım arkadaşlarınla vakit geçir."
-        },
-        {
-            "scenario": "Aylardır çalıştığın kuşak sınavında heyecandan poomsae'nin bir adımını unuttun. Salondaki herkes sana bakıyor, rezil olduğunu düşünüyorsun.",
-            "task": "İNSANLIK HALİ. Mükemmel olmak zorunda değilsin. Hata yapmak insanın doğasında vardır. Derin bir nefes al ve 'Her taekwondocu en az bir kez hareket unutmuştur, bu normal bir durum' diyerek devam et."
-        }
-    ],
-    "Bilinçli Farkındalık (Aşırı Özdeşleşmeye Karşı)": [
-        {
-            "scenario": "Maçta hakemin sana haksız yere ceza verdiğini düşünüyorsun. Öfken giderek artıyor ve maça odaklanamıyorsun, sürekli o anı düşünüyorsun.",
-            "task": "FARKINDALIK PRATİĞİ. Duygunu fark et ama ona kapılma: 'Şu an hakeme çok öfkeliyim. Bu öfkeyi hissediyorum. Ama ben bu öfkeden ibaret değilim. Zihnimi şimdi ve buradaki maça, bir sonraki adımıma geri getiriyorum.'"
-        },
-        {
-            "scenario": "Arka arkaya girdiğin 3 maçı da kaybettin. Zihninde sürekli 'Ben yeteneksizim', 'Bıraksam daha iyi' gibi düşünceler dönüp duruyor.",
-            "task": "DÜŞÜNCELERİ GÖZLEMLEYİCİ OL. Düşüncelerinle arana mesafe koy: 'Şu an zihnim bana başarısız olduğumu söylüyor. Bu sadece anlık bir düşünce, bir gerçek değil. Düşünceler gelir ve gider.' Sadece nefesine odaklan."
-        },
-        {
-            "scenario": "Antrenman maçında çok iyi performans sergiledin ve kendini yenilmez hissediyorsun. Ancak rehavete kapılıp savunmanı düşürdün.",
-            "task": "ANDA KAL. Aşırı özgüven ile kendini kaybetme. 'Şu an iyi hissediyorum ve gururluyum. Ama maç henüz bitmedi, dikkatimi şimdi atacağım tekmeye ve rakibime vermeliyim.' diyerek odağını ana getir."
-        }
-    ]
-}
+# -----------------
+# 2. VERİ & FONKSİYONLAR
+# -----------------
+
+QUESTIONS = [
+    {"text": "1. Antrenmanda veya maçta benim için önemli olan bir şeyi başaramadığımda, yetersizlik duygusuna kapılırım.", "reverse": True},
+    {"text": "2. Kendi oyun tarzımda sevmediğim özelliklere karşı anlayışlı ve sabırlı olmaya çalışırım.", "reverse": False},
+    {"text": "3. Maçta can sıkıcı bir şey olduğunda durumu dengeli bir şekilde değerlendirmeye çalışırım.", "reverse": False},
+    {"text": "4. Formsuz olduğumda, diğer sporcuların benden daha başarılı ve mutlu olduğunu düşünürüm.", "reverse": True},
+    {"text": "5. Hatalarımı ve başarısızlıklarımı sporun ve insan olmanın doğal bir parçası olarak görmeye çalışırım.", "reverse": False},
+    {"text": "6. Çok zor bir antrenman veya maç dönemi geçirdiğimde, kendime ihtiyacım olan şefkat ve anlayışı gösteririm.", "reverse": False},
+    {"text": "7. Minderde beni üzen bir şey olduğunda, duygularımı dengede tutmaya çalışırım.", "reverse": False},
+    {"text": "8. Benim için önemli olan bir maçta başarısız olduğumda, bu başarısızlığı sadece ben yaşıyormuşum gibi yalnız hissederim.", "reverse": True},
+    {"text": "9. Performansım düştüğünde, sürekli yanlış giden şeylere takılıp kalırım.", "reverse": True},
+    {"text": "10. Bir teknikte yetersiz hissettiğimde, kendime bu duyguların çoğu sporcu tarafından paylaşıldığını hatırlatırım.", "reverse": False},
+    {"text": "11. Kendi hatalarıma ve eksiklerime karşı çok yargılayıcıyımdır.", "reverse": True},
+    {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
+]
+
+def calculate_score(answers):
+    total = 0
+    for i, q in enumerate(QUESTIONS):
+        val = answers[i]
+        if q["reverse"]:
+            val = 6 - val
+        total += val
+    return round((total / (len(QUESTIONS) * 5)) * 100, 1)
 
 def analyze_self_talk(negative, positive):
-    """Yapay Zeka sporcunun dönüşümünü nesnel bir veri olarak analiz eder."""
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
-    
     prompt = f"""
     Aşağıdaki iki metni nesnel bir şekilde analiz et. 
     Eski Ses: "{negative}"
     Yeni Ses: "{positive}"
-    
     Görev: 
-    1. Hangi duygunun hangi duyguya (ör: kaygı -> kabul, öfke -> motivasyon) dönüştüğünü tek kelimeyle yaz.
-    2. Yeni sesin Kristin Neff'in 3 boyutundan (Kendine Nezaket, Ortak İnsanlık, Bilinçli Farkındalık) hangisine ait olduğunu nesnel olarak tespit et.
-    
-    Asla tavsiye verme, kişisel yorum yapma, psikolog gibi davranma. Sadece veriyi kategorize et. 
-    Örnek Format:
-    Duygu Değişimi: Öfke -> Kabul
-    Tespit Edilen Boyut: Bilinçli Farkındalık
+    1. Hangi duygunun hangi duyguya dönüştüğünü yaz.
+    2. Yeni sesin Kristin Neff'in 3 boyutundan (Kendine Nezaket, Ortak İnsanlık, Bilinçli Farkındalık) hangisine ait olduğunu tespit et.
+    Asla tavsiye verme, kişisel yorum yapma, psikolog gibi davranma. Sadece veriyi kategorize et.
+    Format:
+    Duygu Değişimi: X -> Y
+    Tespit Edilen Boyut: Z
     """
-    
     data = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
@@ -108,27 +88,44 @@ def analyze_self_talk(negative, positive):
         "temperature": 0.1,
         "max_tokens": 150
     }
-    
     try:
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
         return response.json()['choices'][0]['message']['content']
-    except Exception as e:
-        return f"Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Boyut: Bilinmeyen (API Hatası)"
+    except:
+        return "Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Boyut: Bilinmeyen (API Hatası)"
 
-# Oturum Durumu Başlatma
-if 'self_talks' not in st.session_state:
-    st.session_state.self_talks = []
+# -----------------
+# 3. STATE YÖNETİMİ
+# -----------------
+if 'stage' not in st.session_state:
+    st.session_state.stage = 0
+if 'pre_answers' not in st.session_state:
+    st.session_state.pre_answers = [3] * len(QUESTIONS)
+if 'post_answers' not in st.session_state:
+    st.session_state.post_answers = [3] * len(QUESTIONS)
+if 'pre_score' not in st.session_state:
+    st.session_state.pre_score = 0
+if 'post_score' not in st.session_state:
+    st.session_state.post_score = 0
+if 'athlete_name' not in st.session_state:
+    st.session_state.athlete_name = ""
 
-# Sidebar
+def next_stage():
+    st.session_state.stage += 1
+
+def reset_game():
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.rerun()
+
+# -----------------
+# 4. ARAYÜZ (UI)
+# -----------------
 with st.sidebar:
     st.markdown("## 🥋 Ayarlar & Bilgi")
-    
-    st.markdown("### 👥 Atölye Grubu Özellikleri")
-    participant_count = st.slider("Katılımcı Sayısı", min_value=8, max_value=15, value=10)
-    age_group = st.selectbox("Yaş Grubu", ["Çocuk (8-12)", "Yıldız (12-14)", "Genç (15-17)", "Büyük (18+)"])
-    gender_mix = st.selectbox("Cinsiyet Dağılımı", ["Karma", "Sadece Kadın", "Sadece Erkek"])
-    exp_level = st.selectbox("Deneyim Seviyesi", ["Yeni Başlayan (Beyaz-Sarı Kuşak)", "Orta Seviye (Yeşil-Mavi Kuşak)", "İleri Seviye (Kırmızı-Siyah Kuşak)", "Milli Sporcu"])
+    st.markdown(f"**Aşama:** {st.session_state.stage}/4")
+    st.progress(st.session_state.stage / 4)
     
     st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
     st.markdown("""
@@ -138,104 +135,123 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# Ana Sayfa İçeriği
-st.markdown("<h1 class='main-header'>🥋 Sporcularda Öz Şefkat Oyun Alanı</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsafe_allow_html=True)
 
-# Sekmeler
-tab1, tab2, tab3 = st.tabs(["🎯 Kart Çek ve Oyna", "📝 Sporcu İç Konuşma Analizi", "ℹ️ Atölye Rehberi"])
-
-with tab1:
-    st.markdown("### 🎲 Senaryo ve Görev Kartları")
-    st.write("Seçtiğiniz boyuta uygun, taekwondo'ya özel rastgele bir senaryo ve pratik görev kartı çekin. (Bu aşama yapay zeka kullanılmadan tamamen uzmanca hazırlanmış havuzdan gelir).")
+# STAGE 0: GİRİŞ
+if st.session_state.stage == 0:
+    st.markdown("<div class='stage-title'>Hoş Geldin Sporcu!</div>", unsafe_allow_html=True)
+    st.markdown("<div class='card-box'>Bu atölyede zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla, kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        st.markdown("#### Boyut Seçimi")
-        dimension = st.radio(
-            "Kristin Neff'in 3 Temel Boyutu:",
-            list(SCENARIOS.keys())
-        )
-        
-        generate_btn = st.button("✨ Kart Çek", use_container_width=True, type="primary")
-        
-    with col2:
-        if generate_btn:
-            selected_item = random.choice(SCENARIOS[dimension])
-            st.markdown(f"""
-            <div class='card-box'>
-                <h4 style='color: #1E3A8A; margin-bottom:10px;'>🥋 Müsabaka/Antrenman Senaryosu:</h4>
-                <p style='font-size: 1.1rem;'>{selected_item['scenario']}</p>
-                <hr>
-                <h4 style='color: #059669; margin-bottom:10px;'>💚 Öz Şefkat Görev Kartı:</h4>
-                <p style='font-size: 1.1rem;'><b>{selected_item['task']}</b></p>
-            </div>
-            """, unsafe_allow_html=True)
-            st.balloons()
+    name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
+    if st.button("Oyuna Başla 🚀", type="primary"):
+        if name:
+            st.session_state.athlete_name = name
+            next_stage()
+            st.rerun()
         else:
-            st.info("Senaryo çekmek için sol taraftaki butona tıklayın.")
+            st.warning("Lütfen bir isim veya rumuz giriniz.")
 
-with tab2:
-    st.markdown("### 🗣️ İç Konuşma Yapay Zeka Analizi")
-    st.write("Sporcuların zihinlerindeki eleştirel sesi şefkatli bir sese dönüştürme pratiği. Yapay zeka bu kez sadece bir 'analizci' olarak, girdiğiniz metnin Öz Şefkat kuramına ne kadar uygun olduğunu değerlendirir.")
+# STAGE 1: ÖN TEST
+elif st.session_state.stage == 1:
+    st.markdown(f"<div class='stage-title'>Aşama 1: Mevcut Durum Analizi (Ön Test)</div>", unsafe_allow_html=True)
+    st.info("Lütfen aşağıdaki ifadelere ne kadar katıldığını dürüstçe işaretle. (1 = Hiç Katılmıyorum, 5 = Tamamen Katılıyorum)")
     
-    with st.form("self_talk_form", clear_on_submit=False):
-        negative_talk = st.text_area("❌ Olumsuz İç Konuşman nedir?", placeholder="Örn: Yine aynı hatayı yaptım, benden hiçbir şey olmaz...")
-        positive_talk = st.text_area("💚 Yeni Şefkatli Sesin nedir?", placeholder="Örn: Herkes hata yapabilir, antrenmanla düzelteceğim.")
+    with st.form("pre_test_form"):
+        for i, q in enumerate(QUESTIONS):
+            st.session_state.pre_answers[i] = st.slider(q["text"], 1, 5, st.session_state.pre_answers[i], key=f"pre_{i}")
         
-        submit_btn = st.form_submit_button("Analiz Et ve Kaydet")
-        
-        if submit_btn and negative_talk and positive_talk:
-            with st.spinner("AI Psikolog verileri analiz ediyor..."):
-                analysis_result = analyze_self_talk(negative_talk, positive_talk)
-                st.session_state.self_talks.append({
-                    "negative": negative_talk,
-                    "positive": positive_talk,
-                    "analysis": analysis_result
-                })
-            st.success("Analiz tamamlandı ve kaydedildi!")
-            
-    if st.session_state.self_talks:
-        st.markdown("### Analiz Panosu")
-        for idx, talk in enumerate(reversed(st.session_state.self_talks)):
-            col_a, col_b = st.columns(2)
-            with col_a:
-                st.markdown(f"<div class='alert-box'><b>Eski Ses:</b><br>{talk['negative']}</div>", unsafe_allow_html=True)
-            with col_b:
-                st.markdown(f"<div class='success-box'><b>Yeni Ses:</b><br>{talk['positive']}</div>", unsafe_allow_html=True)
-            
-            st.markdown(f"<div class='analysis-box'><b>🤖 AI Psikolog Analizi:</b><br>{talk['analysis']}</div>", unsafe_allow_html=True)
-            st.markdown("<hr>", unsafe_allow_html=True)
+        if st.form_submit_button("Testi Tamamla ve İlerle", type="primary"):
+            st.session_state.pre_score = calculate_score(st.session_state.pre_answers)
+            next_stage()
+            st.rerun()
 
-with tab3:
-    st.markdown("### 📋 Atölye Uygulama Rehberi")
-    
-    st.markdown(f"""
-    <div class="card-box">
-    <h4>Uygulama Amacı</h4>
-    Bu atölye, taekwondo sporcularının performans kaygısı, başarısızlık korkusu ve yoğun antrenman stresiyle başa çıkabilmeleri için <b>Kristin Neff'in (2003) Öz Şefkat Kuramı</b> temel alınarak tasarlanmıştır.
+# STAGE 2: GELİŞİM OYUNU
+elif st.session_state.stage == 2:
+    st.markdown("<div class='stage-title'>Aşama 2: İçindeki Eleştirmeni Yen (Oyun)</div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='card-box'>
+    Zihnimizdeki ses bazen en zorlu rakibimizdir. Şimdi, geçmişte yaşadığın bir hayal kırıklığını (maç kaybı, antrenman hatası) düşün.
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("#### 🕒 Oturum Akışı (Tahmini 45-60 Dk)")
-    st.markdown("""
-    1. **Buz Kırıcı ve Isınma (10 Dk):**
-       - Katılımcılar daire şeklinde oturur.
-       - Antrenör/Psikolog "Öz Şefkat" kavramını kısaca taekwondo bağlamında açıklar.
-       
-    2. **Kart Çek ve Oyna - Sabit Senaryolar (20 Dk):**
-       - Gönüllü sporcular sırayla bir boyut seçip butonla kart çeker.
-       - Senaryo okunur ve görev kartındaki pratik grupça zihinsel olarak uygulanır.
-       - *Buradaki veriler tamamen uzman onayı almış, hatasız taekwondo senaryolarından rastgele çekilir.*
-       
-    3. **İç Konuşmayı Dönüştürme ve Analiz Pratiği (15 Dk):**
-       - Sporculardan yakın zamanda yaşadıkları bir "hata" sonrası kendilerine ne söyledikleri (Eski Ses) istenir.
-       - Grupla beyin fırtınası yapılarak bu ses (Yeni Ses)'e dönüştürülür.
-       - Bunlar forma girilir ve Yapay Zeka'nın sadece analiz amacıyla sunduğu teorik geri bildirim birlikte değerlendirilir.
-       
-    4. **Kapanış ve Değerlendirme (5-10 Dk):**
-       - "Mindfulness (Bilinçli Farkındalık)" nefes egzersizi yapılarak atölye sonlandırılır.
-    """)
+    with st.form("game_form"):
+        negative = st.text_area("❌ O an kendine içinden ne söyledin? (Eski Ses)", placeholder="Örn: Benden hiçbir şey olmaz, yine batırdım...")
+        positive = st.text_area("💚 Eğer bu hatayı sevdiğin bir takım arkadaşın yapsaydı, ona nasıl destek olurdun? (Şimdi bu sözleri KENDİNE söyle)", placeholder="Örn: Herkes hata yapabilir, önemli olan ayağa kalkmak...")
+        
+        if st.form_submit_button("Sesi Dönüştür 🔄", type="primary"):
+            if negative and positive:
+                st.session_state.neg = negative
+                st.session_state.pos = positive
+                with st.spinner("Yapay Zeka Veri Asistanı dönüşümü analiz ediyor..."):
+                    st.session_state.analysis = analyze_self_talk(negative, positive)
+                st.session_state.game_played = True
+                st.rerun()
+            else:
+                st.warning("Lütfen her iki kutuyu da doldurun.")
+                
+    if st.session_state.get('game_played', False):
+        st.markdown("### Dönüşüm Raporu")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(f"<div class='alert-box'><b>Eski Ses:</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
+        with col2:
+            st.markdown(f"<div class='success-box'><b>Yeni Ses:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
+            
+        st.markdown(f"<div class='analysis-box'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
+        
+        st.success("Tebrikler! Şefkat Kuşağını kazandın! Sonraki aşamaya geçebilirsin.")
+        if st.button("Aşama 3'e Geç ➡️"):
+            next_stage()
+            st.rerun()
+
+# STAGE 3: SON TEST
+elif st.session_state.stage == 3:
+    st.markdown("<div class='stage-title'>Aşama 3: Gelişim Ölçümü (Son Test)</div>", unsafe_allow_html=True)
+    st.info("İç sesini dönüştürme pratiğinden SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
+    
+    with st.form("post_test_form"):
+        for i, q in enumerate(QUESTIONS):
+            st.session_state.post_answers[i] = st.slider(q["text"], 1, 5, st.session_state.post_answers[i], key=f"post_{i}")
+        
+        if st.form_submit_button("Testi Tamamla ve Sonuçları Gör 📊", type="primary"):
+            st.session_state.post_score = calculate_score(st.session_state.post_answers)
+            next_stage()
+            st.rerun()
+
+# STAGE 4: SONUÇLAR
+elif st.session_state.stage == 4:
+    st.markdown(f"<div class='stage-title'>Aşama 4: Rapor ve Kapanış</div>", unsafe_allow_html=True)
+    
+    pre = st.session_state.pre_score
+    post = st.session_state.post_score
+    diff = post - pre
+    
+    st.markdown(f"### Tebrikler {st.session_state.athlete_name}!")
+    
+    if diff > 0:
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı!</div>", unsafe_allow_html=True)
+        st.balloons()
+    elif diff < 0:
+        st.markdown(f"<div class='card-box'>Öz şefkat seviyeniz <b>{diff:.1f}</b> puan değişti. Önemli olan farkındalık kazanmaktır.</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div class='card-box'>Öz şefkat seviyeniz aynı kaldı. Gelişim sürekli bir antrenmandır.</div>", unsafe_allow_html=True)
+    
+    # Grafik
+    df = pd.DataFrame({
+        'Aşama': ['Ön Test', 'Son Test'],
+        'Öz Şefkat Skoru (%)': [pre, post]
+    })
+    
+    chart = alt.Chart(df).mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3).encode(
+        x=alt.X('Aşama', sort=None),
+        y=alt.Y('Öz Şefkat Skoru (%)', scale=alt.Scale(domain=[0, 100])),
+        color=alt.Color('Aşama', scale=alt.Scale(range=['#EF4444', '#10B981']), legend=None)
+    ).properties(height=400)
+    
+    st.altair_chart(chart, use_container_width=True)
+    
+    if st.button("Oyunu Baştan Başlat 🔄"):
+        reset_game()
 
 # Sayfanın en altındaki Footer
 st.markdown("<br><br><br>", unsafe_allow_html=True)
