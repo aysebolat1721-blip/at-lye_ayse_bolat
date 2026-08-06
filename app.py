@@ -15,10 +15,10 @@ st.set_page_config(
 st.markdown("""
     <style>
     .main-header { font-size: 2.5rem; color: #1E3A8A; font-weight: 700; text-align: center; margin-bottom: 2rem; }
-    .card-box { background-color: #F3F4F6; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; border-left: 5px solid #3B82F6; }
-    .alert-box { background-color: #FEF2F2; border-radius: 10px; padding: 15px; border-left: 5px solid #EF4444; margin-bottom: 15px; }
-    .success-box { background-color: #ECFDF5; border-radius: 10px; padding: 15px; border-left: 5px solid #10B981; margin-bottom: 15px; }
-    .analysis-box { background-color: #EFF6FF; border-radius: 10px; padding: 15px; border-left: 5px solid #60A5FA; margin-top: 10px; font-style: italic; }
+    .card-box { background-color: #F3F4F6; color: #111827; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; border-left: 5px solid #3B82F6; }
+    .alert-box { background-color: #FEF2F2; color: #7F1D1D; border-radius: 10px; padding: 15px; border-left: 5px solid #EF4444; margin-bottom: 15px; }
+    .success-box { background-color: #ECFDF5; color: #064E3B; border-radius: 10px; padding: 15px; border-left: 5px solid #10B981; margin-bottom: 15px; }
+    .analysis-box { background-color: #EFF6FF; color: #1E3A8A; border-radius: 10px; padding: 15px; border-left: 5px solid #60A5FA; margin-top: 10px; font-weight: 500; }
     .footer { position: fixed; left: 0; bottom: 0; width: 100%; background-color: #1F2937; color: white; text-align: center; padding: 12px 0; font-size: 0.95rem; font-weight: 600; z-index: 1000; }
     .sidebar-footer { margin-top: auto; padding-top: 20px; font-size: 0.9rem; color: #4B5563; text-align: center; border-top: 1px solid #E5E7EB; }
     </style>
@@ -77,7 +77,7 @@ SCENARIOS = {
 }
 
 def analyze_self_talk(negative, positive):
-    """Yapay Zeka sporcunun dönüşümünü analiz eder."""
+    """Yapay Zeka sporcunun dönüşümünü nesnel bir veri olarak analiz eder."""
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -85,22 +85,28 @@ def analyze_self_talk(negative, positive):
     }
     
     prompt = f"""
-    Sen uzman bir spor psikoloğusun. Taekwondo yapan bir sporcu, içindeki olumsuz sesi şefkatli bir sese dönüştürdü.
-    Eski Olumsuz Ses: "{negative}"
-    Yeni Şefkatli Ses: "{positive}"
+    Aşağıdaki iki metni nesnel bir şekilde analiz et. 
+    Eski Ses: "{negative}"
+    Yeni Ses: "{positive}"
     
-    Lütfen bu dönüşümü Kristin Neff'in Öz Şefkat Kuramı (Kendine Nezaket, Ortak İnsanlık, Bilinçli Farkındalık) açısından kısaca (2-3 cümle) analiz et. 
-    Sporcunun doğru boyutu kullanıp kullanmadığını belirt. Yapıcı, destekleyici, bilimsel ama kolay anlaşılır ol.
+    Görev: 
+    1. Hangi duygunun hangi duyguya (ör: kaygı -> kabul, öfke -> motivasyon) dönüştüğünü tek kelimeyle yaz.
+    2. Yeni sesin Kristin Neff'in 3 boyutundan (Kendine Nezaket, Ortak İnsanlık, Bilinçli Farkındalık) hangisine ait olduğunu nesnel olarak tespit et.
+    
+    Asla tavsiye verme, kişisel yorum yapma, psikolog gibi davranma. Sadece veriyi kategorize et. 
+    Örnek Format:
+    Duygu Değişimi: Öfke -> Kabul
+    Tespit Edilen Boyut: Bilinçli Farkındalık
     """
     
     data = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "Sen Kristin Neff'in teorisini çok iyi uygulayan, taekwondo oyuncularına destek veren bir psikologsun."},
+            {"role": "system", "content": "Sen sadece duygu ve metin analizi yapan otomatik bir veri işleme asistanısın. Yorum veya tavsiye yapmazsın."},
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.5,
-        "max_tokens": 300
+        "temperature": 0.1,
+        "max_tokens": 150
     }
     
     try:
@@ -108,7 +114,7 @@ def analyze_self_talk(negative, positive):
         response.raise_for_status()
         return response.json()['choices'][0]['message']['content']
     except Exception as e:
-        return f"Dönüşümünüz gayet başarılı! Ancak sistem şu an detaylı analiz yapamıyor. İlerlemeye devam edin!"
+        return f"Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Boyut: Bilinmeyen (API Hatası)"
 
 # Oturum Durumu Başlatma
 if 'self_talks' not in st.session_state:
