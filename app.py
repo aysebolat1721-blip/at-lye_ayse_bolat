@@ -187,52 +187,105 @@ elif st.session_state.stage == 1:
 
 # STAGE 2: GELİŞİM OYUNU
 elif st.session_state.stage == 2:
-    st.markdown("<div class='stage-title'>Aşama 2: İçindeki Eleştirmeni Yen (Öz Şefkat Pratiği)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='stage-title'>Aşama 2: Şefkat Geliştirme Oyun Alanı 🎮</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Zihnimizdeki ses bazen en zorlu rakibimizdir. Öz şefkati geliştirmek için 3 adımlı bir zihinsel antrenman yapacağız. Şimdi, geçmişte taekwondoda yaşadığın büyük bir hayal kırıklığını (maç kaybı, antrenman hatası vb.) düşün.
+    Zihinsel şefkat ve dayanıklılık kaslarını geliştirmek için aşağıdaki oyunları tamamla. İstediğin oyundan başlayabilirsin!
     </div>
     """, unsafe_allow_html=True)
     
-    with st.form("game_form"):
-        st.markdown("#### Adım 1: Farkındalık (Mindfulness)")
-        negative = st.text_area("O an kendine içinden ne söyledin? (Duygularını ve acımasız eleştirilerini filtresiz yaz)", placeholder="Örn: Benden hiçbir şey olmaz, yine aynı hatayı yaptım, çok kötüyüm...")
+    game_tab1, game_tab2, game_tab3 = st.tabs([
+        "🔄 Oyun 1: Zihinsel Dönüştürücü", 
+        "🛡️ Oyun 2: Şefkat Kalkanı (Kriz Testi)", 
+        "🧘 Oyun 3: Mindfulness & Nefes Antrenmanı"
+    ])
+    
+    # OYUN 1: ZİHİNSEL DÖNÜŞTÜRÜCÜ
+    with game_tab1:
+        st.markdown("### 🔄 3 Adımlı Zihinsel Dönüşüm Oyunu")
+        st.write("Geçmişte taekwondoda yaşadığın bir hayal kırıklığını (maç kaybı, antrenman hatası vb.) düşün ve 3 adımı doldur.")
         
-        st.markdown("#### Adım 2: Ortak İnsanlık (Common Humanity)")
-        common = st.text_area("Sence dünyadaki diğer taekwondocular da benzer hatalar yapıyor mu? Bunu kendine hatırlatan bir cümle yaz.", placeholder="Örn: Olimpiyat şampiyonları bile maç kaybediyor, hata yapmak insan olmanın doğasında var...")
-        
-        st.markdown("#### Adım 3: Kendine Nezaket (Self-Kindness)")
-        positive = st.text_area("Eğer bu hatayı senin en sevdiğin takım arkadaşın yapsaydı, ona nasıl destek olurdun? (Şimdi bu sözleri KENDİNE söyle)", placeholder="Örn: Sorun değil, antrenmanlarda çok çalıştığını biliyorum. Ayağa kalk ve devam et...")
-        
-        if st.form_submit_button("Zihnimi Dönüştür 🔄", type="primary"):
-            if negative and common and positive:
-                st.session_state.neg = negative
-                st.session_state.common = common
-                st.session_state.pos = positive
-                with st.spinner("Yapay Zeka Veri Asistanı dönüşümü analiz ediyor..."):
-                    # Analiz için negative ve (common+positive) gönderiyoruz
-                    st.session_state.analysis = analyze_self_talk(negative, f"Ortak İnsanlık: {common} | Nezaket: {positive}")
-                st.session_state.game_played = True
-                st.rerun()
-            else:
-                st.warning("Lütfen üç adımı da eksiksiz doldurun.")
-                
-    if st.session_state.get('game_played', False):
-        st.markdown("### Dönüşüm Raporu")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown(f"<div class='alert-box'><b>Farkındalık (Eski Ses):</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"<div class='analysis-box'><b>Ortak İnsanlık:</b><br>{st.session_state.common}</div>", unsafe_allow_html=True)
-        with col3:
-            st.markdown(f"<div class='success-box'><b>Kendine Nezaket:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
+        with st.form("game_form_1"):
+            st.markdown("#### Adım 1: Farkındalık (Mindfulness)")
+            negative = st.text_area("O an kendine içinden ne söyledin? (Duygularını filtresiz yaz)", placeholder="Örn: Benden hiçbir şey olmaz, yine aynı hatayı yaptım...")
             
-        st.markdown(f"<div class='analysis-box' style='background-color: #F3E8FF; border-left: 5px solid #A855F7; color: #6B21A8;'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
+            st.markdown("#### Adım 2: Ortak İnsanlık (Common Humanity)")
+            common = st.text_area("Sence dünyadaki diğer taekwondocular da benzer hatalar yapıyor mu?", placeholder="Örn: Olimpiyat şampiyonları bile maç kaybediyor, hata yapmak insanca bir durum...")
+            
+            st.markdown("#### Adım 3: Kendine Nezaket (Self-Kindness)")
+            positive = st.text_area("En sevdiğin takım arkadaşın bu hatayı yapsaydı ona ne derdin? (KENDİNE söyle)", placeholder="Örn: Sorun değil, antrenmanda çok çalıştın. Ayağa kalk ve devam et...")
+            
+            if st.form_submit_button("Zihnimi Dönüştür 🔄", type="primary"):
+                if negative and common and positive:
+                    st.session_state.neg = negative
+                    st.session_state.common = common
+                    st.session_state.pos = positive
+                    with st.spinner("AI Veri Asistanı dönüşümü analiz ediyor..."):
+                        st.session_state.analysis = analyze_self_talk(negative, f"Ortak İnsanlık: {common} | Nezaket: {positive}")
+                    st.session_state.game_played = True
+                    st.rerun()
+                else:
+                    st.warning("Lütfen üç adımı da eksiksiz doldurun.")
+                    
+        if st.session_state.get('game_played', False):
+            st.markdown("### 📊 Dönüşüm Raporun")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown(f"<div class='alert-box'><b>Farkındalık (Eski Ses):</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
+            with col2:
+                st.markdown(f"<div class='analysis-box'><b>Ortak İnsanlık:</b><br>{st.session_state.common}</div>", unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"<div class='success-box'><b>Kendine Nezaket:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
+                
+            st.markdown(f"<div class='analysis-box' style='background-color: #F3E8FF; border-left: 5px solid #A855F7; color: #6B21A8;'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
+
+    # OYUN 2: ŞEFKAT KALKANI (KRIZ SENARYOLARI)
+    with game_tab2:
+        st.markdown("### 🛡️ Şefkat Kalkanı: Taekwondo Kriz Simülatörü")
+        st.write("Aşağıdaki zorlu Taekwondo senaryosunda doğru zihinsel tepkiyi (Şefkat Kalkanı) bularak puan kazan!")
         
-        st.success("Tebrikler! 3 Adımlı Şefkat Antrenmanını tamamlayarak Şefkat Kuşağını kazandın! Sonraki aşamaya geçebilirsin.")
-        if st.button("Aşama 3'e Geç ➡️"):
-            next_stage()
-            st.rerun()
+        scenario_q = "🥋 **Senaryo:** Bölge Şampiyonası Final Maçı'nın son 5 saniyesinde öndeyken talihsiz bir ceza (kyongo) aldın ve maçı 1 puanla kaybettin. Minderden inerken zihninde ne tür bir tepki vermelisin?"
+        st.markdown(f"<div class='card-box'>{scenario_q}</div>", unsafe_allow_html=True)
+        
+        choice = st.radio(
+            "Hangi zihinsel tepki senin Şefkat Kalkanındır?",
+            [
+                "A) 'Ben berbat bir sporcuyum, son saniyede maçı vermek tam bana göre. Bir daha maça çıkmayacağım.'",
+                "B) 'Çok öfkeliyim! Hakem de antrenör de ben de suçluyum, dünya üzerimdeki en adaletsiz yer!'",
+                "C) 'Şu an derin bir üzüntü ve hayal kırıklığı hissediyorum (Farkındalık). Ama dünyadaki her taekwondocu son saniye mağlubiyeti yaşamıştır (Ortak İnsanlık). Kendime yüklenmek yerine bu maçtan ders çıkarıp bir sonrakine hazırlanacağım (Kendine Nezaket).'",
+                "D) 'Hiç önemli değil, umurumda bile değil, ben zaten kazanmış sayılırım.'"
+            ]
+        )
+        
+        if st.button("Cevabı Kontrol Et 🛡️", type="primary"):
+            if choice.startswith("C)"):
+                st.markdown("<div class='success-box'><b>🎉 DOĞRU CEVAP! (+100 Şefkat Puanı)</b><br>Bu tepki Kristin Neff'in 3 temel boyutunun (Farkındalık, Ortak İnsanlık, Kendine Nezaket) mükemmel bir birleşimidir. Zihinsel kalkanın çok güçlü!</div>", unsafe_allow_html=True)
+                st.balloons()
+            else:
+                st.markdown("<div class='alert-box'><b>❌ TEKRAR DENE:</b> Seçtiğin tepki öz-yargılama veya bastırma içeriyor. Doğru tepki, duyguyu kabul edip (Farkındalık), yalnız olmadığını hatırla (Ortak İnsanlık) ve kendine yapıcı davranmaktır (Nezaket).</div>", unsafe_allow_html=True)
+
+    # OYUN 3: MINDFULNESS & NEFES ANTREMANI
+    with game_tab3:
+        st.markdown("### 🧘 Zihinsel Odak ve Nefes Antrenmanı (4-7-8 Tekniği)")
+        st.write("Zorlu maçlardan sonra veya kaygılı anlarda zihnini ve kalbini sakinleştirmek için 4-7-8 Nefes Egzersizini uygula.")
+        
+        st.markdown("""
+        <div class='card-box' style='text-align: center;'>
+            <h4>🌬️ Nefes Ritim Rehberi</h4>
+            <p><b>1. Adım:</b> 4 Saniye boyunca burnundan derin nefes al 📥</p>
+            <p><b>2. Adım:</b> 7 Saniye boyunca nefesini tut ⏸️</p>
+            <p><b>3. Adım:</b> 8 Saniye boyunca ağzından yavaşça ver 📤</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("Nefes Egzersizini Tamamladım 🧘‍♂️", type="secondary"):
+            st.success("Tebrikler! Zihinsel sakinleşme antrenmanını tamamladın. Zihnin son test için hazır!")
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown("#### Bütün oyunları/pratikleri denediysen bir sonraki aşamaya geçebilirsin!")
+    if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
+        next_stage()
+        st.rerun()
 
 # STAGE 3: SON TEST
 elif st.session_state.stage == 3:
