@@ -67,7 +67,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # API Ayarları
-GROQ_API_KEY = "gsk_" + "v58LoWEAqYd61eK5NkC6WGdyb3FYC4ygvwblvUAyeV5wK1ajk5bz"
+try:
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+except:
+    GROQ_API_KEY = "gsk_" + "v58LoWEAqYd61eK5NkC6WGdyb3FYC4ygvwblvUAyeV5wK1ajk5bz"
 
 def get_ai_scenario(dimension, age, gender, experience):
     url = "https://api.groq.com/openai/v1/chat/completions"
