@@ -23,6 +23,7 @@ st.markdown("""
     .footer { position: fixed; left: 0; bottom: 0; width: 100%; background-color: #1F2937; color: white; text-align: center; padding: 12px 0; font-size: 0.95rem; font-weight: 600; z-index: 1000; }
     .sidebar-footer { margin-top: auto; padding-top: 20px; font-size: 0.9rem; color: #4B5563; text-align: center; border-top: 1px solid #E5E7EB; }
     .stage-title { font-size: 1.8rem; color: #2563EB; font-weight: 600; border-bottom: 2px solid #BFDBFE; padding-bottom: 10px; margin-bottom: 20px;}
+    .theory-box { background-color: #FFE4E6; color: #9F1239; border-radius: 10px; padding: 15px; border-left: 5px solid #F43F5E; margin-bottom: 15px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -67,21 +68,21 @@ def analyze_self_talk(negative, positive):
         "Content-Type": "application/json"
     }
     prompt = f"""
-    Aşağıdaki iki metni nesnel bir şekilde analiz et. 
-    Eski Ses: "{negative}"
-    Yeni Ses: "{positive}"
+    Aşağıdaki metni nesnel olarak analiz et.
+    Dönüşüm Metni: "{positive}"
+    Eski Olumsuz Metin: "{negative}"
+    
     Görev: 
-    1. Hangi duygunun hangi duyguya dönüştüğünü yaz.
-    2. Yeni sesin Kristin Neff'in 3 boyutundan (Kendine Nezaket, Ortak İnsanlık, Bilinçli Farkındalık) hangisine ait olduğunu tespit et.
-    Asla tavsiye verme, kişisel yorum yapma, psikolog gibi davranma. Sadece veriyi kategorize et.
+    1. Duygu Dönüşümü (örn: Öfke -> Kabul)
+    2. Kristin Neff, Paul Gilbert veya Tara Brach ilkelerinden hangisinin baskın olduğunu tespit et.
     Format:
     Duygu Değişimi: X -> Y
-    Tespit Edilen Boyut: Z
+    Tespit Edilen Psikolojik Yaklaşım: Z
     """
     data = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "Sen sadece duygu ve metin analizi yapan otomatik bir veri işleme asistanısın. Yorum veya tavsiye yapmazsın."},
+            {"role": "system", "content": "Sen sadece duygu ve psikolojik teknik analizi yapan nesnel bir veri asistanısın."},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.1,
@@ -92,7 +93,7 @@ def analyze_self_talk(negative, positive):
         response.raise_for_status()
         return response.json()['choices'][0]['message']['content']
     except:
-        return "Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Boyut: Bilinmeyen (API Hatası)"
+        return "Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Yaklaşım: Bilinmeyen (API Hatası)"
 
 # -----------------
 # 3. STATE YÖNETİMİ
@@ -149,7 +150,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 # STAGE 0: GİRİŞ
 if st.session_state.stage == 0:
     st.markdown("<div class='stage-title'>Hoş Geldin Sporcu!</div>", unsafe_allow_html=True)
-    st.markdown("<div class='card-box'>Bu etkileşimli atölyede zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla, kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='card-box'>Bu etkileşimli atölyede dünyaca ünlü psikologların (Kristin Neff, Paul Gilbert, Tara Brach) yöntemleriyle zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
     
     with st.form("login_form"):
         st.markdown("#### Kendini Tanıt")
@@ -187,102 +188,137 @@ elif st.session_state.stage == 1:
 
 # STAGE 2: GELİŞİM OYUNU
 elif st.session_state.stage == 2:
-    st.markdown("<div class='stage-title'>Aşama 2: Şefkat Geliştirme Oyun Alanı 🎮</div>", unsafe_allow_html=True)
+    st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Zihinsel şefkat ve dayanıklılık kaslarını geliştirmek için aşağıdaki oyunları tamamla. İstediğin oyundan başlayabilirsin!
+    Bu aşama zihinsel kaslarını güçlendirecek 4 bilimsel modülden oluşmaktadır. İstediğin modülle başla ve tüm modülleri keşfet!
     </div>
     """, unsafe_allow_html=True)
     
-    game_tab1, game_tab2, game_tab3 = st.tabs([
-        "🔄 Oyun 1: Zihinsel Dönüştürücü", 
-        "🛡️ Oyun 2: Şefkat Kalkanı (Kriz Testi)", 
-        "🧘 Oyun 3: Mindfulness & Nefes Antrenmanı"
+    game_tab1, game_tab2, game_tab3, game_tab4 = st.tabs([
+        "🌧️ 1. Tara Brach - RAIN Metodu", 
+        "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
+        "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
+        "✉️ 4. Germer & Neff - Şefkatli Mektup"
     ])
     
-    # OYUN 1: ZİHİNSEL DÖNÜŞTÜRÜCÜ
+    # MODÜL 1: TARA BRACH - RAIN METODU
     with game_tab1:
-        st.markdown("### 🔄 3 Adımlı Zihinsel Dönüşüm Oyunu")
-        st.write("Geçmişte taekwondoda yaşadığın bir hayal kırıklığını (maç kaybı, antrenman hatası vb.) düşün ve 3 adımı doldur.")
-        
-        with st.form("game_form_1"):
-            st.markdown("#### Adım 1: Farkındalık (Mindfulness)")
-            negative = st.text_area("O an kendine içinden ne söyledin? (Duygularını filtresiz yaz)", placeholder="Örn: Benden hiçbir şey olmaz, yine aynı hatayı yaptım...")
-            
-            st.markdown("#### Adım 2: Ortak İnsanlık (Common Humanity)")
-            common = st.text_area("Sence dünyadaki diğer taekwondocular da benzer hatalar yapıyor mu?", placeholder="Örn: Olimpiyat şampiyonları bile maç kaybediyor, hata yapmak insanca bir durum...")
-            
-            st.markdown("#### Adım 3: Kendine Nezaket (Self-Kindness)")
-            positive = st.text_area("En sevdiğin takım arkadaşın bu hatayı yapsaydı ona ne derdin? (KENDİNE söyle)", placeholder="Örn: Sorun değil, antrenmanda çok çalıştın. Ayağa kalk ve devam et...")
-            
-            if st.form_submit_button("Zihnimi Dönüştür 🔄", type="primary"):
-                if negative and common and positive:
-                    st.session_state.neg = negative
-                    st.session_state.common = common
-                    st.session_state.pos = positive
-                    with st.spinner("AI Veri Asistanı dönüşümü analiz ediyor..."):
-                        st.session_state.analysis = analyze_self_talk(negative, f"Ortak İnsanlık: {common} | Nezaket: {positive}")
-                    st.session_state.game_played = True
-                    st.rerun()
-                else:
-                    st.warning("Lütfen üç adımı da eksiksiz doldurun.")
-                    
-        if st.session_state.get('game_played', False):
-            st.markdown("### 📊 Dönüşüm Raporun")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.markdown(f"<div class='alert-box'><b>Farkındalık (Eski Ses):</b><br>{st.session_state.neg}</div>", unsafe_allow_html=True)
-            with col2:
-                st.markdown(f"<div class='analysis-box'><b>Ortak İnsanlık:</b><br>{st.session_state.common}</div>", unsafe_allow_html=True)
-            with col3:
-                st.markdown(f"<div class='success-box'><b>Kendine Nezaket:</b><br>{st.session_state.pos}</div>", unsafe_allow_html=True)
-                
-            st.markdown(f"<div class='analysis-box' style='background-color: #F3E8FF; border-left: 5px solid #A855F7; color: #6B21A8;'><b>🤖 Veri Analizi:</b><br>{st.session_state.analysis}</div>", unsafe_allow_html=True)
-
-    # OYUN 2: ŞEFKAT KALKANI (KRIZ SENARYOLARI)
-    with game_tab2:
-        st.markdown("### 🛡️ Şefkat Kalkanı: Taekwondo Kriz Simülatörü")
-        st.write("Aşağıdaki zorlu Taekwondo senaryosunda doğru zihinsel tepkiyi (Şefkat Kalkanı) bularak puan kazan!")
-        
-        scenario_q = "🥋 **Senaryo:** Bölge Şampiyonası Final Maçı'nın son 5 saniyesinde öndeyken talihsiz bir ceza (kyongo) aldın ve maçı 1 puanla kaybettin. Minderden inerken zihninde ne tür bir tepki vermelisin?"
-        st.markdown(f"<div class='card-box'>{scenario_q}</div>", unsafe_allow_html=True)
-        
-        choice = st.radio(
-            "Hangi zihinsel tepki senin Şefkat Kalkanındır?",
-            [
-                "A) 'Ben berbat bir sporcuyum, son saniyede maçı vermek tam bana göre. Bir daha maça çıkmayacağım.'",
-                "B) 'Çok öfkeliyim! Hakem de antrenör de ben de suçluyum, dünya üzerimdeki en adaletsiz yer!'",
-                "C) 'Şu an derin bir üzüntü ve hayal kırıklığı hissediyorum (Farkındalık). Ama dünyadaki her taekwondocu son saniye mağlubiyeti yaşamıştır (Ortak İnsanlık). Kendime yüklenmek yerine bu maçtan ders çıkarıp bir sonrakine hazırlanacağım (Kendine Nezaket).'",
-                "D) 'Hiç önemli değil, umurumda bile değil, ben zaten kazanmış sayılırım.'"
-            ]
-        )
-        
-        if st.button("Cevabı Kontrol Et 🛡️", type="primary"):
-            if choice.startswith("C)"):
-                st.markdown("<div class='success-box'><b>🎉 DOĞRU CEVAP! (+100 Şefkat Puanı)</b><br>Bu tepki Kristin Neff'in 3 temel boyutunun (Farkındalık, Ortak İnsanlık, Kendine Nezaket) mükemmel bir birleşimidir. Zihinsel kalkanın çok güçlü!</div>", unsafe_allow_html=True)
-                st.balloons()
-            else:
-                st.markdown("<div class='alert-box'><b>❌ TEKRAR DENE:</b> Seçtiğin tepki öz-yargılama veya bastırma içeriyor. Doğru tepki, duyguyu kabul edip (Farkındalık), yalnız olmadığını hatırla (Ortak İnsanlık) ve kendine yapıcı davranmaktır (Nezaket).</div>", unsafe_allow_html=True)
-
-    # OYUN 3: MINDFULNESS & NEFES ANTREMANI
-    with game_tab3:
-        st.markdown("### 🧘 Zihinsel Odak ve Nefes Antrenmanı (4-7-8 Tekniği)")
-        st.write("Zorlu maçlardan sonra veya kaygılı anlarda zihnini ve kalbini sakinleştirmek için 4-7-8 Nefes Egzersizini uygula.")
-        
+        st.markdown("### 🌧️ Tara Brach'in RAIN Metodu (4 Adımlı Zihinsel Pratik)")
         st.markdown("""
-        <div class='card-box' style='text-align: center;'>
-            <h4>🌬️ Nefes Ritim Rehberi</h4>
-            <p><b>1. Adım:</b> 4 Saniye boyunca burnundan derin nefes al 📥</p>
-            <p><b>2. Adım:</b> 7 Saniye boyunca nefesini tut ⏸️</p>
-            <p><b>3. Adım:</b> 8 Saniye boyunca ağzından yavaşça ver 📤</p>
+        <div class='theory-box'>
+        <b>RAIN Tekniği Nedir?</b> Dünyaca ünlü psikolog Tara Brach tarafından geliştirilen bu yöntem, zorlu duygularla (maç stresi, hata yapma korkusu) başa çıkmak için 4 adımdan oluşur:
+        <br><b>R</b>ecognize (Tanı) | <b>A</b>llow (İzin Ver) | <b>I</b>nvestigate (İncele) | <b>N</b>urture (Şefkatle Besle)
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("Nefes Egzersizini Tamamladım 🧘‍♂️", type="secondary"):
-            st.success("Tebrikler! Zihinsel sakinleşme antrenmanını tamamladın. Zihnin son test için hazır!")
+        with st.form("rain_form"):
+            rain_r = st.text_area("1. Recognize (Tanı): Zor bir maç veya antrenman anında zihninde hangi duygu var?", placeholder="Örn: Yenilme korkusu, başarısızlık stresi, hakeme öfke...")
+            rain_a = st.text_area("2. Allow (İzin Ver): Bu duyguyla savaşmak yerine onun varlığına izin ver. 'Şu an bu hissi duyuyorum' yaz.", placeholder="Örn: Şu an korkuyorum ve bu hissin var olmasına izin veriyorum, bunu bastırmıyorum.")
+            rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor, çenem kasılıyor...")
+            rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun ve ben senin yanındayım.")
+            
+            if st.form_submit_button("RAIN Egzersizini Tamamla 🌧️", type="primary"):
+                if rain_r and rain_a and rain_i and rain_n:
+                    st.success("Tebrikler! Tara Brach'in RAIN Metodunu başarıyla uyguladın! Şefkat kasın güçlendi.")
+                else:
+                    st.warning("Lütfen 4 adımı da doldurun.")
+
+    # MODÜL 2: PAUL GILBERT - 3 BEYİN SİSTEMİ
+    with game_tab2:
+        st.markdown("### 🔴🔵🟢 Paul Gilbert'in Şefkat Odaklı Terapi (CFT) 3 Beyin Sistemi")
+        st.markdown("""
+        <div class='theory-box'>
+        Evrimsel Psikolog Prof. Paul Gilbert'e göre beynimizde 3 temel duygu düzenleme sistemi bulunur:
+        <br>🔴 <b>Tehdit Sistemi:</b> Korku, panik, öz-eleştiri ("Mahvoldum, kesin kaybedeceğim")
+        <br>🔵 <b>Güdü/Başarı Sistemi:</b> Hırs, kazanma odaklılık, sürüklenme ("Ne pahasına olursa olsun yenmeliyim")
+        <br>🟢 <b>Yatıştırıcı/Şefkat Sistemi:</b> Güven, sakinlik, öz-şefkat ("Hata yapabilirim, ben güvendeyim")
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("#### 🎯 Taekwondo Durum Testi: Hangi Sistemdesin?")
+        q_gilbert = st.radio(
+            "Seçme maçında rakibin senden 4 puan öne geçti. O an içindeki ses en çok hangisine yakın?",
+            [
+                "🔴 Tehdit Sistemi: 'Eyvah bittim ben! Rezil olacağım, antrenörüm bana çok kızacak!'",
+                "🔵 Güdü Sistemi: 'Gözüm hiçbir şey görmüyor, şu an saldırıp ne pahasına olursa olsun puan almalıyım!'",
+                "🟢 Şefkat/Yatıştırma Sistemi: 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
+            ]
+        )
+        if st.button("Sistemini Analiz Et 🧠"):
+            if q_gilbert.startswith("🔴"):
+                st.markdown("<div class='alert-box'>🔴 <b>Tehdit Sistemindesin:</b> Beynin kortizol üretiyor. Kendini eleştirmek yerine 🟢 Yatıştırıcı sisteme geçmek için derin nefes al.</div>", unsafe_allow_html=True)
+            elif q_gilbert.startswith("🔵"):
+                st.markdown("<div class='card-box'>🔵 <b>Güdü/Başarı Sistemindesin:</b> Hırsın yüksek ama dikkat et! Kontrolsüz hırs hata yaptırabilir. Araya 🟢 Şefkat ekleyerek odağını koru.</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div class='success-box'>🟢 <b>Harika! Yatıştırıcı Şefkat Sistemindesin:</b> Zihnin dengede, spor performansın için en verimli moddasın! (+100 Puan)</div>", unsafe_allow_html=True)
+                st.balloons()
+
+    # MODÜL 3: KRISTIN NEFF - KRIZ SENARYO BANKASI
+    with game_tab3:
+        st.markdown("### 🛡️ Kristin Neff'in 3 Boyutlu Kriz Simülatörü")
+        st.write("Aşağıdaki taekwondo kriz durumlarında doğru zihinsel şefkat tepkisini ver.")
+        
+        senaryo_secim = st.selectbox("Bir Kriz Senaryosu Seç:", [
+            "Senaryo 1: Kuşak sınavında hareketi unuttun.",
+            "Senaryo 2: Favori tekmende rakip kontradan puan aldı.",
+            "Senaryo 3: Sakatlık yüzünden turnuvadan çekilmek zorunda kaldın."
+        ])
+        
+        if "Senaryo 1" in senaryo_secim:
+            st.markdown("<div class='card-box'>🥋 <b>Kuşak sınavında poomsae çizerken adımı unuttun ve salondaki herkes sana bakıyor.</b></div>", unsafe_allow_html=True)
+            ans = st.radio("Zihinsel Tepkin:", [
+                "A) 'Rezil oldum, benden hiçbir şey olmaz.' (Öz Yargılama)",
+                "B) 'Derin bir nefes alıyorum. Heyecandan unutmak her sporcunun başına gelebilir, yalnız değilim. Baştan devam ediyorum.' (Öz Şefkat)"
+            ])
+            if st.button("Tepkiyi Kontrol Et 1"):
+                if ans.startswith("B)"):
+                    st.success("Tebrikler! Ortak İnsanlık ve Farkındalık boyutunu mükemmel kullandın!")
+                else:
+                    st.error("Bu tepki Öz-Yargılama içeriyor. Kendine yüklenmek yerine nazik olmalısın.")
+                    
+        elif "Senaryo 2" in senaryo_secim:
+            st.markdown("<div class='card-box'>🥋 <b>Çok güvendiğin Dollyo Chagi tekmende puan alamadın ve kontradan kafana tekme yedin.</b></div>", unsafe_allow_html=True)
+            ans = st.radio("Zihinsel Tepkin:", [
+                "A) 'Şu an canım yanıyor ve üzgünüm ama bu bir deneyim. Bir sonraki rauntta mesafemi ayarlayacağım.' (Öz Şefkat)",
+                "B) 'Ben aptalım, bunu nasıl yerim!' (Aşırı Özdeşleşme)"
+            ])
+            if st.button("Tepkiyi Kontrol Et 2"):
+                if ans.startswith("A)"):
+                    st.success("Tebrikler! Farkındalık ve Kendine Nezaket boyutunu kullandın!")
+                else:
+                    st.error("Bu tepki Aşırı Özdeşleşme içeriyor.")
+                    
+        else:
+            st.markdown("<div class='card-box'>🥋 <b>Şampiyonaya 2 gün kala bileğin burkuldu ve doktor turnuvadan çekilmeni söyledi.</b></div>", unsafe_allow_html=True)
+            ans = st.radio("Zihinsel Tepkin:", [
+                "A) 'Bütün emeklerim çöp oldu, dünya üzerimdeki en şanssız insanım.' (İzolasyon)",
+                "B) 'Çok üzgünüm ama sağlığım her şeyden önemli. Birçok sporcu sakatlık yaşar, iyileşip daha güçlü döneceğim.' (Öz Şefkat)"
+            ])
+            if st.button("Tepkiyi Kontrol Et 3"):
+                if ans.startswith("B)"):
+                    st.success("Tebrikler! Ortak İnsanlık boyutunu harika uyguladın!")
+                else:
+                    st.error("Bu tepki İzolasyon içeriyor.")
+
+    # MODÜL 4: GERMER & NEFF - ŞEFKATLİ MEKTUP
+    with game_tab4:
+        st.markdown("### ✉️ Germer & Neff Şefkatli Mektup Egzersizi")
+        st.write("Kendine, seni koşulsuz seven ve anlayan bilge bir şampiyon antrenör gözüyle bir mektup yaz.")
+        
+        with st.form("letter_form"):
+            letter_text = st.text_area("Kendine Şefkatli Mektubun:", placeholder="Sevgili [Adın], son maçta istediğin sonucu alamadığını biliyorum ama sen antrenmanlarda harika işler çıkardın...")
+            if st.form_submit_button("Mektubu Analiz Et & Gönder ✉️", type="primary"):
+                if letter_text:
+                    with st.spinner("AI Veri Asistanı mektuptaki şefkat unsurlarını analiz ediyor..."):
+                        res = analyze_self_talk("Şefkatli Mektup Egzersizi", letter_text)
+                    st.markdown(f"<div class='analysis-box'><b>🤖 Mektup Analizi:</b><br>{res}</div>", unsafe_allow_html=True)
+                    st.success("Mektubun kaydedildi! Şefkat kasın tavan yaptı!")
+                else:
+                    st.warning("Lütfen mektubunuzu yazın.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown("#### Bütün oyunları/pratikleri denediysen bir sonraki aşamaya geçebilirsin!")
+    st.markdown("#### Bütün modülleri ve egzersizleri denediysen bir sonraki aşamaya geçebilirsin!")
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
         next_stage()
         st.rerun()
@@ -290,7 +326,7 @@ elif st.session_state.stage == 2:
 # STAGE 3: SON TEST
 elif st.session_state.stage == 3:
     st.markdown("<div class='stage-title'>Aşama 3: Gelişim Ölçümü (Son Test)</div>", unsafe_allow_html=True)
-    st.info("İç sesini dönüştürme pratiğinden SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
+    st.info("Psikolojik atölye egzersizlerinden SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
     
     with st.form("post_test_form"):
         for i, q in enumerate(QUESTIONS):
@@ -321,7 +357,6 @@ elif st.session_state.stage == 4:
     
     st.markdown("#### Öz Şefkat Skoru Değişimi (%)")
     
-    # Harici kütüphane (Altair vb.) çökme hatasını %100 önlemek için saf HTML/CSS bar grafik kullanıldı.
     st.markdown(f"""
         <div style="margin-bottom: 20px; font-family: sans-serif;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
@@ -329,7 +364,7 @@ elif st.session_state.stage == 4:
                 <span style="font-weight: 600; color: #111827;">{pre}%</span>
             </div>
             <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                <div style="background-color: #3B82F6; width: {pre}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; transition: width 1s ease-in-out;">
+                <div style="background-color: #3B82F6; width: {pre}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold;">
                 </div>
             </div>
         </div>
@@ -339,7 +374,7 @@ elif st.session_state.stage == 4:
                 <span style="font-weight: 600; color: #111827;">{post}%</span>
             </div>
             <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                <div style="background-color: #10B981; width: {post}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; transition: width 1s ease-in-out;">
+                <div style="background-color: #10B981; width: {post}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold;">
                 </div>
             </div>
         </div>
