@@ -100,6 +100,14 @@ def analyze_self_talk(negative, positive):
 # -----------------
 if 'stage' not in st.session_state:
     st.session_state.stage = 0
+if 'setup_complete' not in st.session_state:
+    st.session_state.setup_complete = False
+if 'target_participant_count' not in st.session_state:
+    st.session_state.target_participant_count = 8
+if 'workshop_data' not in st.session_state:
+    st.session_state.workshop_data = []
+
+# Bireysel katılımcı geçici state'leri
 if 'pre_answers' not in st.session_state:
     st.session_state.pre_answers = [3] * len(QUESTIONS)
 if 'post_answers' not in st.session_state:
@@ -118,7 +126,16 @@ if 'athlete_gender' not in st.session_state:
 def next_stage():
     st.session_state.stage += 1
 
-def reset_game():
+def reset_individual():
+    st.session_state.pre_answers = [3] * len(QUESTIONS)
+    st.session_state.post_answers = [3] * len(QUESTIONS)
+    st.session_state.pre_score = 0
+    st.session_state.post_score = 0
+    st.session_state.athlete_name = ""
+    st.session_state.game_played = False
+    st.session_state.stage = 0
+
+def reset_full_workshop():
     for key in list(st.session_state.keys()):
         del st.session_state[key]
     st.rerun()
@@ -126,16 +143,22 @@ def reset_game():
 # -----------------
 # 4. ARAYÜZ (UI)
 # -----------------
+current_done = len(st.session_state.workshop_data)
+
 with st.sidebar:
-    st.markdown("## 🥋 Atölye Paneli")
-    st.markdown("Gruplar 8-15 kişi olacak şekilde tasarlandığında herkes kendi telefonundan bu adımları takip edebilir.")
-    st.markdown(f"**Güncel Aşama:** {st.session_state.stage}/4")
-    st.progress(st.session_state.stage / 4)
-    
-    if st.session_state.athlete_name:
-        st.markdown(f"👤 **Oyuncu:** {st.session_state.athlete_name}")
-        st.markdown(f"🎂 **Yaş:** {st.session_state.athlete_age}")
-        st.markdown(f"⚧ **Cinsiyet:** {st.session_state.athlete_gender}")
+    st.markdown("## 🥋 Atölye Grubu Paneli")
+    if st.session_state.setup_complete:
+        st.markdown(f"👥 **Atölye Hedef Mevcudu:** {st.session_state.target_participant_count} Sporcu")
+        st.markdown(f"✅ **Tamamlayan Sporcu:** {current_done} / {st.session_state.target_participant_count}")
+        st.progress(min(current_done / st.session_state.target_participant_count, 1.0))
+        st.markdown("---")
+        st.markdown(f"**Mevcut Sporcu Aşaması:** {st.session_state.stage}/4")
+        if st.session_state.athlete_name:
+            st.markdown(f"👤 **Aktif Sporcu:** {st.session_state.athlete_name}")
+            st.markdown(f"🎂 **Yaş:** {st.session_state.athlete_age}")
+            st.markdown(f"⚧ **Cinsiyet:** {st.session_state.athlete_gender}")
+    else:
+        st.markdown("⚙️ *Atölye henüz kurulmadı.*")
     
     st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("""
@@ -147,34 +170,46 @@ with st.sidebar:
 
 st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsafe_allow_html=True)
 
-# STAGE 0: GİRİŞ
+# STAGE 0: ATÖLYE KURULUMU & KATILIMCI GİRİŞİ
 if st.session_state.stage == 0:
-    st.markdown("<div class='stage-title'>Hoş Geldin Sporcu!</div>", unsafe_allow_html=True)
-    st.markdown("<div class='card-box'>Bu etkileşimli atölyede dünyaca ünlü psikologların (Kristin Neff, Paul Gilbert, Tara Brach) yöntemleriyle zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz. Toplam 4 aşamadan oluşan bu oyunla kendi iç dünyanı keşfedeceksin.</div>", unsafe_allow_html=True)
-    
-    with st.form("login_form"):
-        st.markdown("#### Kendini Tanıt")
-        name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
-        col1, col2 = st.columns(2)
-        with col1:
-            age = st.number_input("Yaşın:", min_value=6, max_value=60, value=12, step=1)
-        with col2:
-            gender = st.selectbox("Cinsiyetin:", ["Kadın", "Erkek", "Belirtmek İstemiyorum"])
-            
-        submitted = st.form_submit_button("Oyuna Başla 🚀", type="primary")
-        if submitted:
-            if name:
-                st.session_state.athlete_name = name
-                st.session_state.athlete_age = age
-                st.session_state.athlete_gender = gender
-                next_stage()
+    if not st.session_state.setup_complete:
+        st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        
+        with st.form("setup_form"):
+            count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
+            if st.form_submit_button("Atölyeyi Başlat ve 1. Sporcuyu Çağır 🚀", type="primary"):
+                st.session_state.target_participant_count = count
+                st.session_state.setup_complete = True
                 st.rerun()
-            else:
-                st.warning("Lütfen başlamadan önce bir rumuz veya isim giriniz.")
+    else:
+        num = current_done + 1
+        st.markdown(f"<div class='stage-title'>📌 Sporcu {num} / {st.session_state.target_participant_count} Giriş Ekranı</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Bu etkileşimli atölyede dünyaca ünlü psikologların yöntemleriyle zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz.</div>", unsafe_allow_html=True)
+        
+        with st.form("login_form"):
+            st.markdown(f"#### Katılımcı #{num} Bilgileri")
+            name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
+            col1, col2 = st.columns(2)
+            with col1:
+                age = st.number_input("Yaşın:", min_value=6, max_value=60, value=14, step=1)
+            with col2:
+                gender = st.selectbox("Cinsiyetin:", ["Kadın", "Erkek", "Belirtmek İstemiyorum"])
+                
+            submitted = st.form_submit_button("Oyuna ve Teste Başla 🚀", type="primary")
+            if submitted:
+                if name:
+                    st.session_state.athlete_name = name
+                    st.session_state.athlete_age = age
+                    st.session_state.athlete_gender = gender
+                    next_stage()
+                    st.rerun()
+                else:
+                    st.warning("Lütfen başlamadan önce bir rumuz veya isim giriniz.")
 
 # STAGE 1: ÖN TEST
 elif st.session_state.stage == 1:
-    st.markdown(f"<div class='stage-title'>Aşama 1: Mevcut Durum Analizi (Ön Test)</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='stage-title'>Aşama 1: Mevcut Durum Analizi (Ön Test) - {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     st.info("Lütfen aşağıdaki ifadelere ne kadar katıldığını dürüstçe işaretle. (1 = Hiç Katılmıyorum, 5 = Tamamen Katılıyorum)")
     
     with st.form("pre_test_form"):
@@ -207,20 +242,20 @@ elif st.session_state.stage == 2:
         st.markdown("### 🌧️ Tara Brach'in RAIN Metodu (4 Adımlı Zihinsel Pratik)")
         st.markdown("""
         <div class='theory-box'>
-        <b>RAIN Tekniği Nedir?</b> Dünyaca ünlü psikolog Tara Brach tarafından geliştirilen bu yöntem, zorlu duygularla (maç stresi, hata yapma korkusu) başa çıkmak için 4 adımdan oluşur:
+        <b>RAIN Tekniği Nedir?</b> Dünyaca ünlü psikolog Tara Brach tarafından geliştirilen bu yöntem, zorlu duygularla başa çıkmak için 4 adımdan oluşur:
         <br><b>R</b>ecognize (Tanı) | <b>A</b>llow (İzin Ver) | <b>I</b>nvestigate (İncele) | <b>N</b>urture (Şefkatle Besle)
         </div>
         """, unsafe_allow_html=True)
         
         with st.form("rain_form"):
-            rain_r = st.text_area("1. Recognize (Tanı): Zor bir maç veya antrenman anında zihninde hangi duygu var?", placeholder="Örn: Yenilme korkusu, başarısızlık stresi, hakeme öfke...")
-            rain_a = st.text_area("2. Allow (İzin Ver): Bu duyguyla savaşmak yerine onun varlığına izin ver. 'Şu an bu hissi duyuyorum' yaz.", placeholder="Örn: Şu an korkuyorum ve bu hissin var olmasına izin veriyorum, bunu bastırmıyorum.")
-            rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor, çenem kasılıyor...")
-            rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun ve ben senin yanındayım.")
+            rain_r = st.text_area("1. Recognize (Tanı): Zor bir maç veya antrenman anında zihninde hangi duygu var?", placeholder="Örn: Yenilme korkusu, başarısızlık stresi...")
+            rain_a = st.text_area("2. Allow (İzin Ver): Bu duyguyla savaşmak yerine onun varlığına izin ver.", placeholder="Örn: Şu an korkuyorum ve bu hissin var olmasına izin veriyorum...")
+            rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor...")
+            rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun...")
             
             if st.form_submit_button("RAIN Egzersizini Kaydet 🌧️", type="primary"):
                 if rain_r and rain_a and rain_i and rain_n:
-                    st.success("RAIN Metodu Pratiği Kaydedildi: Tara Brach'in 4 adımlı zihinsel farkındalık süreci tamamlandı.")
+                    st.success("RAIN Metodu Pratiği Kaydedildi: 4 adımlı zihinsel farkındalık süreci tamamlandı.")
                 else:
                     st.warning("Lütfen 4 adımı da doldurun.")
 
@@ -236,7 +271,6 @@ elif st.session_state.stage == 2:
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("#### 🎯 Taekwondo Durum İncelemesi: Kuramsal Karşılık")
         q_gilbert = st.radio(
             "Seçme maçında rakibin senden 4 puan öne geçti. O anki düşüncen en çok hangi kuramsal sisteme örnektir?",
             [
@@ -247,17 +281,15 @@ elif st.session_state.stage == 2:
         )
         if st.button("Kuramsal Analizi Gör 🧠"):
             if q_gilbert.startswith("🔴"):
-                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu modelleşme, tehdit anında beynin koruma ve tehlike uyarısını temsil eder. Teoriye göre bu sistemi fark etmek duygu düzenlemenin ilk adımıdır.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu modelleşme tehdit anında beynin tehlike uyarısını temsil eder.</div>", unsafe_allow_html=True)
             elif q_gilbert.startswith("🔵"):
-                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu modelleşme, hedefe ulaşma ve kazanma güdüsüyle ilişkilidir. Spor performansında motivasyon sağlar; ancak yatıştırıcı sistemle dengelendiğinde odaklanmayı artırır.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu modelleşme kazanma güdüsüyle ilişkilidir.</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu modelleşme, zihinsel güvenlik, sakinlik ve öz-şefkat alanını temsil eder. Gilbert'e göre sporcunun baskı anında performansını korumasını destekler.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu modelleşme zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
 
     # MODÜL 3: KRISTIN NEFF - KRIZ SENARYO BANKASI
     with game_tab3:
         st.markdown("### 🛡️ Kristin Neff'in 3 Boyutlu Kriz Simülatörü")
-        st.write("Aşağıdaki taekwondo kriz durumlarında Öz Şefkat Kuramına uyan seçeneği inceleyin.")
-        
         senaryo_secim = st.selectbox("Bir Kriz Senaryosu Seç:", [
             "Senaryo 1: Kuşak sınavında hareketi unuttun.",
             "Senaryo 2: Favori tekmende rakip kontradan puan aldı.",
@@ -268,48 +300,46 @@ elif st.session_state.stage == 2:
             st.markdown("<div class='card-box'>🥋 <b>Kuşak sınavında poomsae çizerken adımı unuttun ve salondaki herkes sana bakıyor.</b></div>", unsafe_allow_html=True)
             ans = st.radio("Zihinsel Tepki Seçeneği:", [
                 "A) 'Rezil oldum, benden hiçbir şey olmaz.' (Öz Yargılama)",
-                "B) 'Derin bir nefes alıyorum. Heyecandan unutmak her sporcunun başına gelebilir, yalnız değilim. Baştan devam ediyorum.' (Öz Şefkat)"
+                "B) 'Derin bir nefes alıyorum. Heyecandan unutmak her sporcunun başına gelebilir, yalnız değilim.' (Öz Şefkat)"
             ])
             if st.button("Kuramsal Çerçeveyi İncele 1"):
                 if ans.startswith("B)"):
-                    st.success("Kuramsal Uygunluk: Bu seçenek Kristin Neff'in (2003) Ortak İnsanlık ve Bilinçli Farkındalık boyutlarıyla örtüşmektedir.")
+                    st.success("Kuramsal Uygunluk: Kristin Neff'in (2003) Ortak İnsanlık boyutuna uygundur.")
                 else:
-                    st.info("Kuramsal Analiz: Bu seçenek Neff'in (2003) 'Öz-Yargılama' boyutuna örnektir. Kurama göre zorlu anlarda durum kabul edilip anlayış gösterilmelidir.")
+                    st.info("Kuramsal Analiz: 'Öz-Yargılama' boyutuna örnektir.")
                     
         elif "Senaryo 2" in senaryo_secim:
-            st.markdown("<div class='card-box'>🥋 <b>Çok güvendiğin Dollyo Chagi tekmende puan alamadın ve kontradan kafana tekme yedin.</b></div>", unsafe_allow_html=True)
+            st.markdown("<div class='card-box'>🥋 <b>Dollyo Chagi tekmende puan alamadın ve kontradan kafana tekme yedin.</b></div>", unsafe_allow_html=True)
             ans = st.radio("Zihinsel Tepki Seçeneği:", [
-                "A) 'Şu an canım yanıyor ve üzgünüm ama bu bir deneyim. Bir sonraki rauntta mesafemi ayarlayacağım.' (Öz Şefkat)",
+                "A) 'Şu an canım yanıyor ama bu bir deneyim. Bir sonraki rauntta mesafemi ayarlayacağım.' (Öz Şefkat)",
                 "B) 'Ben aptalım, bunu nasıl yerim!' (Aşırı Özdeşleşme)"
             ])
             if st.button("Kuramsal Çerçeveyi İncele 2"):
                 if ans.startswith("A)"):
-                    st.success("Kuramsal Uygunluk: Bu seçenek Neff'in (2003) Bilinçli Farkındalık ve Kendine Nezaket boyutlarına örnektir.")
+                    st.success("Kuramsal Uygunluk: Bilinçli Farkındalık ve Kendine Nezaket boyutuna örnektir.")
                 else:
-                    st.info("Kuramsal Analiz: Bu seçenek 'Aşırı Özdeşleşme' boyutuna örnektir. Hatanın genel sporcu kimliğiyle özdeşleştirilmeden değerlendirilmesi hedeflenir.")
+                    st.info("Kuramsal Analiz: 'Aşırı Özdeşleşme' boyutuna örnektir.")
                     
         else:
-            st.markdown("<div class='card-box'>🥋 <b>Şampiyonaya 2 gün kala bileğin burkuldu ve doktor turnuvadan çekilmeni söyledi.</b></div>", unsafe_allow_html=True)
+            st.markdown("<div class='card-box'>🥋 <b>Şampiyonaya 2 gün kala bileğin burkuldu ve turnuvadan çekilmen istendi.</b></div>", unsafe_allow_html=True)
             ans = st.radio("Zihinsel Tepki Seçeneği:", [
-                "A) 'Bütün emeklerim çöp oldu, dünya üzerimdeki en şanssız insanım.' (İzolasyon)",
-                "B) 'Çok üzgünüm ama sağlığım her şeyden önemli. Birçok sporcu sakatlık yaşar, iyileşip daha güçlü döneceğim.' (Öz Şefkat)"
+                "A) 'Bütün emeklerim çöp oldu, en şanssız insanım.' (İzolasyon)",
+                "B) 'Sağlığım önemli. Birçok sporcu sakatlık yaşar, daha güçlü döneceğim.' (Öz Şefkat)"
             ])
             if st.button("Kuramsal Çerçeveyi İncele 3"):
                 if ans.startswith("B)"):
-                    st.success("Kuramsal Uygunluk: Bu seçenek Neff'in (2003) Ortak İnsanlık boyutuna uygun bir yaklaşımdır.")
+                    st.success("Kuramsal Uygunluk: Ortak İnsanlık boyutuna örnektir.")
                 else:
-                    st.info("Kuramsal Analiz: Bu seçenek 'İzolasyon' boyutuna örnektir. Benzer zorlukların tüm sporcular için ortak bir insanlık deneyimi olduğu vurgulanır.")
+                    st.info("Kuramsal Analiz: 'İzolasyon' boyutuna örnektir.")
 
     # MODÜL 4: GERMER & NEFF - ŞEFKATLİ MEKTUP
     with game_tab4:
         st.markdown("### ✉️ Germer & Neff Şefkatli Mektup Egzersizi")
-        st.write("Kendine, nesnel ve destekleyici bir sporcu perspektifinden bir mektup yaz.")
-        
         with st.form("letter_form"):
-            letter_text = st.text_area("Şefkatli Mektup Metni:", placeholder="Sevgili [Adın], son maçta istediğin sonucu alamadığını biliyorum ama antrenmanlardaki çabaların değerli...")
+            letter_text = st.text_area("Şefkatli Mektup Metni:", placeholder="Sevgili [Adın], antrenmanlardaki çabaların çok değerli...")
             if st.form_submit_button("Mektubu Analiz Et & Gönder ✉️", type="primary"):
                 if letter_text:
-                    with st.spinner("Yapay Zeka Veri Asistanı mektuptaki duygu öğelerini kategorize ediyor..."):
+                    with st.spinner("Yapay Zeka Veri Asistanı kategorize ediyor..."):
                         res = analyze_self_talk("Şefkatli Mektup Egzersizi", letter_text)
                     st.markdown(f"<div class='analysis-box'><b>🤖 Veri Analitiği Raporu:</b><br>{res}</div>", unsafe_allow_html=True)
                     st.success("Mektup metni başarıyla kaydedildi.")
@@ -317,70 +347,102 @@ elif st.session_state.stage == 2:
                     st.warning("Lütfen mektup metnini doldurun.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown("#### Bütün modülleri ve egzersizleri denediysen bir sonraki aşamaya geçebilirsin!")
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
         next_stage()
         st.rerun()
 
 # STAGE 3: SON TEST
-elif st.session_state.stage == 3:
-    st.markdown("<div class='stage-title'>Aşama 3: Gelişim Ölçümü (Son Test)</div>", unsafe_allow_html=True)
-    st.info("Psikolojik atölye egzersizlerinden SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
-    
-    with st.form("post_test_form"):
-        for i, q in enumerate(QUESTIONS):
-            st.session_state.post_answers[i] = st.slider(q["text"], 1, 5, st.session_state.post_answers[i], key=f"post_{i}")
+elif st.session_state.stage == 1 or st.session_state.stage == 3:
+    if st.session_state.stage == 3:
+        st.markdown(f"<div class='stage-title'>Aşama 3: Gelişim Ölçümü (Son Test) - {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
+        st.info("Psikolojik atölye egzersizlerinden SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
         
-        if st.form_submit_button("Testi Tamamla ve Sonuçları Gör 📊", type="primary"):
-            st.session_state.post_score = calculate_score(st.session_state.post_answers)
-            next_stage()
-            st.rerun()
+        with st.form("post_test_form"):
+            for i, q in enumerate(QUESTIONS):
+                st.session_state.post_answers[i] = st.slider(q["text"], 1, 5, st.session_state.post_answers[i], key=f"post_{i}")
+            
+            if st.form_submit_button("Testi Tamamla ve Bireysel Raporu Gör 📊", type="primary"):
+                st.session_state.post_score = calculate_score(st.session_state.post_answers)
+                next_stage()
+                st.rerun()
 
-# STAGE 4: SONUÇLAR
+# STAGE 4: BİREYSEL SONUÇ & ATÖLYE GEÇİŞİ
 elif st.session_state.stage == 4:
-    st.markdown(f"<div class='stage-title'>Aşama 4: Rapor ve Kapanış</div>", unsafe_allow_html=True)
-    
     pre = st.session_state.pre_score
     post = st.session_state.post_score
-    diff = post - pre
+    diff = round(post - pre, 1)
     
-    st.markdown(f"### Tebrikler {st.session_state.athlete_name}!")
+    st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
         st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı!</div>", unsafe_allow_html=True)
         st.balloons()
-    elif diff < 0:
-        st.markdown(f"<div class='card-box'>Öz şefkat seviyeniz <b>{diff:.1f}</b> puan değişti. Önemli olan farkındalık kazanmaktır.</div>", unsafe_allow_html=True)
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat seviyeniz aynı kaldı. Gelişim sürekli bir antrenmandır.</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. Farkındalık gelişim yolculuğunun ilk adımıdır.</div>", unsafe_allow_html=True)
     
-    st.markdown("#### Öz Şefkat Skoru Değişimi (%)")
+    # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
+    already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
+    if not already_saved:
+        st.session_state.workshop_data.append({
+            "Sıra": len(st.session_state.workshop_data) + 1,
+            "Rumuz/Ad": st.session_state.athlete_name,
+            "Yaş": st.session_state.athlete_age,
+            "Cinsiyet": st.session_state.athlete_gender,
+            "Ön Test (%)": pre,
+            "Son Test (%)": post,
+            "Net Gelişim (%)": diff
+        })
     
-    st.markdown(f"""
-        <div style="margin-bottom: 20px; font-family: sans-serif;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span style="font-weight: 600; color: #111827;">Ön Test (Aşama 1)</span>
-                <span style="font-weight: 600; color: #111827;">{pre}%</span>
-            </div>
-            <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                <div style="background-color: #3B82F6; width: {pre}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold;">
-                </div>
-            </div>
-        </div>
-        <div style="margin-bottom: 30px; font-family: sans-serif;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span style="font-weight: 600; color: #111827;">Son Test (Aşama 3)</span>
-                <span style="font-weight: 600; color: #111827;">{post}%</span>
-            </div>
-            <div style="background-color: #E5E7EB; border-radius: 8px; width: 100%; height: 30px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
-                <div style="background-color: #10B981; width: {post}%; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold;">
-                </div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    total_target = st.session_state.target_participant_count
+    saved_count = len(st.session_state.workshop_data)
     
-    if st.button("Oyunu Baştan Başlat 🔄", type="primary"):
-        reset_game()
+    st.markdown("---")
+    if saved_count < total_target:
+        st.info(f"Tamamlanan Sporcu: **{saved_count} / {total_target}**. Sıradaki sporcunun testi için aşağıdaki butona tıklayın.")
+        if st.button(f"➡️ Sıradaki Sporcuya Geç (Sporcu #{saved_count + 1})", type="primary"):
+            reset_individual()
+    else:
+        st.success(f"🎉 Tüm {total_target} sporcu testlerini ve antrenmanlarını tamamladı! Atölye sona erdi.")
+        if st.button("📊 Atölye Grubu Toplu Veri Raporunu Gör", type="primary"):
+            next_stage()
+            st.rerun()
+
+# STAGE 5: ATÖLYE TOPLU VERİ LİSTESİ VE RAPORU (PSİKOLOG / EĞİTMEN EKRANI)
+elif st.session_state.stage == 5:
+    st.markdown("<div class='stage-title'>📊 Atölye Grubu Toplu Sonuç Veri Raporu</div>", unsafe_allow_html=True)
+    
+    df_results = pd.DataFrame(st.session_state.workshop_data)
+    
+    avg_pre = round(df_results["Ön Test (%)"].mean(), 1)
+    avg_post = round(df_results["Son Test (%)"].mean(), 1)
+    avg_diff = round(df_results["Net Gelişim (%)"].mean(), 1)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Toplam Katılımcı", f"{len(df_results)} Sporcu")
+    with col2:
+        st.metric("Grubun Ön Test Ortalaması", f"{avg_pre}%")
+    with col3:
+        st.metric("Grubun Son Test Ortalaması", f"{avg_post}%")
+    with col4:
+        st.metric("Ortalama Öz Şefkat Artışı", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
+        
+    st.markdown("### 📋 Katılımcı Veri Listesi (Detaylı Tablo)")
+    st.dataframe(df_results, use_container_width=True, hide_index=True)
+    
+    # CSV İndirme Butonu
+    csv_data = df_results.to_csv(index=False).encode('utf-8-sig')
+    st.download_button(
+        label="📥 Atölye Veri Listesini İndir (CSV/Excel)",
+        data=csv_data,
+        file_name="atolye_ozsefkat_grup_verileri.csv",
+        mime="text/csv",
+        type="primary"
+    )
+    
+    st.markdown("---")
+    if st.button("Yeni Bir Atölye Grubu Başlat 🔄"):
+        reset_full_workshop()
 
 # Sayfanın en altındaki Footer
 st.markdown("<br><br><br>", unsafe_allow_html=True)
