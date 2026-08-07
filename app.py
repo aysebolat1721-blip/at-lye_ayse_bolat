@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import json
+import random
 
 # -----------------
 # 1. AYARLAR & CSS
@@ -24,7 +25,8 @@ st.markdown("""
     .sidebar-footer { margin-top: auto; padding-top: 20px; font-size: 0.9rem; color: #4B5563; text-align: center; border-top: 1px solid #E5E7EB; }
     .stage-title { font-size: 1.8rem; color: #2563EB; font-weight: 600; border-bottom: 2px solid #BFDBFE; padding-bottom: 10px; margin-bottom: 20px;}
     .theory-box { background-color: #FFE4E6; color: #9F1239; border-radius: 10px; padding: 15px; border-left: 5px solid #F43F5E; margin-bottom: 15px; }
-    .sos-box { background-color: #FEF3C7; color: #78350F; border-radius: 10px; padding: 18px; border-left: 5px solid #F59E0B; margin-bottom: 20px; font-size: 1.1rem; }
+    .fear-box { background-color: #FEF3C7; color: #92400E; border-radius: 10px; padding: 18px; border-left: 5px solid #F59E0B; margin-bottom: 20px; font-size: 1.1rem; font-weight: 500; }
+    .compassion-board { background-color: #F0FDF4; color: #166534; border-radius: 10px; padding: 18px; border: 1px solid #BBF7D0; margin-bottom: 15px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -53,35 +55,13 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Takım Empati & Kurtarma Senaryoları (Sporcunun başına gelen olaylar ve takımın yardımlaşması)
-PEER_RESCUE_SCENARIOS = [
-    {
-        "victim": "Sporcu Arda",
-        "event": "🥋 **Arda'nın Maç Anı:** Şampiyonada son 5 saniyede 1 puan farkla maçı kaybetti. Minderin kenarında başını ellerinin arasına almış oturuyor.",
-        "moves": [
-            "🛡️ Zihinsel Kalkan Uzat: 'Arda tek bir maç senin değerini belirlemez. Son saniyeye kadar verdiğin mücadele gurur verici!'",
-            "🤝 Ortak İnsanlık Hatırlat: 'Kıl payı kaybetmek en büyük şampiyonların bile başına geldi. Yanındayız, yalnız değilsin!'",
-            "💪 Mücadele Desteği Ver: 'Düştüğün yerden daha güçlü kalkacağını biliyoruz. Dinlen ve birlikte devam edelim!'"
-        ]
-    },
-    {
-        "victim": "Sporcu Elif",
-        "event": "🥋 **Elif'in Sınav Anı:** Kuşak sınavında heyecandan hareketi unuttu ve kurul üyeleri önünde stresi arttı.",
-        "moves": [
-            "🛡️ Zihinsel Kalkan Uzat: 'Elif heyecanlanmak çok insani bir şey. Derin bir nefes al, biz salonda senin yanındayız!'",
-            "🤝 Ortak İnsanlık Hatırlat: 'Hepimiz sınavlarda unuttuk. Bu senin yeteneğini eksiltmez, sakin ol!'",
-            "💪 Mücadele Desteği Ver: 'Sen bu hareketi antrenmanda defalarca çizdin, zihnine güven!'"
-        ]
-    },
-    {
-        "victim": "Sporcu Can",
-        "event": "🥋 **Can'ın Sakatlık Anı:** Turnuva öncesi son antrenmanda bileğini burktu ve bu maça çıkamayacağı söendi.",
-        "moves": [
-            "🛡️ Zihinsel Kalkan Uzat: 'Can sağlığın her şeyden önemli. Bu turnuva geçecek ama sen bizim takımın önemli bir parçasısın!'",
-            "🤝 Ortak İnsanlık Hatırlat: 'Sakatlık sporun parçası. İyileşme sürecinde tüm takım seninle olacak!'",
-            "💪 Mücadele Desteği Ver: 'Tribünde yerin hazır, sen bizim zihinsel güç kaynağımız olacaksın!'"
-        ]
-    }
+# Örnek Havuz (Eğer grupta henüz başka eleman yazmadıysa düşecek anonim korkular)
+SAMPLE_FEARS = [
+    "Seçme maçında çok kötü dövüşüp herkesi hayal kırıklığına uğratmaktan korkuyorum.",
+    "Antrenörüm benden ümidini kesti, eski performansımı veremiyorum.",
+    "Kuşak sınavında stresi yönetemeyip hareketi unutmaktan çok korkuyorum.",
+    "Bütün emeklerim boşa gidecek ve milli takıma seçilemeyeceğim diye aklımdan geçiyor.",
+    "Bir teknik hatası yaptığımda salondaki herkesin bana güldüğünü hissediyorum."
 ]
 
 def calculate_score(answers):
@@ -114,7 +94,7 @@ def analyze_self_talk(negative, positive):
     data = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "Sen sadece duygu ve psikolojik teknik analizi yapan nesnel bir veri asistanısın."},
+            {"role": "system", "content": "Sen sadece duygu ve psikolojik teknik analizi yapan nesnel veri asistanısın."},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.1,
@@ -138,6 +118,10 @@ if 'target_participant_count' not in st.session_state:
     st.session_state.target_participant_count = 8
 if 'workshop_data' not in st.session_state:
     st.session_state.workshop_data = []
+if 'group_anonymous_fears' not in st.session_state:
+    st.session_state.group_anonymous_fears = []
+if 'group_board_entries' not in st.session_state:
+    st.session_state.group_board_entries = []
 
 # Bireysel katılımcı geçici state'leri
 if 'pre_answers' not in st.session_state:
@@ -148,12 +132,14 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'empathy_score' not in st.session_state:
-    st.session_state.empathy_score = 100
-if 'empathy_move' not in st.session_state:
-    st.session_state.empathy_move = ""
-if 'empathy_note' not in st.session_state:
-    st.session_state.empathy_note = ""
+if 'my_fear' not in st.session_state:
+    st.session_state.my_fear = ""
+if 'assigned_fear' not in st.session_state:
+    st.session_state.assigned_fear = ""
+if 'my_compassion_response' not in st.session_state:
+    st.session_state.my_compassion_response = ""
+if 'game_substep' not in st.session_state:
+    st.session_state.game_substep = 1
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
 if 'athlete_age' not in st.session_state:
@@ -169,11 +155,11 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.empathy_score = 100
-    st.session_state.empathy_move = ""
-    st.session_state.empathy_note = ""
+    st.session_state.my_fear = ""
+    st.session_state.assigned_fear = ""
+    st.session_state.my_compassion_response = ""
+    st.session_state.game_substep = 1
     st.session_state.athlete_name = ""
-    st.session_state.game_played = False
     st.session_state.stage = 0
 
 def reset_full_workshop():
@@ -215,7 +201,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testleri, modülleri ve Takım Empati Destek Oyununu tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testleri, modülleri ve Şefkatle Yeniden İnşa Oyununu tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -267,7 +253,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşamada zihinsel kaslarını güçlendirecek 4 bilimsel modülü tamamlayacaksın. Mektubunu tamamladıktan sonra bir sonraki aşamada eğlenceli <b>Takım Empati & Kurtarma Oyununa</b> geçeceksin!
+    Bu aşamada zihinsel kaslarını güçlendirecek 4 bilimsel modülü tamamlayacaksın. Mektubunu tamamladıktan sonra bir sonraki aşamada <b>Takım Şefkatle Yeniden İnşa Oyununa</b> geçeceksin!
     </div>
     """, unsafe_allow_html=True)
     
@@ -388,64 +374,124 @@ elif st.session_state.stage == 2:
                     st.warning("Lütfen mektup metnini doldurun.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
-    if st.button("Aşama 3'e Geç (Takım Empati & Kurtarma Destek Oyunu) ➡️", type="primary"):
+    if st.button("Aşama 3'e Geç (Takım Şefkatle Yeniden İnşa Oyunu) ➡️", type="primary"):
         next_stage()
         st.rerun()
 
-# STAGE 3: TAMAMEN BAĞIMSIZ VE TESTLERDEN AYRI CANLI TAKIM EMPATİ & KURTARMA OYUNU
+# STAGE 3: TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU (3 AŞAMALI ANONİM & ŞEFKATLİ KURTARMA OYUNU)
 elif st.session_state.stage == 3:
-    st.markdown("<div class='stage-title'>Aşama 3: 🚑 Takım Empati & Kurtarma Destek Oyunu (Özel Etkileşim Sahası)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='stage-title'>Aşama 3: 🎮 Takım Şefkatle Yeniden İnşa Oyunu (3 Aşamalı Etkileşim)</div>", unsafe_allow_html=True)
     
-    # Sporcu sırasına göre olay çekilir
-    scen_idx = current_done % len(PEER_RESCUE_SCENARIOS)
-    scen_data = PEER_RESCUE_SCENARIOS[scen_idx]
-    
-    st.markdown(f"""
-    <div class='sos-box'>
-    <b>🆘 TAKIM ARKADAŞINA DÜŞTÜĞÜ YERDE YARDIM ET VE EMPATİ UZAT!</b><br>
-    Zihinsel Sahada Takım Arkadaşınız <b>{scen_data['victim']}</b> zor bir an yaşıyor ve desteğe ihtiyacı var!
-    <br><br>{scen_data['event']}
-    </div>
-    """, unsafe_allow_html=True)
-    
-    with st.form("team_empathy_form"):
-        st.markdown(f"#### 👤 Yardım Eden Sporcu: {st.session_state.athlete_name}")
+    # SUBSTEP 1: KAYALARI BIRAKMAK (ANONİM İÇ SES & KORKU GİRDİSİ)
+    if st.session_state.game_substep == 1:
+        st.markdown("""
+        <div class='theory-box'>
+        <b>1. Aşama: Kayaları Bırakmak (Anonim İç Ses & Korku Girdisi - 60 Saniye)</b><br>
+        Antrenmanda veya maçta yaşamaktan en çok korktuğun başarısızlığı ya da aklından geçen o acımasız iç sesi buraya yaz.
+        <br><i>🔒 İsim istenmez, bu girdi tamamen anonimdir!</i>
+        </div>
+        """, unsafe_allow_html=True)
         
-        chosen_move = st.selectbox(f"{scen_data['victim']}'a Hangi Empatık Destek Hamlesini Yapıyorsun?", scen_data["moves"])
+        with st.form("fear_input_form"):
+            fear_input = st.text_area(
+                "Antrenmanda/Maçta En Çok Korktuğun Başarısızlık veya Acımasız İç Ses:",
+                placeholder="Örn: 'Seçme maçında çok kötü dövüşüp herkesi hayal kırıklığına uğratacağım' veya 'Antrenörüm benden ümidini kesti.'"
+            )
+            
+            if st.form_submit_button("Korkuyu Anonim Torbaya At 🪨 (2. Aşamaya Geç)", type="primary"):
+                if fear_input:
+                    st.session_state.my_fear = fear_input
+                    st.session_state.group_anonymous_fears.append(fear_input)
+                    st.session_state.game_substep = 2
+                    st.success("Korkun anonim olarak torbaya atıldı!")
+                    st.rerun()
+                else:
+                    st.warning("Lütfen bir korku veya iç ses yazın.")
+
+    # SUBSTEP 2: KARIŞIM VE KURTARMA (ŞEFKATLE YENİDEN İNŞA)
+    elif st.session_state.game_substep == 2:
+        st.markdown("""
+        <div class='theory-box'>
+        <b>2. Aşama: Karışım ve Kurtarma (Şefkatle Yeniden İnşa - 2 Dakika)</b><br>
+        Sistem yazılan anonim korkuları karıştırdı ve senin ekranına <b>BAŞKA BİR SPORCUNUN KORKUSU</b> düştü!
+        <br>Şimdi görev: Bu korkuyu okuyup takım arkadaşını ayağa kaldıracak en iyi şefkat ve motivasyon mesajını yaz.
+        </div>
+        """, unsafe_allow_html=True)
         
-        emp_note = st.text_area(
-            f"{scen_data['victim']}'a Olay Anında Söyleyeceğin Empatik Yardım ve Güç Cümlesi:",
-            placeholder=f"Örn: Bak {scen_data['victim']}, hepimiz bu minderlerde düştük ama önemli olan yan yana olmamız. Asla pes etme, biz yanındayız!"
-        )
-        
-        if st.form_submit_button("Yardım Elini Uzat ve Arkadaşını Kaldır 🤝", type="primary"):
-            if emp_note:
-                st.session_state.empathy_move = chosen_move
-                st.session_state.empathy_note = emp_note
-                st.session_state.empathy_score = 100
-                st.session_state.game_played = True
-                st.success(f"🎉 TAKIM ARKADAŞINIZ {scen_data['victim'].upper()} DÜŞTÜĞÜ YERDEN KALDIRILDI! (+100 Takım Empati Skoru)")
-                st.balloons()
+        # Ekran için başka bir korku seç
+        if not st.session_state.assigned_fear:
+            other_fears = [f for f in st.session_state.group_anonymous_fears if f != st.session_state.my_fear]
+            if other_fears:
+                st.session_state.assigned_fear = random.choice(other_fears)
             else:
-                st.warning("Lütfen takım arkadaşınıza destek mesajınızı yazın.")
+                st.session_state.assigned_fear = random.choice(SAMPLE_FEARS)
+        
+        st.markdown(f"""
+        <div class='fear-box'>
+        <b>🪨 Ekrana Düşen Takım Arkadaşının Anonim Korkusu:</b><br>
+        <i>"{st.session_state.assigned_fear}"</i>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        with st.form("rescue_form"):
+            resp = st.text_area(
+                "Bu Sporcuyu Ayağa Kaldıracak Şefkat ve Motivasyon Mesajın:",
+                placeholder="Örn: Haklısın, bu korku hepimizin zihnine gelebilir ama senin ne kadar çabaladığını görüyoruz. Tek bir maç senin değerini belirlemez, yanındayız!"
+            )
+            
+            if st.form_submit_button("Şefkatli Kurtarma Mesajını Gönder 💌 (3. Aşamaya Geç)", type="primary"):
+                if resp:
+                    st.session_state.my_compassion_response = resp
+                    # Panoya kaydet
+                    st.session_state.group_board_entries.append({
+                        "fear": st.session_state.assigned_fear,
+                        "response": resp,
+                        "responder": st.session_state.athlete_name
+                    })
+                    st.session_state.game_substep = 3
+                    st.success("Şefkatli kurtarma mesajın gönderildi!")
+                    st.balloons()
+                    st.rerun()
+                else:
+                    st.warning("Lütfen şefkatli bir mesaj yazın.")
 
-    if st.session_state.get('game_played', False):
-        st.markdown("### 🚑 Oynanan Takım Destek Hamlesi")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown(f"<div class='success-box'><b>Seçilen Empati Hamlesi:</b><br>{st.session_state.empathy_move}</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"<div class='analysis-box'><b>Arkadaşına Uzatılan Yardım Cümlesi:</b><br>{st.session_state.empathy_note}</div>", unsafe_allow_html=True)
-
-    st.markdown("<hr>", unsafe_allow_html=True)
-    if st.button("Aşama 4'e Geç (Son Test) ➡️", type="primary"):
-        next_stage()
-        st.rerun()
+    # SUBSTEP 3: BÜYÜK YÜZLEŞME (ORTAK İNSANLIK TABLOSU)
+    elif st.session_state.game_substep == 3:
+        st.markdown("""
+        <div class='theory-box'>
+        <b>3. Aşama: Büyük Yüzleşme (Ortak İnsanlık Tablosu)</b><br>
+        Herkesin ilk yazdığı korkular ve diğer arkadaşlarının yazdığı şefkatli cevaplar ortak panoda listelendi. 
+        Bu panoya bak ve yalnız olmadığını fark et!
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("### 🤝 Ortak İnsanlık & Şefkat Panosu")
+        
+        if st.session_state.group_board_entries:
+            for idx, entry in enumerate(st.session_state.group_board_entries, 1):
+                st.markdown(f"""
+                <div class='compassion-board'>
+                <b>🪨 Anonim Korku #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
+                <b>💌 Şefkatli Yanıt ({entry['responder']}):</b> "{entry['response']}"
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class='compassion-board'>
+            <b>🪨 Senin Anonim Korkun:</b> <i>"{st.session_state.my_fear}"</i><br><br>
+            <b>💌 Arkadaşının Sana Yazdığı Şefkatli Yanıt:</b> "{st.session_state.my_compassion_response}"
+            </div>
+            """, unsafe_allow_html=True)
+            
+        st.markdown("<hr>", unsafe_allow_html=True)
+        if st.button("Aşama 4'e Geç (Son Test) ➡️", type="primary"):
+            next_stage()
+            st.rerun()
 
 # STAGE 4: SON TEST
 elif st.session_state.stage == 4:
     st.markdown(f"<div class='stage-title'>Aşama 4: Gelişim Ölçümü (Son Test) - {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
-    st.info("Psikolojik atölye egzersizlerinden ve Takım Destek Oyunundan SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
+    st.info("Psikolojik atölye egzersizlerinden ve Takım Şefkat Oyunundan SONRA, şu anki hissiyatına göre soruları tekrar yanıtla.")
     
     with st.form("post_test_form"):
         for i, q in enumerate(QUESTIONS):
@@ -461,17 +507,16 @@ elif st.session_state.stage == 5:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    e_score = st.session_state.get('empathy_score', 100)
-    move_val = st.session_state.get('empathy_move', 'Hamle Yapılmadı')
-    note_val = st.session_state.get('empathy_note', 'Mesaj Girilmedi')
+    fear_val = st.session_state.get('my_fear', 'Korku Girilmedi')
+    resp_val = st.session_state.get('my_compassion_response', 'Yanıt Girilmedi')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Takım Empati Skoru: <b>{e_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı!</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Takım Empati Skoru: <b>{e_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi.</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -484,9 +529,8 @@ elif st.session_state.stage == 5:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Yapılan Empati Hamlesi": move_val,
-            "Arkadaşına Yardım Mesajı": note_val,
-            "Takım Empati Skoru (100)": e_score
+            "Anonim Korku/İç Ses": fear_val,
+            "Verilen Şefkatli Yanıt": resp_val
         })
     
     total_target = st.session_state.target_participant_count
@@ -498,7 +542,7 @@ elif st.session_state.stage == 5:
         if st.button(f"➡️ Sıradaki Sporcuya Geç (Sporcu #{saved_count + 1})", type="primary"):
             reset_individual()
     else:
-        st.success(f"🎉 Tüm {total_target} sporcu testlerini, mektuplarını ve empati oyununu tamamladı! Atölye sona erdi.")
+        st.success(f"🎉 Tüm {total_target} sporcu testlerini, mektuplarını ve Şefkatle Yeniden İnşa Oyununu tamamladı! Atölye sona erdi.")
         if st.button("📊 Atölye Grubu Toplu Veri Raporunu Gör", type="primary"):
             next_stage()
             st.rerun()
@@ -523,7 +567,7 @@ elif st.session_state.stage == 6:
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi ve Takım Empati Yardımlaşma Tablosu")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Anonim Korku / Şefkatli Yanıt Tablosu")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
