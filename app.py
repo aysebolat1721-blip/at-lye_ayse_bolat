@@ -52,51 +52,46 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Dinamik Müsabaka Arena Krizleri (15 Sporcu için Farklı Zihinsel Baskı Kartları)
-ARENA_CHALLENGES = [
+# Zihinsel Şifre Çözme Bulmaca Kartları (Code-Breaker Game Cards)
+CODE_BREAKER_PUZZLES = [
     {
-        "card": "🥋 **Minder Arenası Kartı #1:** Türkiye Şampiyonası Yarı Finalindesin. Son 3 saniye, rakibin 2 puan önünde ve hakem rakibinin faullü vuruşuna puan yazdı!",
-        "moves": [
-            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): Nefes alıp anı kabul ediyorum. İtiraz hakkımı hakeme bildirip son saniyede planladığım döner tekmeyi atıyorum.", 100, "Mükemmel Zihinsel Dayanıklılık! (Mindfulness & Kabul)"),
-            ("⚡ Hamle B (Öfke Saldırısı): Hakeme bağırıp kontrolden çıkıyorum ve ceza alıyorum.", 40, "Tehdit Modu! Öfke kontrol kaybı yarattı."),
-            ("🏃 Hamle C (Minderden Kaçış): Havlu atıp maçı bırakıyorum.", 20, "İzolasyon Modu."),
-            ("❌ Hamle D (Öz-Eleştiri): 'Zaten hep hakemler beni yakıyor' deyip pes ediyorum.", 10, "Aşırı Özdeşleşme.")
+        "code": "🔒 [ZİHİNSEL SABOTAJCI KODU #01]: 'Teknik hatası yaptıktan sonra içindeki sabotajcı ses sana kilit vuruyor: Sende potansiyel yok!'",
+        "keys": [
+            ("🔑 Şifre Anahtarı A: 'Duyguyu fark et (Mindfulness), hatanın öğrenme sürecinin doğal bir parçası olduğunu kabul et (Ortak İnsanlık)'", 100, "🔓 KASA AÇILDI! Sabotajcı Kodu Kırıldı! (+100 Dedektif Skoru)"),
+            ("🔑 Şifre Anahtarı B: Sabotajcıyla kavga edip kendine kızmaya devam et", 20, "❌ HATA! Kasa kilitlendi. Öz-Yargılama sabotajcıyı güçlendirir."),
+            ("🔑 Şifre Anahtarı C: Salondan kaçıp antrenmanı terk et", 10, "❌ HATA! Kasa kilitlendi. İzolasyon kilidi açılamadı.")
         ]
     },
     {
-        "card": "🥋 **Minder Arenası Kartı #2:** Salondaki tüm takım arkadaşların ve antrenörün izlerken antrenman maçında nakavt oldun.",
-        "moves": [
-            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Üzgünüm ama sakatlanmadım. Nakavt olmak sporun parçası, savunma açığımı analiz edip devam ediyorum.'", 100, "Harika! Ortak İnsanlık ve Öz-Nezaket."),
-            ("⚡ Hamle B (Öfke Saldırısı): Tekmeliğe tekmeler atıp salonu terk ediyorum.", 35, "Tehdit Modu."),
-            ("🏃 Hamle C (Minderden Kaçış): Günlerce antrenmana gelmeyip herkesten saklanıyorum.", 20, "İzolasyon Modu."),
-            ("❌ Hamle D (Öz-Eleştiri): 'Ben rezil bir sporcuyum, bir daha kimsenin yüzüne bakamam.'", 15, "Öz-Yargılama.")
+        "code": "🔒 [ZİHİNSEL SABOTAJCI KODU #02]: 'Müsabakada puan kaybettiğinde göğsünü sıkıştıran felaketleştirme illüzyonunu hangi frekans çözer?'",
+        "keys": [
+            ("🔑 Şifre Anahtarı A: Sakin nefes frekansı + 'Şu an sporda zorlanıyorum ama dünyadaki tek sporcu ben değilim'", 100, "🔓 KASA AÇILDI! Zihinsel Kasa Açıldı! (+100 Dedektif Skoru)"),
+            ("🔑 Şifre Anahtarı B: Aşırı hırslanıp körlemesine panikle saldırma frekansı", 35, "⚠️ RİSKLİ! Tehdit modu kasayı açmakta yetersiz kaldı."),
+            ("🔑 Şifre Anahtarı C: 'Tekrar yenildim, ben berbatım' felaketleştirme frekansı", 15, "❌ HATA! Aşırı Özdeşleşme kilidi kilitledi.")
         ]
     },
     {
-        "card": "🥋 **Minder Arenası Kartı #3:** Kuşak sınavında kurul üyelerinin önünde hareketi unuttun ve salonda sessizlik oldu.",
-        "moves": [
-            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Heyecanlandım ama sorun değil. Derin bir nefes alıp baştan çiziyorum.'", 100, "Mükemmel! Öz-Kabul ve Sakinlik."),
-            ("⚡ Hamle B (Öfke Saldırısı): Sınavı yarıda kesip salonu terk ediyorum.", 30, "Kaçış Tepkisi."),
-            ("🏃 Hamle C (Minderden Kaçış): Ağlayarak minderden kaçıyorum.", 20, "Baskı Altında Çöküş."),
-            ("❌ Hamle D (Öz-Eleştiri): 'Unutmak tam bana göre bir sersemlik.'", 10, "Öz-Yargılama.")
+        "code": "🔒 [ZİHİNSEL SABOTAJCI KODU #03]: 'Önemli seçmeler öncesinde sakatlık yaşandığında zihne çöken yalnızlık perdesini hangi anahtar kırar?'",
+        "keys": [
+            ("🔑 Şifre Anahtarı A: 'Sakatlık her sporcunun başına gelebilecek ortak bir insanlık halidir, kendime iyileşme zamanı veriyorum'", 100, "🔓 KASA AÇILDI! Şefkat Anahtarı Tam Uyum Sağladı! (+100 Dedektif Skoru)"),
+            ("🔑 Şifre Anahtarı B: 'Dünyanın en bahtsız insanı benim' diyerek odana kapanmak", 20, "❌ HATA! İzolasyon kilidi kıramadı."),
+            ("🔑 Şifre Anahtarı C: Sakatlığı saklayıp bedenini sakatça zorlamak", 25, "❌ HATA! Bedene zarar verme uyarısı.")
         ]
     },
     {
-        "card": "🥋 **Minder Arenası Kartı #4:** Şampiyonaya 1 gün kala kilon 1.5 kg fazla çıktı.",
-        "moves": [
-            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Paniklemek yerine antrenörümle plan yapıp ter atma seansına geçiyorum.'", 100, "Eyleme Dönük Şefkat!"),
-            ("⚡ Hamle B (Öfke Saldırısı): Kendimi aç bırakıp bedenime zarar veriyorum.", 30, "Cezalandırma."),
-            ("🏃 Hamle C (Minderden Kaçış): Tartıya çıkmadan şampiyonadan çekiliyorum.", 20, "Kaçış."),
-            ("❌ Hamle D (Öz-Eleştiri): 'Disiplinsiz pisliğin tekiyim.'", 10, "Aşırı Yargılama.")
+        "code": "🔒 [ZİHİNSEL SABOTAJCI KODU #04]: 'Antrenörün eleştirisinden sonra içindeki mükemmeliyetçi sabotajcının kilidini nasıl açarsın?'",
+        "keys": [
+            ("🔑 Şifre Anahtarı A: 'Mükemmel olmak zorunda değilim. Eleştiriden ders çıkarıp gelişimime nazikçe odaklanıyorum'", 100, "🔓 KASA AÇILDI! Mükemmeliyetçi Kilit Çözüldü! (+100 Dedektif Skoru)"),
+            ("🔑 Şifre Anahtarı B: 'Antrenörüm benden nefret ediyor' öfke kilidi", 30, "⚠️ Tehdit modu kilidi açamadı."),
+            ("🔑 Şifre Anahtarı C: 'Benden bir şey olmaz' pes etme kilidi", 10, "❌ HATA! Öz-Yargılama kilitledi.")
         ]
     },
     {
-        "card": "🥋 **Minder Arenası Kartı #5:** Milli takım seçmelerini 1 puan farkla kaçırdın.",
-        "moves": [
-            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Canım çok yanıyor ama bu çaba değersiz değil. Birçok olimpiyatçı seçme kaybetti, devam edeceğim.'", 100, "Ortak İnsanlık ve Dayanıklılık!"),
-            ("⚡ Hamle B (Öfke Saldırısı): Seçme komitesine bağırıyorum.", 30, "Tehdit Modu."),
-            ("🏃 Hamle C (Minderden Kaçış): Sporu tamamen bırakıyorum.", 20, "İzolasyon."),
-            ("❌ Hamle D (Öz-Eleştiri): 'Ben hiç bir zaman milli olamayacağım.'", 15, "Aşırı Özdeşleşme.")
+        "code": "🔒 [ZİHİNSEL SABOTAJCI KODU #05]: 'Yetişkin/Genç şampiyonalarda son 5 saniyede geri düştüğünde panik kilidini açacak şifre nedir?'",
+        "keys": [
+            ("🔑 Şifre Anahtarı A: 'Zaman var, zihnimi şu ana getirip dengeli hamle yapıyorum'", 100, "🔓 KASA AÇILDI! Anda Kalma Şifresi Kırıldı! (+100 Dedektif Skoru)"),
+            ("🔑 Şifre Anahtarı B: Gözü kapalı ceza alacak kontrolsüz hamle yapmak", 40, "⚠️ Kontrolsüz hamle kilitlendi."),
+            ("🔑 Şifre Anahtarı C: Zaman bitmeden minderde arkaya kaçmak", 15, "❌ HATA! Pes etme kilidi.")
         ]
     }
 ]
@@ -165,10 +160,10 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'arena_score' not in st.session_state:
-    st.session_state.arena_score = 100
-if 'chosen_move' not in st.session_state:
-    st.session_state.chosen_move = ""
+if 'detective_score' not in st.session_state:
+    st.session_state.detective_score = 100
+if 'unlocked_key' not in st.session_state:
+    st.session_state.unlocked_key = ""
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
 if 'athlete_age' not in st.session_state:
@@ -184,11 +179,11 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.arena_score = 100
-    st.session_state.chosen_move = ""
+    st.session_state.detective_score = 100
+    st.session_state.unlocked_key = ""
     st.session_state.athlete_name = ""
     st.session_state.game_played = False
-    st.session_state.arena_played = False
+    st.session_state.puzzle_played = False
     st.session_state.stage = 0
 
 def reset_full_workshop():
@@ -230,7 +225,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve Stres Arena Turnuvasını tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve Dedektiflik Bulmaca Oyununu tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -282,7 +277,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. 5. modüldeki Minder Arenası Turnuvasını tamamlamayı unutma!
+    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. 5. modüldeki Dedektiflik Bulmaca Oyununu tamamlamayı unutma!
     </div>
     """, unsafe_allow_html=True)
     
@@ -291,7 +286,7 @@ elif st.session_state.stage == 2:
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
         "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
         "✉️ 4. Germer & Neff - Şefkatli Mektup",
-        "🥋 5. Minder Arenası Turnuvası (Grup Stres Oyunu)"
+        "🕵️‍♂️ 5. Şefkat Dedektifi & Zihinsel Şifre Oyunu"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -403,51 +398,51 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen mektup metnini doldurun.")
 
-    # MODÜL 5: MİNDER ARENASI MÜSABAKA TURNUVASI (GERÇEKÇİ STRES & KONTRA ARENASI)
+    # MODÜL 5: ZİHİNSEL DEDEKTİF & ŞİFRE ÇÖZME BULMACA OYUNU (NEFF & GERMER UNMASKING THE SABOTEUR GROUP GAME)
     with game_tab5:
-        st.markdown("### 🥋 Minder Arenası: Stres & Zihinsel Kontra Turnuvası")
+        st.markdown("### 🕵️‍♂️ Şefkat Dedektifi & Zihinsel Şifre Çözme Oyunu")
         st.markdown("""
         <div class='theory-box'>
-        <b>🎮 Oyun Kuralları & Turnuva Sistemi (Neff & Germer, 2018; Gilbert, 2010):</b><br>
-        1. Atölyedeki N kişiden sıradaki sporcu ({st.session_state.athlete_name}) için ekrana sert bir Taekwondo müsabaka baskı kartı gelir.<br>
-        2. Baskı altında doğru <b>Zihinsel Kontra Hamlesi</b>ni oynayarak <b>100 Arena Puanı</b> elde etmeye çalış!<br>
-        3. Skorun doğrudan atölye sonundaki <b>Minder Liderlik Tablosuna (Stage 5)</b> yansıyacaktır.
+        <b>🕵️‍♂️ Oyun Kuralları & Bulmaca Sistemi (Neff & Germer, 2018 "Unmasking the Inner Critic"):</b><br>
+        1. Atölyedeki N kişiden sıradaki sporcu ({st.session_state.athlete_name}) kilitli zihinsel kasanın başına geçer.<br>
+        2. Kilitli kasada duran <b>Zihinsel Sabotajcı İpucunu</b> çözmek için doğru Şefkat Anahtarını bulup kilidi açmalıdır.<br>
+        3. Kilidi kıran sporcu <b>+100 Dedektif Skoru</b> kazanır ve skoru doğrudan son <b>Toplu Veri Tablosuna (Stage 5)</b> yansır.
         </div>
         """, unsafe_allow_html=True)
         
-        # Dinamik Arena Kriz Kartı (Katılımcı sırasına göre 5 karttan biri)
-        challenge_idx = current_done % len(ARENA_CHALLENGES)
-        challenge_data = ARENA_CHALLENGES[challenge_idx]
+        # Dinamik Bulmaca Kartı (Katılımcı sırasına göre 5 şifre bulmacasından biri)
+        puzzle_idx = current_done % len(CODE_BREAKER_PUZZLES)
+        puzzle_data = CODE_BREAKER_PUZZLES[puzzle_idx]
         
-        st.markdown(f"<div class='card-box'>{challenge_data['card']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>{puzzle_data['code']}</div>", unsafe_allow_html=True)
         
-        moves_labels = [m[0] for m in challenge_data['moves']]
-        selected_move_label = st.radio("Zihinsel Kontra Hamlen Hangisi?", moves_labels, key="arena_radio")
+        key_options = [k[0] for m in [puzzle_data['keys']] for k in m]
+        selected_key = st.radio("Zihinsel Kasayı Açacak Şifre Anahtarını Seç:", key_options, key="puzzle_radio")
         
-        if st.button("Zihinsel Hamleyi Oyna 🥋", type="primary"):
-            selected_move = next(m for m in challenge_data['moves'] if m[0] == selected_move_label)
-            score = selected_move[1]
-            feedback = selected_move[2]
+        if st.button("Şifre Anahtarını Çevir ve Kasayı Aç 🔓", type="primary"):
+            key_tuple = next(k for k in puzzle_data['keys'] if k[0] == selected_key)
+            score = key_tuple[1]
+            result_text = key_tuple[2]
             
-            st.session_state.arena_score = score
-            st.session_state.chosen_move = selected_move_label.split(":")[0]
-            st.session_state.arena_played = True
+            st.session_state.detective_score = score
+            st.session_state.unlocked_key = selected_key.split(":")[0]
+            st.session_state.puzzle_played = True
             
             if score == 100:
-                st.markdown(f"<div class='success-box'><b>🎉 MÜKEMMEL KONTRA HAMLESİ! (+100 Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='success-box'><b>{result_text}</b></div>", unsafe_allow_html=True)
                 st.balloons()
-            elif score >= 40:
-                st.markdown(f"<div class='card-box'><b>RİSKLİ ZİHİNSEL HAMLE (+{score} Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
+            elif score >= 30:
+                st.markdown(f"<div class='card-box'><b>{result_text}</b></div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<div class='alert-box'><b>ZİHİNSEL NAKAVT (+{score} Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='alert-box'><b>{result_text}</b></div>", unsafe_allow_html=True)
 
-        if st.session_state.get('arena_played', False):
-            st.markdown("### 🏆 Sporcu Arena Skoru")
+        if st.session_state.get('puzzle_played', False):
+            st.markdown("### 🏆 Sporcu Dedektiflik Raporu")
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f"<div class='success-box'><b>Oynanan Zihinsel Hamle:</b><br>{st.session_state.chosen_move}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='success-box'><b>Kullanılan Şifre Anahtarı:</b><br>{st.session_state.unlocked_key}</div>", unsafe_allow_html=True)
             with col2:
-                st.markdown(f"<div class='analysis-box'><b>Arena Puanı:</b><br>{st.session_state.arena_score} / 100</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='analysis-box'><b>Dedektiflik Skoru:</b><br>{st.session_state.detective_score} / 100</div>", unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
@@ -474,16 +469,16 @@ elif st.session_state.stage == 4:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    a_score = st.session_state.get('arena_score', 100)
-    move_val = st.session_state.get('chosen_move', 'Hamle Yapılmadı')
+    d_score = st.session_state.get('detective_score', 100)
+    key_val = st.session_state.get('unlocked_key', 'Şifre Çözülmedi')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Minder Arena Puanı: <b>{a_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Dedektiflik Skoru: <b>{d_score}/100</b>)</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Minder Arena Puanı: <b>{a_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Dedektiflik Skoru: <b>{d_score}/100</b>)</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -496,8 +491,8 @@ elif st.session_state.stage == 4:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Oynanan Zihinsel Hamle": move_val,
-            "Arena Puanı (100)": a_score
+            "Kullanılan Şifre Anahtarı": key_val,
+            "Dedektif Skoru (100)": d_score
         })
     
     total_target = st.session_state.target_participant_count
@@ -523,7 +518,7 @@ elif st.session_state.stage == 5:
     avg_pre = round(df_results["Ön Test (%)"].mean(), 1)
     avg_post = round(df_results["Son Test (%)"].mean(), 1)
     avg_diff = round(df_results["Net Gelişim (%)"].mean(), 1)
-    avg_arena = round(df_results["Arena Puanı (100)"].mean(), 1)
+    avg_det = round(df_results["Dedektif Skoru (100)"].mean(), 1)
     
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -535,9 +530,9 @@ elif st.session_state.stage == 5:
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
     with col5:
-        st.metric("Ort. Arena Puanı", f"{avg_arena} / 100")
+        st.metric("Ort. Dedektiflik Skoru", f"{avg_det} / 100")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi ve Minder Arenası Liderlik Tablosu")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Zihinsel Şifre Çözücüler Tablosu")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
