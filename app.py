@@ -42,7 +42,7 @@ QUESTIONS = [
     {"text": "2. Kendi oyun tarzımda sevmediğim özelliklere karşı anlayışlı ve sabırlı olmaya çalışırım.", "reverse": False},
     {"text": "3. Maçta can sıkıcı bir şey olduğunda durumu dengeli bir şekilde değerlendirmeye çalışırım.", "reverse": False},
     {"text": "4. Formsuz olduğumda, diğer sporcuların benden daha başarılı ve mutlu olduğunu düşünürüm.", "reverse": True},
-    {"text": "5. Hatalarımı ve başarısızlıklarımı sporun ve insan olmanın doğal bir parçası olarak görmeye çalışırım.", "reverse": False},
+    {"text": "5. Hatalarımı ve başarısızlıklarımı sporun dan ve insan olmanın doğal bir parçası olarak görmeye çalışırım.", "reverse": False},
     {"text": "6. Çok zor bir antrenman veya maç dönemi geçirdiğimde, kendime ihtiyacım olan şefkat ve anlayışı gösteririm.", "reverse": False},
     {"text": "7. Minderde beni üzen bir şey olduğunda, duygularımı dengede tutmaya çalışırım.", "reverse": False},
     {"text": "8. Benim için önemli olan bir maçta başarısız olduğumda, bu başarısızlığı sadece ben yaşıyormuşum gibi yalnız hissederim.", "reverse": True},
@@ -52,128 +52,14 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Dinamik Grup Turnuvası Senaryoları (15 Farklı Katılımcı için)
-GROUP_SCENARIOS = [
-    {
-        "q": "🥋 **Katılımcı Kartı #1:** Türkiye Şampiyonası elemelerinde ilk turda elendin. Antrenörün salondan ayrıldı.",
-        "options": [
-            ("A) 'Her şey bitti, ben yeteneksiz bir sporcuyum.'", 25, "Öz-Yargılama baskın."),
-            ("B) 'Üzgünüm ama bu yenilgi eksiklerimi görmemi sağlayacak bir deneyim. Birçok şampiyon ilk turlarda elenmiştir.'", 100, "Mükemmel! Ortak İnsanlık ve Nezaket boyutları uygulandı."),
-            ("C) 'Öfkeliyim, hakemler bilerek puanımı vermedi.'", 50, "Dışsal Yükleme baskın.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #2:** Antrenmanda en çok çalıştığın Dwit Chagi (Döner Tekme) hareketini yaparken yere düştün.",
-        "options": [
-            ("A) 'Düşmek sporun doğasında var. Tekniğimi düzeltip tekrar deneyeceğim.'", 100, "Harika! Bilinçli Farkındalık ve Öz-Nezaket yüksek."),
-            ("B) 'Herkes bana gülüyor, bir daha bu tekniği denemeyeceğim.'", 25, "İzolasyon ve Yargılama baskın."),
-            ("C) 'Önemli değil ama bir daha asla antrenman yapmayacağım.'", 30, "Bastırma tutumu.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #3:** Kuşak sınavında heyecandan Poomsae adımlarını şaşırdın.",
-        "options": [
-            ("A) 'Aptalım ben, bunca aylık emek çöp oldu.'", 20, "Aşırı Özdeşleşme."),
-            ("B) 'Heyecanlanmam çok insani. Nefes alıp hatırladığım yerden devam edeceğim.'", 100, "Mükemmel! Farkındalık ve Kabul uygulandı."),
-            ("C) 'Sınav sistemi zaten çok saçma.'", 45, "Savunma mekanizması.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #4:** Maçın son 10 saniyesinde ceza (kyongo) alarak yenildin.",
-        "options": [
-            ("A) 'Büyük bir hayal kırıklığı ama her sporcu son saniye stresi yaşayabilir. Bu tecrübe beni güçlendirecek.'", 100, "Harika! Ortak İnsanlık boyutu yüksek."),
-            ("B) 'Dünyanın en şanssız insanı benim, tek talihsizlik ben mi yaşarım?'", 25, "İzolasyon tutumu."),
-            ("C) 'Son saniyede maçı vermek tam benim gibi bir başarısızlığa yakışır.'", 20, "Öz-Yargılama.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #5:** Takım arkadaşın milli takıma seçildi ancak sen kıl payı kaçırdın.",
-        "options": [
-            ("A) 'Onun adına sevinirken kendi üzüntümü de kabul ediyorum. Çalışmaya devam edeceğim.'", 100, "Mükemmel! Duygusal denge ve Öz-Nezaket."),
-            ("B) 'Ben hiç sevilmiyorum, torpil yapıldı.'", 30, "Dışsal Mağduriyet."),
-            ("C) 'Artık sporu bırakıyorum, hiçbir anlamı kalmadı.'", 20, "Pes etme ve İzolasyon.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #6:** Antrenman maçında kendinden daha alt kuşaktaki birine nakavt oldun.",
-        "options": [
-            ("A) 'Gelişmek için bazen yenilmek gerekir. Alt kuşak arkadaşımı tebrik edip kendi savunmama odaklanacağım.'", 100, "Harika! Mütevazılık ve Farkındalık."),
-            ("B) 'Rezil oldum, salondakilerin yüzüne bakamam.'", 25, "İzolasyon ve Utanç."),
-            ("C) 'O şans eseri vurdu, normalde beni asla yenemez.'", 40, "İnkar.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #7:** Önemli bir maç öncesi tartıda kilon fazla çıktı ve strese girdin.",
-        "options": [
-            ("A) 'Stresli olmam normal. Şu an paniklemek yerine ter atma egzersizime odaklanıyorum.'", 100, "Mükemmel! Bilinçli Farkındalık."),
-            ("B) 'Disiplinsizim, benden sporcu olmaz.'", 20, "Öz-Yargılama."),
-            ("C) 'Aç kalarak kendime zarar vereceğim.'", 30, "Cezalandırıcı Tutum.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #8:** Maç esnasında sakatlandın ve doktor maça devam etmeni yasakladı.",
-        "options": [
-            ("A) 'Sağlığım her şeyden önemli. Birçok sporcu sakatlanır, iyileşme sürecime şefkatle yaklaşacağım.'", 100, "Harika! Nezaket ve Ortak İnsanlık."),
-            ("B) 'Hayatım bitti, spor kariyerim buraya kadarmış.'", 25, "Felaketleştirme."),
-            ("C) 'Doktor hiçbir şeyden anlamıyor.'", 40, "Öfke yansıtma.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #9:** Antrenörün sert eleştirisine maruz kaldın.",
-        "options": [
-            ("A) 'Eleştirideki yapıcı kısımları alıp kendime olan sevgimi koruyacağım.'", 100, "Mükemmel! İçsel Güven ve Nezaket."),
-            ("B) 'Antrenörüm benden nefret ediyor.'", 30, "Kişiselleştirme."),
-            ("C) 'Ben zaten hiçbir şeyi doğru yapamam.'", 20, "Öz-Yargılama.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #10:** Uzun bir sakatlıktan sonra ilk antrenmanına çıktın ve çok çabuk yoruldun.",
-        "options": [
-            ("A) 'Bedenime zaman tanımalıyım. Sakatlık sonrası performans düşüşü çok doğaldır.'", 100, "Harika! Sabır ve Beden Şefkati."),
-            ("B) 'Eski halime asla dönemeyeceğim.'", 25, "Aşırı Özdeşleşme."),
-            ("C) 'Kendimi zorlayıp sakatlığımı nüksettireceğim.'", 30, "Zorlayıcı Saldırganlık.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #11:** Müsabakada faul yaptığın için puanın silindi.",
-        "options": [
-            ("A) 'Anlık bir hataydı. Sakinleşip maça geri dönüyorum.'", 100, "Mükemmel! Anda Kalma ve Farkındalık."),
-            ("B) 'Her şeyi batırdım.'", 25, "Genelleme."),
-            ("C) 'Hakem bana taktı.'", 35, "Dışsal Yükleme.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #12:** Takım seçmelerinde yedek kaldın.",
-        "options": [
-            ("A) 'Yedek kalmak üzücü ama pes etmeden çalışmaya ve takımı desteklemeye devam edeceğim.'", 100, "Harika! Dayanıklılık ve Şefkat."),
-            ("B) 'Beni hiç kimse önemsemiyor.'", 25, "İzolasyon."),
-            ("C) 'Ben takımın en kötüsüyüm.'", 20, "Öz-Yargılama.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #13:** Yıllardır yendiğin rakibine bu sefer mağlup oldun.",
-        "options": [
-            ("A) 'Sporun doğasında yenilmek de var. Rakibimi tebrik edip kendi eksiklerime bakacağım.'", 100, "Mükemmel! Ortak İnsanlık ve Olgunluk."),
-            ("B) 'Bitmişim ben, gururum kırıldı.'", 25, "Ego Zedelenmesi."),
-            ("C) 'Zemin kaygandı yoksa yenilmezdim.'", 40, "Bahane Geliştirme.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #14:** Maç sırasında kondisyonunun tükendiğini hissettin.",
-        "options": [
-            ("A) 'Bedenimi dinliyorum, nefesimi ayarlayıp tempomu zekice yöneteceğim.'", 100, "Harika! Bilinçli Öz-Bakım."),
-            ("B) 'Cılız biriyim, kondisyonum hiç yok.'", 25, "Öz-Yargılama."),
-            ("C) 'Kendimi pürüzsüzce bitene kadar zorlayacağım.'", 40, "Aşırı Zorlama.")
-        ]
-    },
-    {
-        "q": "🥋 **Katılımcı Kartı #15:** Turnuvada madalya alamadan salondan ayrılıyorsun.",
-        "options": [
-            ("A) 'Madalya alamamak emeğimi değersiz kılmaz. Gösterdiğim çaba ile gurur duyuyorum.'", 100, "Mükemmel! Koşulsuz Öz-Kabul."),
-            ("B) 'Boşuna antrenman yapmışım, her şey çöp.'", 20, "Hep ya da Hiç Düşüncesi."),
-            ("C) 'Ailem ve arkadaşlarım bana çok kızacak.'", 30, "Dışsal Onay Bağımlılığı.")
-        ]
-    }
+# Olumlu Sporcu Güç & Değer Listesi
+STRENGTH_OPTIONS = [
+    "🔥 Hırsım ve Vazgeçmeyen Mücadeleci Ruhum",
+    "🎯 Disiplinli ve Düzenli Antrenman Alışkanlığım",
+    "🤝 Takım Arkadaşlarıma Verdiğim Destek ve Samimiyet",
+    "🧘 Zor Anlarda Soğukkanlılığımı Korumaya Çalışmam",
+    "🥋 Taekwondo Sporuna ve Etik Değerlerine Duyduğum Saygı",
+    "💪 Yenilgilerden Ders Çıkarıp Daha Güçlü Dönme Kapasitem"
 ]
 
 def calculate_score(answers):
@@ -240,8 +126,12 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'game_score' not in st.session_state:
-    st.session_state.game_score = 100
+if 'group_interaction_score' not in st.session_state:
+    st.session_state.group_interaction_score = 100
+if 'peer_message' not in st.session_state:
+    st.session_state.peer_message = ""
+if 'athlete_strength' not in st.session_state:
+    st.session_state.athlete_strength = ""
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
 if 'athlete_age' not in st.session_state:
@@ -257,7 +147,9 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.game_score = 100
+    st.session_state.group_interaction_score = 100
+    st.session_state.peer_message = ""
+    st.session_state.athlete_strength = ""
     st.session_state.athlete_name = ""
     st.session_state.game_played = False
     st.session_state.group_game_played = False
@@ -302,7 +194,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve oyunları tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve olumlu etkileşim oyununu tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -354,7 +246,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. Özellikle 5. modüldeki Grup Turnuvası Oyununu tamamlamayı unutma!
+    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. Özellikle 5. modüldeki Olumlu Grup Aynası Oyununu tamamlamayı unutma!
     </div>
     """, unsafe_allow_html=True)
     
@@ -363,7 +255,7 @@ elif st.session_state.stage == 2:
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
         "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
         "✉️ 4. Germer & Neff - Şefkatli Mektup",
-        "🏆 5. MSC Grup Turnuvası (Şefkat Müttefiki Oyunu)"
+        "🤝 5. Şefkat Aynası & Güç Çemberi (Grup Etkileşim Oyunu)"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -475,43 +367,47 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen mektup metnini doldurun.")
 
-    # MODÜL 5: MSC GRUP ŞEFKAT MÜTTEFİKİ OYUNU (LİTERATÜR BAZLI DİNAMİK GRUP OYUNU)
+    # MODÜL 5: OLUMLU GRUP ETKİLEŞİM OYUNU (NEFF & GERMER APPRECIATING PEERS & SELF MIRRORING)
     with game_tab5:
-        st.markdown("### 🏆 Şefkat Müttefiki & Kriz Turnuvası Oyunu")
+        st.markdown("### 🤝 Şefkat Aynası & Güç Çemberi (Grup İçi Olumlu Etkileşim Oyunu)")
         st.markdown("""
         <div class='theory-box'>
-        <b>Oyunun Literatür Dayanağı & Kuralları (Neff & Germer, 2018 MSC Group Challenge):</b><br>
-        1. Bu oyun 8-15 kişilik atölyelerde her sporcuya özel dinamik bir kriz kartı atayarak grup etkileşimini sağlar.<br>
-        2. Sana özel atanan aşağıdaki Taekwondo Kriz Kartı'nda 3 seçenek arasından <b>en yüksek Öz-Şefkat Puanına (100 Puan)</b> sahip Müttefik Yanıtı'nı seçmelisin.<br>
-        3. Kazandığın Oyun Skoru, atölye sonundaki <b>Toplu Veri Raporu Tablosuna (Stage 5)</b> doğrudan eklenecektir!
+        <b>Oyunun Literatür Dayanağı & Kuralları (Neff & Germer, 2018; Gilbert, 2010):</b><br>
+        1. Bu oyun tamamen <b>olumlu, cesaretlendirici ve grup içi güven bağını güçlendiren</b> etkileşimli bir çalışmadır.<br>
+        2. <b>1. Adım (Öz-Takdir):</b> Taekwondo sporculuğunda kendi gurur duyduğun ve takdir ettiğin bir gücünü seç.<br>
+        3. <b>2. Adım (Takım Arkadaşına Olumlu Şefkat Mesajı):</b> Atölyedeki takım arkadaşlarına özel bir cesaretlendirme ve şefkat mesajı yaz.<br>
+        4. Tamamlanan olumlu etkileşim <b>+100 Şefkat Müttefiki Puanı</b> kazandırır ve mesajınız en sondaki <b>Toplu Veri Raporu Tablosuna (Stage 5)</b> doğrudan aktarılır.
         </div>
         """, unsafe_allow_html=True)
         
-        # Dinamik Senaryo İndeksi (Sporcunun sırasına göre 15 senaryodan biri çekilir)
-        scen_idx = current_done % len(GROUP_SCENARIOS)
-        scen_data = GROUP_SCENARIOS[scen_idx]
-        
-        st.markdown(f"<div class='card-box'>{scen_data['q']}</div>", unsafe_allow_html=True)
-        
-        opts = [op[0] for op in scen_data['options']]
-        chosen_opt = st.radio(f"Sıradaki Sporcu ({st.session_state.athlete_name}) için Müttefik Yanıtın Hangisi?", opts, key="group_game_radio")
-        
-        if st.button("Şefkat Müttefiki Yanıtını Onayla 🏆", type="primary"):
-            # Seçilen opsiyonun puanını bul
-            selected_tuple = next(item for item in scen_data['options'] if item[0] == chosen_opt)
-            puan = selected_tuple[1]
-            aciklama = selected_tuple[2]
+        with st.form("group_compassion_mirror_form"):
+            st.markdown(f"#### 🌟 Sporcu: {st.session_state.athlete_name}")
             
-            st.session_state.game_score = puan
-            st.session_state.group_game_played = True
+            chosen_strength = st.selectbox("1. Taekwondo Sporculuğunda En Çok Gurur Duyduğun Gücün / Özelliğin:", STRENGTH_OPTIONS)
             
-            if puan == 100:
-                st.markdown(f"<div class='success-box'><b>🎉 TEBRİKLER! TAM PUAN (+100 Şefkat Skoru)</b><br>{aciklama}</div>", unsafe_allow_html=True)
-                st.balloons()
-            elif puan >= 50:
-                st.markdown(f"<div class='card-box'><b>ORTA SEVİYE PUAN (+{puan} Puan)</b><br>{aciklama}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='alert-box'><b>DÜŞÜK ŞEFKAT PUANI (+{puan} Puan)</b><br>{aciklama}</div>", unsafe_allow_html=True)
+            peer_msg = st.text_area(
+                "2. Takım Arkadaşlarına (Gruba) Yönelik Olumlu Şefkat & Destek Mesajın:",
+                placeholder="Örn: Hepimiz bu minderde çok çalışıyoruz. Bazen yenilsek de her birinizin çabası çok kıymetli, birbirimizin yanındayız!"
+            )
+            
+            if st.form_submit_button("Olumlu Grup Mesajını ve Gücünü Paylaş 🤝", type="primary"):
+                if peer_msg:
+                    st.session_state.athlete_strength = chosen_strength
+                    st.session_state.peer_message = peer_msg
+                    st.session_state.group_interaction_score = 100
+                    st.session_state.group_game_played = True
+                    st.success("🎉 Harika! Öz-Takdirin ve Takım Arkadaşlarına Gönderdiğin Olumlu Şefkat Mesajı Kaydedildi! (+100 Etkileşim Puanı)")
+                    st.balloons()
+                else:
+                    st.warning("Lütfen takım arkadaşlarınız için olumlu bir mesaj yazın.")
+
+        if st.session_state.get('group_game_played', False):
+            st.markdown("### 💬 Kaydedilen Olumlu Grup Kartın")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"<div class='success-box'><b>Öz-Takdir Edilen Gücün:</b><br>{st.session_state.athlete_strength}</div>", unsafe_allow_html=True)
+            with col2:
+                st.markdown(f"<div class='analysis-box'><b>Takım Arkadaşlarına Şefkat Mesajın:</b><br>{st.session_state.peer_message}</div>", unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
@@ -538,15 +434,17 @@ elif st.session_state.stage == 4:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    g_score = st.session_state.get('game_score', 100)
+    g_score = st.session_state.get('group_interaction_score', 100)
+    str_val = st.session_state.get('athlete_strength', 'Belirtilmedi')
+    msg_val = st.session_state.get('peer_message', 'Mesaj Girilmedi')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Grup Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Grup Olumlu Etkileşim Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Grup Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Grup Olumlu Etkileşim Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -559,7 +457,9 @@ elif st.session_state.stage == 4:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Grup Oyun Skoru (100)": g_score
+            "Öz-Takdir Edilen Güç": str_val,
+            "Gruba Şefkat Mesajı": msg_val,
+            "Grup Etkileşim Skoru": g_score
         })
     
     total_target = st.session_state.target_participant_count
@@ -585,9 +485,8 @@ elif st.session_state.stage == 5:
     avg_pre = round(df_results["Ön Test (%)"].mean(), 1)
     avg_post = round(df_results["Son Test (%)"].mean(), 1)
     avg_diff = round(df_results["Net Gelişim (%)"].mean(), 1)
-    avg_game = round(df_results["Grup Oyun Skoru (100)"].mean(), 1)
     
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Toplam Katılımcı", f"{len(df_results)} Sporcu")
     with col2:
@@ -596,16 +495,14 @@ elif st.session_state.stage == 5:
         st.metric("Son Test Ortalaması", f"{avg_post}%")
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
-    with col5:
-        st.metric("Ort. Grup Oyun Skoru", f"{avg_game} / 100")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi (Detaylı Tablo)")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Olumlu Grup Mesajları (Detaylı Tablo)")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
     csv_data = df_results.to_csv(index=False).encode('utf-8-sig')
     st.download_button(
-        label="📥 Atölye Veri Listesini İndir (CSV/Excel)",
+        label="📥 Atölye Veri ve Mesaj Listesini İndir (CSV/Excel)",
         data=csv_data,
         file_name="atolye_ozsefkat_grup_verileri.csv",
         mime="text/csv",
