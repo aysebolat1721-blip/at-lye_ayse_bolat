@@ -52,14 +52,53 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Oyun Güç Kartı Unvanları
-STRENGTH_OPTIONS = [
-    "🔥 Hırs ve Vazgeçmeyen Mücadeleci Gücü",
-    "🎯 Disiplinli ve Düzenli Odaklanma Gücü",
-    "🤝 Takım Arkadaşlarına Destek ve Dayanışma Gücü",
-    "🧘 Zor Anlarda Soğukkanlılık Gücü",
-    "🥋 Taekwondo Spor Etik ve Saygı Gücü",
-    "💪 Yenilgilerden Ders Çıkarıp Güçlenme Kapasitesi"
+# Dinamik Müsabaka Arena Krizleri (15 Sporcu için Farklı Zihinsel Baskı Kartları)
+ARENA_CHALLENGES = [
+    {
+        "card": "🥋 **Minder Arenası Kartı #1:** Türkiye Şampiyonası Yarı Finalindesin. Son 3 saniye, rakibin 2 puan önünde ve hakem rakibinin faullü vuruşuna puan yazdı!",
+        "moves": [
+            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): Nefes alıp anı kabul ediyorum. İtiraz hakkımı hakeme bildirip son saniyede planladığım döner tekmeyi atıyorum.", 100, "Mükemmel Zihinsel Dayanıklılık! (Mindfulness & Kabul)"),
+            ("⚡ Hamle B (Öfke Saldırısı): Hakeme bağırıp kontrolden çıkıyorum ve ceza alıyorum.", 40, "Tehdit Modu! Öfke kontrol kaybı yarattı."),
+            ("🏃 Hamle C (Minderden Kaçış): Havlu atıp maçı bırakıyorum.", 20, "İzolasyon Modu."),
+            ("❌ Hamle D (Öz-Eleştiri): 'Zaten hep hakemler beni yakıyor' deyip pes ediyorum.", 10, "Aşırı Özdeşleşme.")
+        ]
+    },
+    {
+        "card": "🥋 **Minder Arenası Kartı #2:** Salondaki tüm takım arkadaşların ve antrenörün izlerken antrenman maçında nakavt oldun.",
+        "moves": [
+            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Üzgünüm ama sakatlanmadım. Nakavt olmak sporun parçası, savunma açığımı analiz edip devam ediyorum.'", 100, "Harika! Ortak İnsanlık ve Öz-Nezaket."),
+            ("⚡ Hamle B (Öfke Saldırısı): Tekmeliğe tekmeler atıp salonu terk ediyorum.", 35, "Tehdit Modu."),
+            ("🏃 Hamle C (Minderden Kaçış): Günlerce antrenmana gelmeyip herkesten saklanıyorum.", 20, "İzolasyon Modu."),
+            ("❌ Hamle D (Öz-Eleştiri): 'Ben rezil bir sporcuyum, bir daha kimsenin yüzüne bakamam.'", 15, "Öz-Yargılama.")
+        ]
+    },
+    {
+        "card": "🥋 **Minder Arenası Kartı #3:** Kuşak sınavında kurul üyelerinin önünde hareketi unuttun ve salonda sessizlik oldu.",
+        "moves": [
+            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Heyecanlandım ama sorun değil. Derin bir nefes alıp baştan çiziyorum.'", 100, "Mükemmel! Öz-Kabul ve Sakinlik."),
+            ("⚡ Hamle B (Öfke Saldırısı): Sınavı yarıda kesip salonu terk ediyorum.", 30, "Kaçış Tepkisi."),
+            ("🏃 Hamle C (Minderden Kaçış): Ağlayarak minderden kaçıyorum.", 20, "Baskı Altında Çöküş."),
+            ("❌ Hamle D (Öz-Eleştiri): 'Unutmak tam bana göre bir sersemlik.'", 10, "Öz-Yargılama.")
+        ]
+    },
+    {
+        "card": "🥋 **Minder Arenası Kartı #4:** Şampiyonaya 1 gün kala kilon 1.5 kg fazla çıktı.",
+        "moves": [
+            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Paniklemek yerine antrenörümle plan yapıp ter atma seansına geçiyorum.'", 100, "Eyleme Dönük Şefkat!"),
+            ("⚡ Hamle B (Öfke Saldırısı): Kendimi aç bırakıp bedenime zarar veriyorum.", 30, "Cezalandırma."),
+            ("🏃 Hamle C (Minderden Kaçış): Tartıya çıkmadan şampiyonadan çekiliyorum.", 20, "Kaçış."),
+            ("❌ Hamle D (Öz-Eleştiri): 'Disiplinsiz pisliğin tekiyim.'", 10, "Aşırı Yargılama.")
+        ]
+    },
+    {
+        "card": "🥋 **Minder Arenası Kartı #5:** Milli takım seçmelerini 1 puan farkla kaçırdın.",
+        "moves": [
+            ("🛡️ Hamle A (Soğukkanlı Kontra Kalkanı): 'Canım çok yanıyor ama bu çaba değersiz değil. Birçok olimpiyatçı seçme kaybetti, devam edeceğim.'", 100, "Ortak İnsanlık ve Dayanıklılık!"),
+            ("⚡ Hamle B (Öfke Saldırısı): Seçme komitesine bağırıyorum.", 30, "Tehdit Modu."),
+            ("🏃 Hamle C (Minderden Kaçış): Sporu tamamen bırakıyorum.", 20, "İzolasyon."),
+            ("❌ Hamle D (Öz-Eleştiri): 'Ben hiç bir zaman milli olamayacağım.'", 15, "Aşırı Özdeşleşme.")
+        ]
+    }
 ]
 
 def calculate_score(answers):
@@ -126,12 +165,10 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'game_score' not in st.session_state:
-    st.session_state.game_score = 100
-if 'peer_message' not in st.session_state:
-    st.session_state.peer_message = ""
-if 'athlete_strength' not in st.session_state:
-    st.session_state.athlete_strength = ""
+if 'arena_score' not in st.session_state:
+    st.session_state.arena_score = 100
+if 'chosen_move' not in st.session_state:
+    st.session_state.chosen_move = ""
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
 if 'athlete_age' not in st.session_state:
@@ -147,12 +184,11 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.game_score = 100
-    st.session_state.peer_message = ""
-    st.session_state.athlete_strength = ""
+    st.session_state.arena_score = 100
+    st.session_state.chosen_move = ""
     st.session_state.athlete_name = ""
     st.session_state.game_played = False
-    st.session_state.group_game_played = False
+    st.session_state.arena_played = False
     st.session_state.stage = 0
 
 def reset_full_workshop():
@@ -194,7 +230,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve oyunları tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve Stres Arena Turnuvasını tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -246,7 +282,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. Özellikle 5. modüldeki Takım Şefkat Ligi Oyununu tamamlamayı unutma!
+    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. 5. modüldeki Minder Arenası Turnuvasını tamamlamayı unutma!
     </div>
     """, unsafe_allow_html=True)
     
@@ -255,7 +291,7 @@ elif st.session_state.stage == 2:
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
         "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
         "✉️ 4. Germer & Neff - Şefkatli Mektup",
-        "🎮 5. Takım Şefkat Ligi: Güç Paslama Oyunu"
+        "🥋 5. Minder Arenası Turnuvası (Grup Stres Oyunu)"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -367,46 +403,51 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen mektup metnini doldurun.")
 
-    # MODÜL 5: OYUN ARENASI (TAKIM ŞEFKAT LİGİ & GÜÇ PASLAMA OYUNU)
+    # MODÜL 5: MİNDER ARENASI MÜSABAKA TURNUVASI (GERÇEKÇİ STRES & KONTRA ARENASI)
     with game_tab5:
-        st.markdown("### 🎮 Takım Şefkat Ligi: Güç Paslama & Rozet Oyunu")
+        st.markdown("### 🥋 Minder Arenası: Stres & Zihinsel Kontra Turnuvası")
         st.markdown("""
         <div class='theory-box'>
-        <b>🎮 Oyun Kuralları & Puanlama (Neff & Germer, 2018; Gilbert, 2010):</b><br>
-        1. Kendi Taekwondo zihinsel güç unvanını seç ve kilitlerini aç.<br>
-        2. Takım arkadaşlarına özel bir <b>Güç Pası Kartı</b> fırlat!<br>
-        3. Pas attığında <b>+100 Şefkat Puanı</b> ve <b>"Şefkat Ustası" Rozeti</b> kazanırsın. Oyun skorun doğrudan son tablonun skorborduna aktarılır.
+        <b>🎮 Oyun Kuralları & Turnuva Sistemi (Neff & Germer, 2018; Gilbert, 2010):</b><br>
+        1. Atölyedeki N kişiden sıradaki sporcu ({st.session_state.athlete_name}) için ekrana sert bir Taekwondo müsabaka baskı kartı gelir.<br>
+        2. Baskı altında doğru <b>Zihinsel Kontra Hamlesi</b>ni oynayarak <b>100 Arena Puanı</b> elde etmeye çalış!<br>
+        3. Skorun doğrudan atölye sonundaki <b>Minder Liderlik Tablosuna (Stage 5)</b> yansıyacaktır.
         </div>
         """, unsafe_allow_html=True)
         
-        with st.form("group_compassion_league_form"):
-            st.markdown(f"#### ⚡ Oyuncu: {st.session_state.athlete_name}")
+        # Dinamik Arena Kriz Kartı (Katılımcı sırasına göre 5 karttan biri)
+        challenge_idx = current_done % len(ARENA_CHALLENGES)
+        challenge_data = ARENA_CHALLENGES[challenge_idx]
+        
+        st.markdown(f"<div class='card-box'>{challenge_data['card']}</div>", unsafe_allow_html=True)
+        
+        moves_labels = [m[0] for m in challenge_data['moves']]
+        selected_move_label = st.radio("Zihinsel Kontra Hamlen Hangisi?", moves_labels, key="arena_radio")
+        
+        if st.button("Zihinsel Hamleyi Oyna 🥋", type="primary"):
+            selected_move = next(m for m in challenge_data['moves'] if m[0] == selected_move_label)
+            score = selected_move[1]
+            feedback = selected_move[2]
             
-            chosen_strength = st.selectbox("1. Kendi Taekwondo Zihinsel Güç Unvanın:", STRENGTH_OPTIONS)
+            st.session_state.arena_score = score
+            st.session_state.chosen_move = selected_move_label.split(":")[0]
+            st.session_state.arena_played = True
             
-            peer_msg = st.text_area(
-                "2. Takım Arkadaşlarına Fırlatacağın Güç Pası Kartı Mesajı:",
-                placeholder="Örn: Minderde senin mücadeleni görmek hepimize güç veriyor. Pes etmeden yola devam!"
-            )
-            
-            if st.form_submit_button("Güç Pasını Fırlat ve Puan Kazan 🚀", type="primary"):
-                if peer_msg:
-                    st.session_state.athlete_strength = chosen_strength
-                    st.session_state.peer_message = peer_msg
-                    st.session_state.game_score = 100
-                    st.session_state.group_game_played = True
-                    st.success("🎉 GÜÇ PASI ATILDI! LEVEL UP! (+100 Oyuncu Puanı) - 'Şefkat Ustası' Rozetini Kazandın!")
-                    st.balloons()
-                else:
-                    st.warning("Lütfen pas atmak için bir güç mesajı yazın.")
+            if score == 100:
+                st.markdown(f"<div class='success-box'><b>🎉 MÜKEMMEL KONTRA HAMLESİ! (+100 Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
+                st.balloons()
+            elif score >= 40:
+                st.markdown(f"<div class='card-box'><b>RİSKLİ ZİHİNSEL HAMLE (+{score} Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div class='alert-box'><b>ZİHİNSEL NAKAVT (+{score} Arena Puanı)</b><br>{feedback}</div>", unsafe_allow_html=True)
 
-        if st.session_state.get('group_game_played', False):
-            st.markdown("### 🏆 Oyuncu Skorbord Kartın")
+        if st.session_state.get('arena_played', False):
+            st.markdown("### 🏆 Sporcu Arena Skoru")
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f"<div class='success-box'><b>Seçilen Güç Unvanın:</b><br>{st.session_state.athlete_strength}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='success-box'><b>Oynanan Zihinsel Hamle:</b><br>{st.session_state.chosen_move}</div>", unsafe_allow_html=True)
             with col2:
-                st.markdown(f"<div class='analysis-box'><b>Fırlatılan Güç Pası Mesajın:</b><br>{st.session_state.peer_message}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='analysis-box'><b>Arena Puanı:</b><br>{st.session_state.arena_score} / 100</div>", unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
@@ -433,17 +474,16 @@ elif st.session_state.stage == 4:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    g_score = st.session_state.get('game_score', 100)
-    str_val = st.session_state.get('athlete_strength', 'Belirtilmedi')
-    msg_val = st.session_state.get('peer_message', 'Mesaj Girilmedi')
+    a_score = st.session_state.get('arena_score', 100)
+    move_val = st.session_state.get('chosen_move', 'Hamle Yapılmadı')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Minder Arena Puanı: <b>{a_score}/100</b>)</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Minder Arena Puanı: <b>{a_score}/100</b>)</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -456,9 +496,8 @@ elif st.session_state.stage == 4:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Zihinsel Güç Unvanı": str_val,
-            "Takım Güç Pası Mesajı": msg_val,
-            "Oyun Puanı (100)": g_score
+            "Oynanan Zihinsel Hamle": move_val,
+            "Arena Puanı (100)": a_score
         })
     
     total_target = st.session_state.target_participant_count
@@ -484,8 +523,9 @@ elif st.session_state.stage == 5:
     avg_pre = round(df_results["Ön Test (%)"].mean(), 1)
     avg_post = round(df_results["Son Test (%)"].mean(), 1)
     avg_diff = round(df_results["Net Gelişim (%)"].mean(), 1)
+    avg_arena = round(df_results["Arena Puanı (100)"].mean(), 1)
     
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.metric("Toplam Katılımcı", f"{len(df_results)} Sporcu")
     with col2:
@@ -494,14 +534,16 @@ elif st.session_state.stage == 5:
         st.metric("Son Test Ortalaması", f"{avg_post}%")
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
+    with col5:
+        st.metric("Ort. Arena Puanı", f"{avg_arena} / 100")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi ve Takım Güç Kartları Tablosu")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Minder Arenası Liderlik Tablosu")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
     csv_data = df_results.to_csv(index=False).encode('utf-8-sig')
     st.download_button(
-        label="📥 Atölye Veri ve Mesaj Listesini İndir (CSV/Excel)",
+        label="📥 Atölye Veri Listesini İndir (CSV/Excel)",
         data=csv_data,
         file_name="atolye_ozsefkat_grup_verileri.csv",
         mime="text/csv",
