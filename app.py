@@ -24,7 +24,7 @@ st.markdown("""
     .sidebar-footer { margin-top: auto; padding-top: 20px; font-size: 0.9rem; color: #4B5563; text-align: center; border-top: 1px solid #E5E7EB; }
     .stage-title { font-size: 1.8rem; color: #2563EB; font-weight: 600; border-bottom: 2px solid #BFDBFE; padding-bottom: 10px; margin-bottom: 20px;}
     .theory-box { background-color: #FFE4E6; color: #9F1239; border-radius: 10px; padding: 15px; border-left: 5px solid #F43F5E; margin-bottom: 15px; }
-    .tower-block { background-color: #3B82F6; color: white; border-radius: 8px; padding: 12px; margin-bottom: 6px; text-align: center; font-weight: bold; font-size: 1.1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .puzzle-piece { background-color: #10B981; color: white; border-radius: 8px; padding: 15px; margin: 5px; text-align: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 """, unsafe_allow_html=True)
 
@@ -53,12 +53,12 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Takım Denge Kulesi Blok Seçenekleri (Jenga Oyun Mantığı)
-TOWER_BLOCKS = [
-    {"name": "🟩 Hata Yapma Özgürlüğü Bloğu (+1 Kat)", "effect": 1, "desc": "Hata yapmak kulenin devrilmesi değil; daha güçlü ve esnek bir zemin kurma tecrübesidir."},
-    {"name": "🟨 Takım Dayanışması ve Arkadaşlık Bloğu (+2 Kat)", "effect": 2, "desc": "Takım arkadaşlarımızın desteği kulemizin dengesini iki kat güçlendirir."},
-    {"name": "🟦 Sabır ve Kendine Nezaket Bloğu (+1 Kat)", "effect": 1, "desc": "Kendine sabırlı yaklaştığında zihinsel kule sarsılmaz bir dengeye ulaşır."},
-    {"name": "🟧 Bilinçli Odak ve Nefes Bloğu (+1 Kat)", "effect": 1, "desc": "Anlık baskıda nefes alıp sakinleşmek kuleye sağlam bir denge kazandırır."}
+# Takım Şefkat Yapbozu Parçaları (Team Compassion Quest Pieces)
+PUZZLE_PIECES = [
+    {"name": "🧩 Parça #1: Bilinçli Odaklama Taşı", "desc": "Zihnini ana getirip nefes dengesini kurarak takıma ilk yapboz parçasını kazandırdın."},
+    {"name": "🧩 Parça #2: Kendine Nezaket Taşı", "desc": "Sporcu olarak kendine sabır ve anlayış göstererek yapbozun ikinci kilidini açtın."},
+    {"name": "🧩 Parça #3: Ortak İnsanlık Taşı", "desc": "Zorlukların tüm sporcular için ortak bir deneyim olduğunu hatırlatarak yapbozu birleştirdin."},
+    {"name": "🧩 Parça #4: Zihinsel Esneklik Taşı", "desc": "Hataları öğrenme tecrübesine dönüştürerek takıma büyük bir yapboz hamlesi kazandırdın."}
 ]
 
 def calculate_score(answers):
@@ -125,10 +125,10 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'tower_score' not in st.session_state:
-    st.session_state.tower_score = 100
-if 'chosen_block' not in st.session_state:
-    st.session_state.chosen_block = ""
+if 'puzzle_score' not in st.session_state:
+    st.session_state.puzzle_score = 100
+if 'chosen_piece' not in st.session_state:
+    st.session_state.chosen_piece = ""
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
 if 'athlete_age' not in st.session_state:
@@ -144,11 +144,11 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.tower_score = 100
-    st.session_state.chosen_block = ""
+    st.session_state.puzzle_score = 100
+    st.session_state.chosen_piece = ""
     st.session_state.athlete_name = ""
     st.session_state.game_played = False
-    st.session_state.tower_played = False
+    st.session_state.puzzle_completed = False
     st.session_state.stage = 0
 
 def reset_full_workshop():
@@ -190,7 +190,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve Takım Denge Kulesi Oyununu tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve Takım Şefkat Yapbozu Oyununu tamamladığında toplu veri tablosu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -242,7 +242,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. 5. modüldeki Takım Denge Kulesi İnşa Oyununu tamamlamayı unutma!
+    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. 5. modüldeki Takım Şefkat Yapbozu Oyununu tamamlamayı unutma!
     </div>
     """, unsafe_allow_html=True)
     
@@ -251,7 +251,7 @@ elif st.session_state.stage == 2:
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
         "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
         "✉️ 4. Germer & Neff - Şefkatli Mektup",
-        "🧱 5. Takım Denge Kulesi Oyunu (Jenga Mantığı)"
+        "🧩 5. Takım Şefkat Yapbozu & Bayrak Oyunu"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -363,40 +363,43 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen mektup metnini doldurun.")
 
-    # MODÜL 5: TAKIM DENGE KULESİ İNŞA OYUNU (JENGA MANITIĞINDA GRUP OYUNU - NEFF & GERMER EXPERIENTIAL TEAM TOWER)
+    # MODÜL 5: TAKIM ŞEFKAT YAPBOZU OYUNU (NEFF & GERMER EXPERIENTIAL TEAM PUZZLE RELAY GAME)
     with game_tab5:
-        st.markdown("### 🧱 Takım Denge Kulesi Oyunu (Jenga Mantığında Ortak İnşa)")
+        st.markdown("### 🧩 Takım Şefkat Yapbozu & Bayrak Oyunu")
         st.markdown(f"""
         <div class='theory-box'>
-        <b>🧱 Oyun Kuralları & Mantığı (Neff & Germer, 2018 Experiential Team Building):</b><br>
-        1. Atölyedeki tüm sporcular (8-15 kişi) sırayla ortak bir <b>Şefkat ve Denge Kulesi</b> inşa eder.<br>
-        2. Her sporcu kuleye eklemek üzere bir <b>Denge Bloğu (Jenga Taşı)</b> seçer ve kule bir kat daha yükselir.<br>
-        3. Şu anki Sporcu (<b>{st.session_state.athlete_name}</b>) kulenin <b>#{current_done + 1}. Katını</b> inşa ediyor!
+        <b>🧩 Oyun Kuralları & Mantığı (Neff & Germer, 2018 Team Puzzle Quest):</b><br>
+        1. Atölyedeki N kişilik takım (8-15 kişi) sırayla ortak bir <b>Zihinsel Güç Yapbozu</b> birleştirir.<br>
+        2. Her sporcu kendi turunda takıma bir yapboz parçası kazandırmak üzere zihinsel güç taşını seçer.<br>
+        3. Şu anki Sporcu (<b>{st.session_state.athlete_name}</b>) yapbozun <b>#{current_done + 1}. Parçasını</b> yerine yerleştiriyor!
         </div>
         """, unsafe_allow_html=True)
         
-        block_names = [b["name"] for b in TOWER_BLOCKS]
-        selected_block_name = st.selectbox("Kuleye Eklemek İstediğin Denge Bloğunu Seç:", block_names)
-        selected_b_data = next(b for b in TOWER_BLOCKS if b["name"] == selected_block_name)
+        piece_names = [p["name"] for p in PUZZLE_PIECES]
+        selected_piece_name = st.selectbox("Yapboza Eklemek İstediğin Zihinsel Güç Parçasını Seç:", piece_names)
+        selected_p_data = next(p for p in PUZZLE_PIECES if p["name"] == selected_piece_name)
         
-        st.info(f"💡 **Bloğun Anlamı:** {selected_b_data['desc']}")
+        st.info(f"💡 **Parçanın Zihinsel Etkisi:** {selected_p_data['desc']}")
         
-        if st.button("Denge Bloğunu Kuleye Yerleştir 🧱", type="primary"):
-            st.session_state.chosen_block = selected_b_data["name"]
-            st.session_state.tower_score = 100
-            st.session_state.tower_played = True
-            st.success(f"🎉 DENGE BLOĞU YERLEŞTİRİLDİ! Takım Kulesi #{current_done + 1}. Katta Güvenle Yükseldi! (+100 Denge Puanı)")
+        if st.button("Yapboz Parçasını Birleştir 🧩", type="primary"):
+            st.session_state.chosen_piece = selected_p_data["name"]
+            st.session_state.puzzle_score = 100
+            st.session_state.puzzle_completed = True
+            st.success(f"🎉 YAPBOZ PARÇASI YERLEŞTİRİLDİ! Takım Yapbozu #{current_done + 1}. Parçayla Tamamlanıyor! (+100 Yapboz Puanı)")
             st.balloons()
 
-        # İnşa edilen kulenin görsel katları
-        st.markdown("#### 🏰 Mevcut Takım Denge Kulesi Yüksekliği")
-        tower_height = current_done + (1 if st.session_state.get('tower_played', False) else 0)
+        # İnşa edilen yapbozun görsel parçaları
+        st.markdown("#### 🧩 Takım Yapbozu İlerleme Tablosu")
+        completed_pieces = current_done + (1 if st.session_state.get('puzzle_completed', False) else 0)
         
-        if tower_height > 0:
-            for i in range(tower_height, 0, -1):
-                st.markdown(f"<div class='tower-block'>🧱 Kule Katı #{i} - Denge Bloğu Yerleşti</div>", unsafe_allow_html=True)
+        if completed_pieces > 0:
+            cols = st.columns(min(completed_pieces, 4))
+            for idx in range(completed_pieces):
+                col_idx = idx % 4
+                with cols[col_idx]:
+                    st.markdown(f"<div class='puzzle-piece'>🧩 Parça #{idx + 1} Birleşti</div>", unsafe_allow_html=True)
         else:
-            st.write("Kulenin zemin katı hazır, ilk bloğu koyun!")
+            st.write("Yapboz alanı hazır, ilk parçayı birleştirin!")
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
@@ -423,16 +426,16 @@ elif st.session_state.stage == 4:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    t_score = st.session_state.get('tower_score', 100)
-    block_val = st.session_state.get('chosen_block', 'Blok Konulmadı')
+    p_score = st.session_state.get('puzzle_score', 100)
+    piece_val = st.session_state.get('chosen_piece', 'Parça Birleştirilmedi')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Kule Denge Puanı: <b>{t_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Yapboz Puanı: <b>{p_score}/100</b>)</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Kule Denge Puanı: <b>{t_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Yapboz Puanı: <b>{p_score}/100</b>)</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -445,8 +448,8 @@ elif st.session_state.stage == 4:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Kuleye Yerleştirilen Denge Bloğu": block_val,
-            "Kule Denge Puanı (100)": t_score
+            "Birleştirilen Yapboz Parçası": piece_val,
+            "Yapboz Puanı (100)": p_score
         })
     
     total_target = st.session_state.target_participant_count
@@ -458,7 +461,7 @@ elif st.session_state.stage == 4:
         if st.button(f"➡️ Sıradaki Sporcuya Geç (Sporcu #{saved_count + 1})", type="primary"):
             reset_individual()
     else:
-        st.success(f"🎉 Tüm {total_target} sporcu testlerini ve kule inşaatını tamamladı! Atölye sona erdi.")
+        st.success(f"🎉 Tüm {total_target} sporcu testlerini ve yapbozu tamamladı! Atölye sona erdi.")
         if st.button("📊 Atölye Grubu Toplu Veri Raporunu Gör", type="primary"):
             next_stage()
             st.rerun()
@@ -483,7 +486,7 @@ elif st.session_state.stage == 5:
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi ve Takım Denge Kulesi Blokları Tablosu")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Takım Yapbozu Parçaları Tablosu")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
