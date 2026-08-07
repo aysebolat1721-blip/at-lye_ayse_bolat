@@ -67,40 +67,6 @@ def calculate_score(answers):
         total += val
     return round((total / (len(QUESTIONS) * 5)) * 100, 1)
 
-def analyze_self_talk(negative, positive):
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    prompt = f"""
-    Aşağıdaki metni nesnel olarak analiz et.
-    Dönüşüm Metni: "{positive}"
-    Eski Olumsuz Metin: "{negative}"
-    
-    Görev: 
-    1. Duygu Dönüşümü (örn: Öfke -> Kabul)
-    2. Kristin Neff, Paul Gilbert veya Tara Brach ilkelerinden hangisinin baskın olduğunu tespit et.
-    Format:
-    Duygu Değişimi: X -> Y
-    Tespit Edilen Psikolojik Yaklaşım: Z
-    """
-    data = {
-        "model": "llama-3.3-70b-versatile",
-        "messages": [
-            {"role": "system", "content": "Sen sadece duygu ve psikolojik teknik analizi yapan nesnel veri asistanısın."},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.1,
-        "max_tokens": 150
-    }
-    try:
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()
-        return response.json()['choices'][0]['message']['content']
-    except:
-        return "Duygu Değişimi: Analiz Edilemedi\nTespit Edilen Yaklaşım: Bilinmeyen (API Hatası)"
-
 # -----------------
 # 3. STATE YÖNETİMİ
 # -----------------
@@ -242,20 +208,19 @@ elif st.session_state.stage == 1:
             next_stage()
             st.rerun()
 
-# STAGE 2: PSİKOLOJİK GELİŞİM MODÜLLERİ (4 BİLİMSEL MODÜL - ŞEFKATLİ MEKTUP DÂHİL)
+# STAGE 2: PSİKOLOJİK GELİŞİM MODÜLLERİ (3 BİLİMSEL MODÜL)
 elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşamada zihinsel kaslarını güçlendirecek 4 bilimsel modülü tamamlayacaksın. Mektubunu tamamladıktan sonra bir sonraki aşamada <b>Takım Şefkatle Yeniden İnşa Oyununa</b> geçeceksin!
+    Bu aşamada zihinsel kaslarını güçlendirecek 3 bilimsel modülü tamamlayacaksın. Tamamladıktan sonra bir sonraki aşamada <b>Takım Şefkatle Yeniden İnşa Oyununa</b> geçeceksin!
     </div>
     """, unsafe_allow_html=True)
     
-    game_tab1, game_tab2, game_tab3, game_tab4 = st.tabs([
+    game_tab1, game_tab2, game_tab3 = st.tabs([
         "🌧️ 1. Tara Brach - RAIN Metodu", 
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
-        "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
-        "✉️ 4. Germer & Neff - Şefkatli Mektup"
+        "🛡️ 3. Kristin Neff - Kriz Senaryoları"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -352,20 +317,6 @@ elif st.session_state.stage == 2:
                     st.success("Kuramsal Uygunluk: Ortak İnsanlık boyutuna örnektir.")
                 else:
                     st.info("Kuramsal Analiz: 'İzolasyon' boyutuna örnektir.")
-
-    # MODÜL 4: GERMER & NEFF - ŞEFKATLİ MEKTUP
-    with game_tab4:
-        st.markdown("### ✉️ Germer & Neff Şefkatli Mektup Egzersizi")
-        with st.form("letter_form"):
-            letter_text = st.text_area("Şefkatli Mektup Metni:", placeholder="Sevgili [Adın], antrenmanlardaki çabaların çok değerli...")
-            if st.form_submit_button("Mektubu Analiz Et & Gönder ✉️", type="primary"):
-                if letter_text:
-                    with st.spinner("Yapay Zeka Veri Asistanı kategorize ediyor..."):
-                        res = analyze_self_talk("Şefkatli Mektup Egzersizi", letter_text)
-                    st.markdown(f"<div class='analysis-box'><b>🤖 Veri Analitiği Raporu:</b><br>{res}</div>", unsafe_allow_html=True)
-                    st.success("Mektup metni başarıyla kaydedildi.")
-                else:
-                    st.warning("Lütfen mektup metnini doldurun.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Takım Şefkatle Yeniden İnşa Oyunu) ➡️", type="primary"):
@@ -539,7 +490,7 @@ elif st.session_state.stage == 5:
         if st.button(f"➡️ Sıradaki Sporcuya Geç (Sporcu #{saved_count + 1})", type="primary"):
             reset_individual()
     else:
-        st.success(f"🎉 Tüm {total_target} sporcu testlerini, mektuplarını ve Şefkatle Yeniden İnşa Oyununu tamamladı! Atölye sona erdi.")
+        st.success(f"🎉 Tüm {total_target} sporcu testlerini, modüllerini ve Şefkatle Yeniden İnşa Oyununu tamamladı! Atölye sona erdi.")
         if st.button("📊 Atölye Grubu Toplu Veri Raporunu Gör", type="primary"):
             next_stage()
             st.rerun()
