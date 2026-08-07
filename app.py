@@ -42,7 +42,7 @@ QUESTIONS = [
     {"text": "2. Kendi oyun tarzımda sevmediğim özelliklere karşı anlayışlı ve sabırlı olmaya çalışırım.", "reverse": False},
     {"text": "3. Maçta can sıkıcı bir şey olduğunda durumu dengeli bir şekilde değerlendirmeye çalışırım.", "reverse": False},
     {"text": "4. Formsuz olduğumda, diğer sporcuların benden daha başarılı ve mutlu olduğunu düşünürüm.", "reverse": True},
-    {"text": "5. Hatalarımı ve başarısızlıklarımı sporun dan ve insan olmanın doğal bir parçası olarak görmeye çalışırım.", "reverse": False},
+    {"text": "5. Hatalarımı ve başarısızlıklarımı sporun ve insan olmanın doğal bir parçası olarak görmeye çalışırım.", "reverse": False},
     {"text": "6. Çok zor bir antrenman veya maç dönemi geçirdiğimde, kendime ihtiyacım olan şefkat ve anlayışı gösteririm.", "reverse": False},
     {"text": "7. Minderde beni üzen bir şey olduğunda, duygularımı dengede tutmaya çalışırım.", "reverse": False},
     {"text": "8. Benim için önemli olan bir maçta başarısız olduğumda, bu başarısızlığı sadece ben yaşıyormuşum gibi yalnız hissederim.", "reverse": True},
@@ -52,14 +52,14 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Olumlu Sporcu Güç & Değer Listesi
+# Oyun Güç Kartı Unvanları
 STRENGTH_OPTIONS = [
-    "🔥 Hırsım ve Vazgeçmeyen Mücadeleci Ruhum",
-    "🎯 Disiplinli ve Düzenli Antrenman Alışkanlığım",
-    "🤝 Takım Arkadaşlarıma Verdiğim Destek ve Samimiyet",
-    "🧘 Zor Anlarda Soğukkanlılığımı Korumaya Çalışmam",
-    "🥋 Taekwondo Sporuna ve Etik Değerlerine Duyduğum Saygı",
-    "💪 Yenilgilerden Ders Çıkarıp Daha Güçlü Dönme Kapasitem"
+    "🔥 Hırs ve Vazgeçmeyen Mücadeleci Gücü",
+    "🎯 Disiplinli ve Düzenli Odaklanma Gücü",
+    "🤝 Takım Arkadaşlarına Destek ve Dayanışma Gücü",
+    "🧘 Zor Anlarda Soğukkanlılık Gücü",
+    "🥋 Taekwondo Spor Etik ve Saygı Gücü",
+    "💪 Yenilgilerden Ders Çıkarıp Güçlenme Kapasitesi"
 ]
 
 def calculate_score(answers):
@@ -126,8 +126,8 @@ if 'pre_score' not in st.session_state:
     st.session_state.pre_score = 0
 if 'post_score' not in st.session_state:
     st.session_state.post_score = 0
-if 'group_interaction_score' not in st.session_state:
-    st.session_state.group_interaction_score = 100
+if 'game_score' not in st.session_state:
+    st.session_state.game_score = 100
 if 'peer_message' not in st.session_state:
     st.session_state.peer_message = ""
 if 'athlete_strength' not in st.session_state:
@@ -147,7 +147,7 @@ def reset_individual():
     st.session_state.post_answers = [3] * len(QUESTIONS)
     st.session_state.pre_score = 0
     st.session_state.post_score = 0
-    st.session_state.group_interaction_score = 100
+    st.session_state.game_score = 100
     st.session_state.peer_message = ""
     st.session_state.athlete_strength = ""
     st.session_state.athlete_name = ""
@@ -194,7 +194,7 @@ st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsa
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve olumlu etkileşim oyununu tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='card-box'>Lütfen bugün atölyeye katılacak **toplam sporcu sayısını** belirleyin (8-15 kişi). Tüm sporcular sırayla testi ve oyunları tamamladığında toplu veri tablosu ve grubu raporu otomatik oluşacaktır.</div>", unsafe_allow_html=True)
         
         with st.form("setup_form"):
             count = st.slider("Atölye Katılımcı Sayısı (Kişi):", min_value=1, max_value=15, value=8, step=1)
@@ -246,7 +246,7 @@ elif st.session_state.stage == 2:
     st.markdown("<div class='stage-title'>Aşama 2: Dünyaca Ünlü Psikologların Yöntemleriyle Şefkat Atölyesi 🧠</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card-box'>
-    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. Özellikle 5. modüldeki Olumlu Grup Aynası Oyununu tamamlamayı unutma!
+    Bu aşama zihinsel kaslarını güçlendirecek 5 bilimsel modülden oluşmaktadır. Özellikle 5. modüldeki Takım Şefkat Ligi Oyununu tamamlamayı unutma!
     </div>
     """, unsafe_allow_html=True)
     
@@ -255,7 +255,7 @@ elif st.session_state.stage == 2:
         "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
         "🛡️ 3. Kristin Neff - Kriz Senaryoları", 
         "✉️ 4. Germer & Neff - Şefkatli Mektup",
-        "🤝 5. Şefkat Aynası & Güç Çemberi (Grup Etkileşim Oyunu)"
+        "🎮 5. Takım Şefkat Ligi: Güç Paslama Oyunu"
     ])
     
     # MODÜL 1: TARA BRACH - RAIN METODU
@@ -367,47 +367,46 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen mektup metnini doldurun.")
 
-    # MODÜL 5: OLUMLU GRUP ETKİLEŞİM OYUNU (NEFF & GERMER APPRECIATING PEERS & SELF MIRRORING)
+    # MODÜL 5: OYUN ARENASI (TAKIM ŞEFKAT LİGİ & GÜÇ PASLAMA OYUNU)
     with game_tab5:
-        st.markdown("### 🤝 Şefkat Aynası & Güç Çemberi (Grup İçi Olumlu Etkileşim Oyunu)")
+        st.markdown("### 🎮 Takım Şefkat Ligi: Güç Paslama & Rozet Oyunu")
         st.markdown("""
         <div class='theory-box'>
-        <b>Oyunun Literatür Dayanağı & Kuralları (Neff & Germer, 2018; Gilbert, 2010):</b><br>
-        1. Bu oyun tamamen <b>olumlu, cesaretlendirici ve grup içi güven bağını güçlendiren</b> etkileşimli bir çalışmadır.<br>
-        2. <b>1. Adım (Öz-Takdir):</b> Taekwondo sporculuğunda kendi gurur duyduğun ve takdir ettiğin bir gücünü seç.<br>
-        3. <b>2. Adım (Takım Arkadaşına Olumlu Şefkat Mesajı):</b> Atölyedeki takım arkadaşlarına özel bir cesaretlendirme ve şefkat mesajı yaz.<br>
-        4. Tamamlanan olumlu etkileşim <b>+100 Şefkat Müttefiki Puanı</b> kazandırır ve mesajınız en sondaki <b>Toplu Veri Raporu Tablosuna (Stage 5)</b> doğrudan aktarılır.
+        <b>🎮 Oyun Kuralları & Puanlama (Neff & Germer, 2018; Gilbert, 2010):</b><br>
+        1. Kendi Taekwondo zihinsel güç unvanını seç ve kilitlerini aç.<br>
+        2. Takım arkadaşlarına özel bir <b>Güç Pası Kartı</b> fırlat!<br>
+        3. Pas attığında <b>+100 Şefkat Puanı</b> ve <b>"Şefkat Ustası" Rozeti</b> kazanırsın. Oyun skorun doğrudan son tablonun skorborduna aktarılır.
         </div>
         """, unsafe_allow_html=True)
         
-        with st.form("group_compassion_mirror_form"):
-            st.markdown(f"#### 🌟 Sporcu: {st.session_state.athlete_name}")
+        with st.form("group_compassion_league_form"):
+            st.markdown(f"#### ⚡ Oyuncu: {st.session_state.athlete_name}")
             
-            chosen_strength = st.selectbox("1. Taekwondo Sporculuğunda En Çok Gurur Duyduğun Gücün / Özelliğin:", STRENGTH_OPTIONS)
+            chosen_strength = st.selectbox("1. Kendi Taekwondo Zihinsel Güç Unvanın:", STRENGTH_OPTIONS)
             
             peer_msg = st.text_area(
-                "2. Takım Arkadaşlarına (Gruba) Yönelik Olumlu Şefkat & Destek Mesajın:",
-                placeholder="Örn: Hepimiz bu minderde çok çalışıyoruz. Bazen yenilsek de her birinizin çabası çok kıymetli, birbirimizin yanındayız!"
+                "2. Takım Arkadaşlarına Fırlatacağın Güç Pası Kartı Mesajı:",
+                placeholder="Örn: Minderde senin mücadeleni görmek hepimize güç veriyor. Pes etmeden yola devam!"
             )
             
-            if st.form_submit_button("Olumlu Grup Mesajını ve Gücünü Paylaş 🤝", type="primary"):
+            if st.form_submit_button("Güç Pasını Fırlat ve Puan Kazan 🚀", type="primary"):
                 if peer_msg:
                     st.session_state.athlete_strength = chosen_strength
                     st.session_state.peer_message = peer_msg
-                    st.session_state.group_interaction_score = 100
+                    st.session_state.game_score = 100
                     st.session_state.group_game_played = True
-                    st.success("🎉 Harika! Öz-Takdirin ve Takım Arkadaşlarına Gönderdiğin Olumlu Şefkat Mesajı Kaydedildi! (+100 Etkileşim Puanı)")
+                    st.success("🎉 GÜÇ PASI ATILDI! LEVEL UP! (+100 Oyuncu Puanı) - 'Şefkat Ustası' Rozetini Kazandın!")
                     st.balloons()
                 else:
-                    st.warning("Lütfen takım arkadaşlarınız için olumlu bir mesaj yazın.")
+                    st.warning("Lütfen pas atmak için bir güç mesajı yazın.")
 
         if st.session_state.get('group_game_played', False):
-            st.markdown("### 💬 Kaydedilen Olumlu Grup Kartın")
+            st.markdown("### 🏆 Oyuncu Skorbord Kartın")
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f"<div class='success-box'><b>Öz-Takdir Edilen Gücün:</b><br>{st.session_state.athlete_strength}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='success-box'><b>Seçilen Güç Unvanın:</b><br>{st.session_state.athlete_strength}</div>", unsafe_allow_html=True)
             with col2:
-                st.markdown(f"<div class='analysis-box'><b>Takım Arkadaşlarına Şefkat Mesajın:</b><br>{st.session_state.peer_message}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='analysis-box'><b>Fırlatılan Güç Pası Mesajın:</b><br>{st.session_state.peer_message}</div>", unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Son Test) ➡️", type="primary"):
@@ -434,17 +433,17 @@ elif st.session_state.stage == 4:
     pre = st.session_state.pre_score
     post = st.session_state.post_score
     diff = round(post - pre, 1)
-    g_score = st.session_state.get('group_interaction_score', 100)
+    g_score = st.session_state.get('game_score', 100)
     str_val = st.session_state.get('athlete_strength', 'Belirtilmedi')
     msg_val = st.session_state.get('peer_message', 'Mesaj Girilmedi')
     
     st.markdown(f"<div class='stage-title'>Katılımcı Bireysel Raporu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
     if diff > 0:
-        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Grup Olumlu Etkileşim Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='success-box'>Harika! Öz şefkat seviyeniz oyundan sonra <b>+{diff:.1f}</b> puan arttı! (Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
         st.balloons()
     else:
-        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Grup Olumlu Etkileşim Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card-box'>Öz şefkat skorunuz kaydedildi. (Oyun Skoru: <b>{g_score}/100</b>)</div>", unsafe_allow_html=True)
     
     # Veriyi listeye kaydet (Tekrarlanmaması için kontrol et)
     already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
@@ -457,9 +456,9 @@ elif st.session_state.stage == 4:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Öz-Takdir Edilen Güç": str_val,
-            "Gruba Şefkat Mesajı": msg_val,
-            "Grup Etkileşim Skoru": g_score
+            "Zihinsel Güç Unvanı": str_val,
+            "Takım Güç Pası Mesajı": msg_val,
+            "Oyun Puanı (100)": g_score
         })
     
     total_target = st.session_state.target_participant_count
@@ -496,7 +495,7 @@ elif st.session_state.stage == 5:
     with col4:
         st.metric("Ortalama Gelişim", f"+{avg_diff}%" if avg_diff > 0 else f"{avg_diff}%")
         
-    st.markdown("### 📋 Katılımcı Veri Listesi ve Olumlu Grup Mesajları (Detaylı Tablo)")
+    st.markdown("### 📋 Katılımcı Veri Listesi ve Takım Güç Kartları Tablosu")
     st.dataframe(df_results, use_container_width=True, hide_index=True)
     
     # CSV İndirme Butonu
