@@ -55,14 +55,8 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Örnek Havuz (Eğer grupta henüz başka eleman yazmadıysa düşecek anonim korkular)
-SAMPLE_FEARS = [
-    "Seçme maçında çok kötü dövüşüp herkesi hayal kırıklığına uğratmaktan korkuyorum.",
-    "Antrenörüm benden ümidini kesti, eski performansımı veremiyorum.",
-    "Kuşak sınavında stresi yönetemeyip hareketi unutmaktan çok korkuyorum.",
-    "Bütün emeklerim boşa gidecek ve milli takıma seçilemeyeceğim diye aklımdan geçiyor.",
-    "Bir teknik hatası yaptığımda salondaki herkesin bana güldüğünü hissediyorum."
-]
+# Örnek Havuz (Sadece 1. Katılımcı için henüz gruptan başkası yazmadıysa düşecek örnek cümle)
+DEFAULT_FIRST_FEAR = "Antrenörüm benden ümidini kesti, eski performansımı veremiyorum."
 
 def calculate_score(answers):
     total = 0
@@ -378,7 +372,7 @@ elif st.session_state.stage == 2:
         next_stage()
         st.rerun()
 
-# STAGE 3: TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU (3 AŞAMALI ANONİM & ŞEFKATLİ KURTARMA OYUNU)
+# STAGE 3: TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU (3 AŞAMALI ANONİM & BİREBİR ŞEFKATLİ KURTARMA OYUNU)
 elif st.session_state.stage == 3:
     st.markdown("<div class='stage-title'>Aşama 3: 🎮 Takım Şefkatle Yeniden İnşa Oyunu (3 Aşamalı Etkileşim)</div>", unsafe_allow_html=True)
     
@@ -387,14 +381,14 @@ elif st.session_state.stage == 3:
         st.markdown("""
         <div class='theory-box'>
         <b>1. Aşama: Kayaları Bırakmak (Anonim İç Ses & Korku Girdisi - 60 Saniye)</b><br>
-        Antrenmanda veya maçta yaşamaktan en çok korktuğun başarısızlığı ya da aklından geçen o acımasız iç sesi buraya yaz.
+        Antrenmanda veya maçta yaşamaktan en çok korktuğun başarısızlığı ya da aklından geçen o acımasız iç sesi birebir cümlesiyle yaz.
         <br><i>🔒 İsim istenmez, bu girdi tamamen anonimdir!</i>
         </div>
         """, unsafe_allow_html=True)
         
         with st.form("fear_input_form"):
             fear_input = st.text_area(
-                "Antrenmanda/Maçta En Çok Korktuğun Başarısızlık veya Acımasız İç Ses:",
+                "Antrenmanda/Maçta En Çok Korktuğun Başarısızlık veya Acımasız İç Ses (Birebir Cümlen):",
                 placeholder="Örn: 'Seçme maçında çok kötü dövüşüp herkesi hayal kırıklığına uğratacağım' veya 'Antrenörüm benden ümidini kesti.'"
             )
             
@@ -403,32 +397,35 @@ elif st.session_state.stage == 3:
                     st.session_state.my_fear = fear_input
                     st.session_state.group_anonymous_fears.append(fear_input)
                     st.session_state.game_substep = 2
-                    st.success("Korkun anonim olarak torbaya atıldı!")
+                    st.success("Birebir korku cümlen anonim torbaya atıldı!")
                     st.rerun()
                 else:
                     st.warning("Lütfen bir korku veya iç ses yazın.")
 
-    # SUBSTEP 2: KARIŞIM VE KURTARMA (ŞEFKATLE YENİDEN İNŞA)
+    # SUBSTEP 2: KARIŞIM VE KURTARMA (BİREBİR TAKIM ARKADAŞI KORKUSUNU ŞEFKATLE İNŞA ETME)
     elif st.session_state.game_substep == 2:
         st.markdown("""
         <div class='theory-box'>
         <b>2. Aşama: Karışım ve Kurtarma (Şefkatle Yeniden İnşa - 2 Dakika)</b><br>
-        Sistem yazılan anonim korkuları karıştırdı ve senin ekranına <b>BAŞKA BİR SPORCUNUN KORKUSU</b> düştü!
+        Sistem atölyedeki takım arkadaşlarının yazdığı birebir cümleleri karıştırdı ve ekranına <b>TAKIM ARKADAŞININ GİRDİĞİ BİREBİR KORKU CÜMLESİ</b> düştü!
         <br>Şimdi görev: Bu korkuyu okuyup takım arkadaşını ayağa kaldıracak en iyi şefkat ve motivasyon mesajını yaz.
         </div>
         """, unsafe_allow_html=True)
         
-        # Ekran için başka bir korku seç
+        # Ekran için birebir takım arkadaşının yazdığı korkuyu düşür
         if not st.session_state.assigned_fear:
             other_fears = [f for f in st.session_state.group_anonymous_fears if f != st.session_state.my_fear]
             if other_fears:
                 st.session_state.assigned_fear = random.choice(other_fears)
+            elif len(st.session_state.group_anonymous_fears) > 0 and st.session_state.group_anonymous_fears[0] != st.session_state.my_fear:
+                st.session_state.assigned_fear = st.session_state.group_anonymous_fears[0]
             else:
-                st.session_state.assigned_fear = random.choice(SAMPLE_FEARS)
+                # İlk sporcu için henüz gruptan başkası yazmadığı için ilk örnek cümle
+                st.session_state.assigned_fear = DEFAULT_FIRST_FEAR
         
         st.markdown(f"""
         <div class='fear-box'>
-        <b>🪨 Ekrana Düşen Takım Arkadaşının Anonim Korkusu:</b><br>
+        <b>🪨 Ekrana Düşen Takım Arkadaşının Birebir Anonim Korku Cümlesi:</b><br>
         <i>"{st.session_state.assigned_fear}"</i>
         </div>
         """, unsafe_allow_html=True)
@@ -460,8 +457,8 @@ elif st.session_state.stage == 3:
         st.markdown("""
         <div class='theory-box'>
         <b>3. Aşama: Büyük Yüzleşme (Ortak İnsanlık Tablosu)</b><br>
-        Herkesin ilk yazdığı korkular ve diğer arkadaşlarının yazdığı şefkatli cevaplar ortak panoda listelendi. 
-        Bu panoya bak ve yalnız olmadığını fark et!
+        Herkesin ilk yazdığı birebir korkular ve diğer arkadaşlarının yazdığı şefkatli cevaplar ortak panoda listelendi. 
+        Bu panoya bak ve takım arkadaşlarının içten içe ne dediğini ve birbirinizi nasıl desteklediğinizi gör!
         </div>
         """, unsafe_allow_html=True)
         
@@ -471,15 +468,15 @@ elif st.session_state.stage == 3:
             for idx, entry in enumerate(st.session_state.group_board_entries, 1):
                 st.markdown(f"""
                 <div class='compassion-board'>
-                <b>🪨 Anonim Korku #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
-                <b>💌 Şefkatli Yanıt ({entry['responder']}):</b> "{entry['response']}"
+                <b>🪨 Takım Arkadaşının Birebir Korku Cümlesi #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
+                <b>💌 Yazılan Şefkatli Yanıt ({entry['responder']}):</b> "{entry['response']}"
                 </div>
                 """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
             <div class='compassion-board'>
-            <b>🪨 Senin Anonim Korkun:</b> <i>"{st.session_state.my_fear}"</i><br><br>
-            <b>💌 Arkadaşının Sana Yazdığı Şefkatli Yanıt:</b> "{st.session_state.my_compassion_response}"
+            <b>🪨 Birebir Korku Cümlesi:</b> <i>"{st.session_state.my_fear}"</i><br><br>
+            <b>💌 Yazılan Şefkatli Yanıt:</b> "{st.session_state.my_compassion_response}"
             </div>
             """, unsafe_allow_html=True)
             
@@ -529,7 +526,7 @@ elif st.session_state.stage == 5:
             "Ön Test (%)": pre,
             "Son Test (%)": post,
             "Net Gelişim (%)": diff,
-            "Anonim Korku/İç Ses": fear_val,
+            "Anonim Korku/İç Ses (Birebir)": fear_val,
             "Verilen Şefkatli Yanıt": resp_val
         })
     
