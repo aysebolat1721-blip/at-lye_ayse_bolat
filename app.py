@@ -171,11 +171,19 @@ if st.session_state.stage == 0:
                 st.rerun()
     else:
         num = current_done + 1
-        st.markdown(f"<div class='stage-title'>📌 Sporcu {num} / {st.session_state.target_participant_count} Giriş Ekranı</div>", unsafe_allow_html=True)
-        st.markdown("<div class='card-box'>Bu etkileşimli atölyede dünyaca ünlü psikologların yöntemleriyle zihinsel dayanıklılığını ve şefkat kaslarını güçlendireceğiz.</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='stage-title'>📌 Sporcu {num} / {st.session_state.target_participant_count} Giriş ve Onam Ekranı</div>", unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class='theory-box'>
+        <b>📋 SPOR PSİKOLOJİSİ ATÖLYESİ AYDINLATILMIŞ ONAM VE BİLGİLENDİRME FORMU</b><br><br>
+        <b>1. Atölyenin Amacı:</b> Bu psikoeğitimsel çalışma, Taekwondo sporcularında zihinsel dayanıklılığı, öz-şefkat farkındalığını ve takım içi duygusal esneklik bağlarını geliştirmek amacıyla kurgulanmıştır.<br>
+        <b>2. Gizlilik ve Gönüllülük İlkesi:</b> Çalışmaya katılım tamamen gönüllüdür. İlettiğiniz yanıtlar gizli tutulacak, grup içi etkileşim oyununda paylaşılan iç sesler isim belirtilmeksizin anonim olarak işlenecektir.<br>
+        <b>3. Veri Güvenliği:</b> Elde edilen veriler sadece atölye gelişim takibi amacıyla saklanacaktır. Dilediğiniz an katılımı durdurma hakkınız mevcuttur.
+        </div>
+        """, unsafe_allow_html=True)
         
         with st.form("login_form"):
-            st.markdown(f"#### Katılımcı #{num} Bilgileri")
+            st.markdown(f"#### Katılımcı #{num} Kimlik ve Onam Bilgileri")
             name = st.text_input("Rumuzun veya Adın:", placeholder="Şampiyon")
             col1, col2 = st.columns(2)
             with col1:
@@ -183,16 +191,20 @@ if st.session_state.stage == 0:
             with col2:
                 gender = st.selectbox("Cinsiyetin:", ["Kadın", "Erkek", "Belirtmek İstemiyorum"])
                 
-            submitted = st.form_submit_button("Oyuna ve Teste Başla 🚀", type="primary")
+            consent = st.checkbox("📌 Aydınlatılmış Onam ve Psikolojik Bilgilendirme Formunu okudum, anladım ve çalışmaya gönüllü katılmayı onaylıyorum.")
+                
+            submitted = st.form_submit_button("Onayla, Oyuna ve Teste Başla 🚀", type="primary")
             if submitted:
-                if name:
+                if not name:
+                    st.warning("Lütfen başlamadan önce bir rumuz veya isim giriniz.")
+                elif not consent:
+                    st.warning("⚠️ Lütfen devam edebilmek için Aydınlatılmış Onam Formunu onaylayınız.")
+                else:
                     st.session_state.athlete_name = name
                     st.session_state.athlete_age = age
                     st.session_state.athlete_gender = gender
                     next_stage()
                     st.rerun()
-                else:
-                    st.warning("Lütfen başlamadan önce bir rumuz veya isim giriniz.")
 
 # STAGE 1: ÖN TEST
 elif st.session_state.stage == 1:
