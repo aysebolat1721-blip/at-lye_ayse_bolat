@@ -55,9 +55,6 @@ QUESTIONS = [
     {"text": "12. Oyunumda sevmediğim yönlere karşı tahammülsüz ve sabırsızım.", "reverse": True},
 ]
 
-# Örnek Havuz (Sadece 1. Katılımcı için henüz gruptan başkası yazmadıysa düşecek örnek cümle)
-DEFAULT_FIRST_FEAR = "Antrenörüm benden ümidini kesti, eski performansımı veremiyorum."
-
 def calculate_score(answers):
     total = 0
     for i, q in enumerate(QUESTIONS):
@@ -78,8 +75,12 @@ if 'target_participant_count' not in st.session_state:
     st.session_state.target_participant_count = 8
 if 'workshop_data' not in st.session_state:
     st.session_state.workshop_data = []
-if 'group_anonymous_fears' not in st.session_state:
-    st.session_state.group_anonymous_fears = []
+
+# Torbada Sporcu Numaralarına göre tutulan anonim korkular: {1: "korku 1", 2: "korku 2", ...}
+if 'group_fears_dict' not in st.session_state:
+    st.session_state.group_fears_dict = {}
+
+# Ortak Yüzleşme Panosu Kayıtları
 if 'group_board_entries' not in st.session_state:
     st.session_state.group_board_entries = []
 
@@ -102,8 +103,10 @@ if 'game_substep' not in st.session_state:
     st.session_state.game_substep = 1
 if 'athlete_name' not in st.session_state:
     st.session_state.athlete_name = ""
+if 'athlete_id' not in st.session_state:
+    st.session_state.athlete_id = 1
 if 'athlete_age' not in st.session_state:
-    st.session_state.athlete_age = 15
+    st.session_state.athlete_age = 14
 if 'athlete_gender' not in st.session_state:
     st.session_state.athlete_gender = "Belirtmek İstemiyorum"
 
@@ -141,7 +144,7 @@ with st.sidebar:
         st.markdown("---")
         st.markdown(f"**Mevcut Sporcu Aşaması:** {st.session_state.stage}/5")
         if st.session_state.athlete_name:
-            st.markdown(f"👤 **Aktif Sporcu:** {st.session_state.athlete_name}")
+            st.markdown(f"👤 **Aktif Sporcu:** {st.session_state.athlete_name} (Sporcu #{st.session_state.athlete_id})")
             st.markdown(f"🎂 **Yaş:** {st.session_state.athlete_age}")
             st.markdown(f"⚧ **Cinsiyet:** {st.session_state.athlete_gender}")
     else:
@@ -157,7 +160,7 @@ with st.sidebar:
 
 st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsafe_allow_html=True)
 
-# STAGE 0: ATÖLYE KURULUMU & KATILIMCI GİRİŞİ
+# STAGE 0: ATÖLYE KURULUMU & KATILIMCI GİRİŞİ (AYDINLATILMIŞ ONAM FORMU İLE)
 if st.session_state.stage == 0:
     if not st.session_state.setup_complete:
         st.markdown("<div class='stage-title'>🏛️ Atölye Grubu Kurulumu (Psikolog / Eğitmen Paneli)</div>", unsafe_allow_html=True)
@@ -171,7 +174,8 @@ if st.session_state.stage == 0:
                 st.rerun()
     else:
         num = current_done + 1
-        st.markdown(f"<div class='stage-title'>📌 Sporcu {num} / {st.session_state.target_participant_count} Giriş ve Onam Ekranı</div>", unsafe_allow_html=True)
+        st.session_state.athlete_id = num
+        st.markdown(f"<div class='stage-title'>📌 Sporcu #{num} / {st.session_state.target_participant_count} Giriş ve Onam Ekranı</div>", unsafe_allow_html=True)
         
         st.markdown("""
         <div class='theory-box'>
@@ -208,7 +212,7 @@ if st.session_state.stage == 0:
 
 # STAGE 1: ÖN TEST
 elif st.session_state.stage == 1:
-    st.markdown(f"<div class='stage-title'>Aşama 1: Mevcut Durum Analizi (Ön Test) - {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='stage-title'>Aşama 1: Mevcut Durum Analizi (Ön Test) - {st.session_state.athlete_name} (Sporcu #{st.session_state.athlete_id})</div>", unsafe_allow_html=True)
     st.info("Lütfen aşağıdaki ifadelere ne kadar katıldığını dürüstçe işaretle. (1 = Hiç Katılmıyorum, 5 = Tamamen Katılıyorum)")
     
     with st.form("pre_test_form"):
@@ -335,85 +339,114 @@ elif st.session_state.stage == 2:
         next_stage()
         st.rerun()
 
-# STAGE 3: TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU (3 AŞAMALI ANONİM & BİREBİR ŞEFKATLİ KURTARMA OYUNU)
+# STAGE 3: TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU (2 AŞAMALI ANONİM & BİREBİR TAKIM KURTARMA OYUNU)
 elif st.session_state.stage == 3:
+    active_num = st.session_state.get('athlete_id', current_done + 1)
+    
     st.markdown("<div class='stage-title'>Aşama 3: 🎮 Takım Şefkatle Yeniden İnşa Oyunu (3 Aşamalı Etkileşim)</div>", unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div class='theory-box'>
+    <b>📋 TAKIM ŞEFKATLE YENİDEN İNŞA OYUNU İŞLEYİŞİ VE GİZLİLİK BİLGİLENDİRMESİ</b><br><br>
+    <b>1. Aşama (Kendi Numarana Özel Anonim Cümle Kaydı):</b> Sıranız geldiğinde (Aktif: <b>Sporcu #{active_num}</b>) antrenmanda veya maçta yaşamaktan en çok korktuğunuz başarısızlığı ya da acımasız iç sesi yazacaksınız. Cümleniz Sporcu #{active_num} koduyla sisteme %100 gizli ve anonim kaydedilir.<br>
+    <b>2. Aşama (Şefkatle Kurtarma & Yüzleşme):</b> Bu aşamada sistem torbadan <u>kendi yazdığınız cümle hariç</u> diğer takım arkadaşlarınızın cümlelerinden birini rastgele karşınıza çıkaracaktır.<br>
+    <b>🔒 %100 Gizlilik Garantisi:</b> Hangi cümlenin kime ait olduğu hiçbir ekranda veya raporda gösterilmez, kimlikler tamamen gizlidir.
+    </div>
+    """, unsafe_allow_html=True)
     
     # SUBSTEP 1: KAYALARI BIRAKMAK (ANONİM İÇ SES & KORKU GİRDİSİ)
     if st.session_state.game_substep == 1:
-        st.markdown("""
-        <div class='theory-box'>
-        <b>1. Aşama: Kayaları Bırakmak (Anonim İç Ses & Korku Girdisi - 60 Saniye)</b><br>
-        Antrenmanda veya maçta yaşamaktan en çok korktuğun başarısızlığı ya da aklından geçen o acımasız iç sesi birebir cümlesiyle yaz.
-        <br><i>🔒 İsim istenmez, bu girdi tamamen anonimdir!</i>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"### 🪨 1. Aşama: Kayaları Bırakmak (Sporcu #{active_num} Anonim Girdisi)")
         
         with st.form("fear_input_form"):
             fear_input = st.text_area(
-                "Antrenmanda/Maçta En Çok Korktuğun Başarısızlık veya Acımasız İç Ses (Birebir Cümlen):",
+                f"Sporcu #{active_num} - Antrenmanda/Maçta En Çok Korktuğun Başarısızlık veya Acımasız İç Ses (Birebir Cümlen):",
                 placeholder="Örn: 'Seçme maçında çok kötü dövüşüp herkesi hayal kırıklığına uğratacağım' veya 'Antrenörüm benden ümidini kesti.'"
             )
             
-            if st.form_submit_button("Korkuyu Anonim Torbaya At 🪨 (2. Aşamaya Geç)", type="primary"):
+            if st.form_submit_button("1. Faz Cümlemi Anonim Torbaya Kaydet 🪨 (2. Aşamaya Geç)", type="primary"):
                 if fear_input:
                     st.session_state.my_fear = fear_input
-                    st.session_state.group_anonymous_fears.append(fear_input)
+                    st.session_state.group_fears_dict[active_num] = fear_input
                     st.session_state.game_substep = 2
-                    st.success("Birebir korku cümlen anonim torbaya atıldı!")
+                    st.success(f"Sporcu #{active_num} olarak birebir korku cümlen anonim torbaya atıldı!")
                     st.rerun()
                 else:
                     st.warning("Lütfen bir korku veya iç ses yazın.")
 
     # SUBSTEP 2: KARIŞIM VE KURTARMA (BİREBİR TAKIM ARKADAŞI KORKUSUNU ŞEFKATLE İNŞA ETME)
     elif st.session_state.game_substep == 2:
-        st.markdown("""
-        <div class='theory-box'>
-        <b>2. Aşama: Karışım ve Kurtarma (Şefkatle Yeniden İnşa - 2 Dakika)</b><br>
-        Sistem atölyedeki takım arkadaşlarının yazdığı birebir cümleleri karıştırdı ve ekranına <b>TAKIM ARKADAŞININ GİRDİĞİ BİREBİR KORKU CÜMLESİ</b> düştü!
-        <br>Şimdi görev: Bu korkuyu okuyup takım arkadaşını ayağa kaldıracak en iyi şefkat ve motivasyon mesajını yaz.
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"### 💌 2. Aşama: Karışım ve Kurtarma (Sporcu #{active_num})")
         
-        # Ekran için birebir takım arkadaşının yazdığı korkuyu düşür
-        if not st.session_state.assigned_fear:
-            other_fears = [f for f in st.session_state.group_anonymous_fears if f != st.session_state.my_fear]
-            if other_fears:
-                st.session_state.assigned_fear = random.choice(other_fears)
-            elif len(st.session_state.group_anonymous_fears) > 0 and st.session_state.group_anonymous_fears[0] != st.session_state.my_fear:
-                st.session_state.assigned_fear = st.session_state.group_anonymous_fears[0]
-            else:
-                # İlk sporcu için henüz gruptan başkası yazmadığı için ilk örnek cümle
-                st.session_state.assigned_fear = DEFAULT_FIRST_FEAR
+        # Ekran için KENDİ KORKUSU HARİÇ başka bir takım arkadaşının yazdığı korkuyu süz
+        other_fears_dict = {id: fear for id, fear in st.session_state.group_fears_dict.items() if id != active_num}
         
-        st.markdown(f"""
-        <div class='fear-box'>
-        <b>🪨 Ekrana Düşen Takım Arkadaşının Birebir Anonim Korku Cümlesi:</b><br>
-        <i>"{st.session_state.assigned_fear}"</i>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        with st.form("rescue_form"):
-            resp = st.text_area(
-                "Bu Sporcuyu Ayağa Kaldıracak Şefkat ve Motivasyon Mesajın:",
-                placeholder="Örn: Haklısın, bu korku hepimizin zihnine gelebilir ama senin ne kadar çabaladığını görüyoruz. Tek bir maç senin değerini belirlemez, yanındayız!"
-            )
+        if other_fears_dict:
+            if not st.session_state.assigned_fear or st.session_state.assigned_fear not in other_fears_dict.values():
+                st.session_state.assigned_fear = random.choice(list(other_fears_dict.values()))
             
-            if st.form_submit_button("Şefkatli Kurtarma Mesajını Gönder 💌 (3. Aşamaya Geç)", type="primary"):
-                if resp:
-                    st.session_state.my_compassion_response = resp
-                    # Panoya kaydet
-                    st.session_state.group_board_entries.append({
-                        "fear": st.session_state.assigned_fear,
-                        "response": resp,
-                        "responder": st.session_state.athlete_name
-                    })
-                    st.session_state.game_substep = 3
-                    st.success("Şefkatli kurtarma mesajın gönderildi!")
-                    st.balloons()
+            st.markdown(f"""
+            <div class='fear-box'>
+            <b>🪨 Ekrana Düşen Takım Arkadaşının Birebir Anonim Korku Cümlesi:</b><br>
+            <i>"{st.session_state.assigned_fear}"</i>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.form("rescue_form"):
+                resp = st.text_area(
+                    "Bu Sporcuyu Ayağa Kaldıracak Şefkat ve Motivasyon Mesajın:",
+                    placeholder="Örn: Haklısın, bu korku hepimizin zihnine gelebilir ama senin ne kadar çabaladığını görüyoruz. Tek bir maç senin değerini belirlemez, yanındayız!"
+                )
+                
+                if st.form_submit_button("Şefkatli Kurtarma Mesajını Gönder 💌 (3. Aşamaya Geç)", type="primary"):
+                    if resp:
+                        st.session_state.my_compassion_response = resp
+                        # Panoya kaydet
+                        st.session_state.group_board_entries.append({
+                            "fear": st.session_state.assigned_fear,
+                            "response": resp,
+                            "responder": st.session_state.athlete_name,
+                            "responder_id": active_num
+                        })
+                        st.session_state.game_substep = 3
+                        st.success("Şefkatli kurtarma mesajın gönderildi!")
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.warning("Lütfen şefkatli bir mesaj yazın.")
+        else:
+            # Grupta henüz Sporcu #active_num hariç başka hiç kimse 1. faz cümlesini girmediyse
+            st.markdown(f"""
+            <div class='alert-box'>
+            <b>⏳ DİĞER TAKIM ARKADAŞLARINIZIN 1. FAZ CÜMLELERİ BEKLENİYOR</b><br>
+            Şu an torbada yalnızca sizin (Sporcu #{active_num}) 1. Faz cümleniz bulunmaktadır. Kendi cümleniz size çıkmayacağı için, gruptaki diğer sporcuların (Sporcu #2, #3...) 1. Faz cümlelerini girmesi gerekmektedir.
+            <br><br>
+            <b>Eğitmen Yönlendirmesi:</b> Diğer sporcular 1. Fazı doldurduğunda 2. Faza geçmek için <b>🔄 Torbayı Yenile</b> butonuna basabilir veya sıradaki sporcunun 1. Faz girişini yapması için <b>➡️ Sıradaki Sporcuya Geç</b> butonuna tıklayabilirsiniz.
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col_b1, col_b2 = st.columns(2)
+            with col_b1:
+                if st.button("🔄 Torbayı Kontrol Et / Yenile", type="primary"):
                     st.rerun()
-                else:
-                    st.warning("Lütfen şefkatli bir mesaj yazın.")
+            with col_b2:
+                if st.button(f"➡️ Sıradaki Sporcu Giriş Yapsın (Sporcu #{active_num + 1})"):
+                    # Bu sporcunun 1. faz cümlesini saklayıp sıradaki sporcunun girişine geçeriz
+                    already_saved = any(row['Rumuz/Ad'] == st.session_state.athlete_name for row in st.session_state.workshop_data)
+                    if not already_saved:
+                        st.session_state.workshop_data.append({
+                            "Sıra": len(st.session_state.workshop_data) + 1,
+                            "Rumuz/Ad": st.session_state.athlete_name,
+                            "Yaş": st.session_state.athlete_age,
+                            "Cinsiyet": st.session_state.athlete_gender,
+                            "Ön Test (%)": st.session_state.pre_score,
+                            "Son Test (%)": st.session_state.pre_score,
+                            "Net Gelişim (%)": 0.0,
+                            "Anonim Korku/İç Ses (Birebir)": st.session_state.my_fear,
+                            "Verilen Şefkatli Yanıt": "Henüz 2. Faz Tamamlanmadı"
+                        })
+                    reset_individual()
+                    st.rerun()
 
     # SUBSTEP 3: BÜYÜK YÜZLEŞME (ORTAK İNSANLIK TABLOSU)
     elif st.session_state.game_substep == 3:
@@ -432,7 +465,7 @@ elif st.session_state.stage == 3:
                 st.markdown(f"""
                 <div class='compassion-board'>
                 <b>🪨 Takım Arkadaşının Birebir Korku Cümlesi #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
-                <b>💌 Yazılan Şefkatli Yanıt ({entry['responder']}):</b> "{entry['response']}"
+                <b>💌 Yazılan Şefkatli Yanıt ({entry['responder']} - Sporcu #{entry['responder_id']}):</b> "{entry['response']}"
                 </div>
                 """, unsafe_allow_html=True)
         else:
