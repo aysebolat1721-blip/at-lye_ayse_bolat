@@ -241,31 +241,31 @@ elif st.session_state.stage == 2:
     
     # MODÜL 1: PAUL GILBERT - 3 BEYİN SİSTEMİ
     with game_tab1:
-        st.markdown("### 🔴🔵🟢 Paul Gilbert'in Şefkat Odaklı Terapi (CFT) 3 Beyin Sistemi")
+        st.markdown("### 🔴🔵🟢 Paul Gilbert'in 3 Beyin Sistemi")
         st.markdown("""
         <div class='theory-box'>
         Evrimsel Psikolog Prof. Paul Gilbert'e göre beynimizde 3 temel duygu düzenleme sistemi bulunur:
-        <br>🔴 <b>Tehdit Sistemi:</b> Tehdit ve tehlike anlarında devreye girer. (Korku, kaygı, öz-eleştiri)
-        <br>🔵 <b>Güdü/Başarı Sistemi:</b> Hedef odaklılık ve arzuda devreye girer. (Hırs, kazanma odaklılık)
-        <br>🟢 <b>Yatıştırıcı/Şefkat Sistemi:</b> Güven, rahatlama ve kabulde devreye girer. (Öz-şefkat, zihinsel denge)
+        <br>🔴 <b>Tehdit Sistemi:</b> Tehdit ve tehlike anlarında devreye girer.
+        <br>🔵 <b>Güdü/Başarı Sistemi:</b> Hedef odaklılık ve arzuda devreye girer.
+        <br>🟢 <b>Yatıştırıcı/Şefkat Sistemi:</b> Güven, rahatlama ve kabulde devreye girer.
         </div>
         """, unsafe_allow_html=True)
         
         q_gilbert = st.radio(
-            "Seçme maçında rakibin senden 4 puan öne geçti. O anki düşüncen en çok hangi kuramsal sisteme örnektir?",
+            "Seçme maçında rakibin senden 4 puan öne geçti. O an aklından geçen düşünce en çok hangisine benziyor?",
             [
-                "🔴 Tehdit Sistemi Örneği: 'Eyvah bittim ben! Rezil olacağım, antrenörüm bana çok kızacak!'",
-                "🔵 Güdü Sistemi Örneği: 'Gözüm hiçbir şey görmüyor, şu an saldırıp ne pahasına olursa olsun puan almalıyım!'",
-                "🟢 Şefkat/Yatıştırma Sistemi Örneği: 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
+                "🔴 'Eyvah bittim ben! Rezil olacağım, antrenörüm bana çok kızacak!'",
+                "🔵 'Gözüm hiçbir şey görmüyor, şu an saldırıp ne pahasına olursa olsun puan almalıyım!'",
+                "🟢 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
             ]
         )
         if st.button("Kuramsal Analizi Gör 🧠"):
             if q_gilbert.startswith("🔴"):
-                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu modelleşme tehdit anında beynin tehlike uyarısını temsil eder.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu düşünce tehdit anında beynin tehlike uyarısını temsil eder.</div>", unsafe_allow_html=True)
             elif q_gilbert.startswith("🔵"):
-                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu modelleşme kazanma güdüsüyle ilişkilidir.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu düşünce kazanma güdüsüyle ilişkilidir.</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu modelleşme zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu düşünce zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
 
     # MODÜL 2: TARA BRACH - RAIN METODU
     with game_tab2:
@@ -289,58 +289,39 @@ elif st.session_state.stage == 2:
                 else:
                     st.warning("Lütfen 4 adımı da doldurun.")
 
-    # MODÜL 3: KRISTIN NEFF - ÖZ-ŞEFKAT KASLARI ANTRENMAN SALONU
+    # MODÜL 3: KRISTIN NEFF - ZİHİNSEL ŞAMPİYONLUK ANTRENMANI
     with game_tab3:
-        st.markdown("### 🏋️‍♂️ Kristin Neff - Aktif Zihinsel Kas Antrenmanı Salonu")
+        st.markdown("### 🏆 Kristin Neff - Zihinsel Şampiyonluk Antrenmanı")
         st.markdown("""
         <div class='theory-box'>
-        <b>💪 Zihinsel Kas Antrenman Salonu (Neff, 2003):</b> Tıpkı bacak veya kol kaslarını güçlendirdiğin gibi, öz-şefkat zihinsel kaslarını da pratik yaparak geliştirebilirsin. Aşağıdan güçlendirmek istediğin zihinsel kası seç ve aktif antrenman pratiğini tamamla!
+        <b>🎯 Zihinsel Şampiyonluk Pratiği (Neff, 2003):</b> Spor psikolojisinde öz-şefkat zihinsel dayanıklılığı zirveye taşıyan bir güçtür. Aşağıdaki 3 adımdaki zihinsel antrenmanını tamamlayarak şampiyon zihniyetini oluştur!
         </div>
         """, unsafe_allow_html=True)
         
-        muscle = st.radio(
-            "Güçlendirmek İstediğin Zihinsel Kası Seç:",
-            [
-                "🧘 1. Zihinsel Esneklik Kası (Mindfulness - Anda Kalma)",
-                "🤝 2. Olimpik Bağ Kası (Ortak İnsanlık - Yalnız Değilim)",
-                "🛡️ 3. İçsel Kalkan Kası (Kendine Nezaket - Şampiyon Koç)"
-            ]
-        )
-        
-        with st.form("muscle_workout_form"):
-            if "1. Zihinsel Esneklik" in muscle:
-                st.markdown("<div class='card-box'>🧘 <b>Zihinsel Esneklik Pratiği:</b> Müsabaka veya antrenman esnasında zihnin kaygıya gittiğinde kendin için oluşturacağın <b>odak sıfırlama cümleni</b> kur.</div>", unsafe_allow_html=True)
-                m_input = st.text_area(
-                    "Şu an zihnimdeki stresi fark ediyorum ama zihnimi dağıtmayıp sadece şu anki:",
-                    placeholder="Örn: Nefesime ve mesafemi korumaya odaklanıyorum. Anda kalıyorum."
-                )
-            elif "2. Olimpik Bağ" in muscle:
-                st.markdown("<div class='card-box'>🤝 <b>Olimpik Bağ Pratiği:</b> Hata yaptığında dünya şampiyonlarının dahi bu yollardan geçtiğini hatırlayarak <b>öğrenme cümleni</b> yaz.</div>", unsafe_allow_html=True)
-                m_input = st.text_area(
-                    "Sporda hata yapmak insani. Dünyadaki en başarılı Taekwondocular da tekme kaçırır. Ben bu tecrübeden:",
-                    placeholder="Örn: Gardımı yüksek tutmayı öğrendim, bu bir eksiklik değil gelişim adımı."
-                )
-            else:
-                st.markdown("<div class='card-box'>🛡️ <b>İçsel Kalkan Pratiği:</b> İçindeki sert eleştirmen yerine, sana en çok inanan <b>şampiyon antrenörünün zihinsel sesini</b> devreye sok.</div>", unsafe_allow_html=True)
-                m_input = st.text_area(
-                    "Zorlu anlarda kendimi suçlamak yerine, şampiyon antrenörüm gibi kendime şunu söylüyorum:",
-                    placeholder="Örn: Güvendesin. Çabana güveniyorum, ayağa kalk ve gücünü göster!"
-                )
+        with st.form("mental_champion_form"):
+            st.markdown("<div class='card-box'>🧘 <b>1. Anda Kalma & Odaklama Cümlen:</b> Müsabaka veya antrenmanda stres hissettiğinde kendini ana döndürecek odak cümlen:</div>", unsafe_allow_html=True)
+            input_focus = st.text_input("Odak Cümlen:", placeholder="Örn: Nefes alıyorum, ana ve mesafemi korumaya odaklanıyorum.")
             
-            submitted_muscle = st.form_submit_button("Zihinsel Kas Antrenmanını Tamamla & Kas Skorunu Gör 🏋️‍♂️", type="primary")
-            if submitted_muscle:
-                if m_input:
-                    power_score = random.randint(88, 99)
+            st.markdown("<div class='card-box'>🤝 <b>2. Öğrenme & Büyüme Cümlen:</b> Hata yaptığında veya tekme kaçırdığında kendine söyleyeceğin öğrenme cümlen:</div>", unsafe_allow_html=True)
+            input_growth = st.text_input("Öğrenme Cümlen:", placeholder="Örn: Hata yapmak sporda doğal, ben bu tecrübeden ders çıkarıp daha güçlü döneceğim.")
+            
+            st.markdown("<div class='card-box'>🛡️ <b>3. Güçlendirici Şampiyon Sesin:</b> Zorlu anlarda kendin için devreye sokacağın zihinsel koç sesin:</div>", unsafe_allow_html=True)
+            input_strength = st.text_input("Şampiyon Koç Cümlen:", placeholder="Örn: Güvendesin. Çabana güveniyorum, ayağa kalk ve gücünü göster!")
+            
+            submitted_champion = st.form_submit_button("Zihinsel Şampiyonluk Antrenmanını Tamamla 🏆", type="primary")
+            if submitted_champion:
+                if input_focus and input_growth and input_strength:
                     st.markdown(f"""
                     <div class='success-box'>
-                    🏋️‍♂️ <b>Zihinsel Kas Antrenmanı Başarıyla Tamamlandı!</b><br>
-                    💪 <b>Geliştirilen Kas Seviyesi:</b> %{power_score} Güç Oranı<br>
-                    <b>🧠 Zihinsel Cümleniz:</b> "{m_input}"<br>
-                    <i>Sporda öz-şefkat zihinsel kasınızı aktif olarak çalıştırdınız!</i>
+                    🏆 <b>Zihinsel Şampiyonluk Antrenmanı Tamamlandı!</b><br>
+                    <b>🧘 Odak Cümlen:</b> "{input_focus}"<br>
+                    <b>🤝 Öğrenme Cümlen:</b> "{input_growth}"<br>
+                    <b>🛡️ Şampiyon Koç Cümlen:</b> "{input_strength}"<br><br>
+                    <i>Zihinsel dayanıklılığını ve şefkat gücünü başarıyla aktive ettin!</i>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
-                    st.warning("Lütfen zihinsel kas antrenman cümlenizi yazın.")
+                    st.warning("Lütfen 3 adımı da tamamlayınız.")
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Takım Şefkatle Yeniden İnşa Oyunu) ➡️", type="primary"):
