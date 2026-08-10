@@ -155,7 +155,7 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsafe_allow_header=True)
+st.markdown("<h1 class='main-header'>🥋 Öz Şefkat Gelişim Oyunu</h1>", unsafe_allow_html=True)
 
 # STAGE 0: ATÖLYE KURULUMU & KATILIMCI GİRİŞİ (AYDINLATILMIŞ ONAM FORMU İLE)
 if st.session_state.stage == 0:
