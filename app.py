@@ -259,13 +259,12 @@ elif st.session_state.stage == 2:
                 "🟢 'Sakin ol, daha süre var. Heyecanlanmam normal, nefes alıp planıma odaklanıyorum.'"
             ]
         )
-        if st.button("Kuramsal Analizi Gör 🧠"):
-            if q_gilbert.startswith("🔴"):
-                st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi Tespiti:</b> Bu düşünce tehdit anında beynin tehlike uyarısını temsil eder.</div>", unsafe_allow_html=True)
-            elif q_gilbert.startswith("🔵"):
-                st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi Tespiti:</b> Bu düşünce kazanma güdüsüyle ilişkilidir.</div>", unsafe_allow_html=True)
-            else:
-                st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu düşünce zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
+        if q_gilbert.startswith("🔴"):
+            st.markdown("<div class='alert-box'>🔴 <b>Tehdit & Korunma Sistemi:</b> Bu düşünce tehdit anında beynin tehlike uyarısını temsil eder.</div>", unsafe_allow_html=True)
+        elif q_gilbert.startswith("🔵"):
+            st.markdown("<div class='card-box'>🔵 <b>Güdü & Başarı Sistemi:</b> Bu düşünce kazanma ve hırs güdüsüyle ilişkilidir.</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi:</b> Bu düşünce zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
 
     # MODÜL 2: TARA BRACH - RAIN METODU
     with game_tab2:
