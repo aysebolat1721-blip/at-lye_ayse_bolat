@@ -475,7 +475,7 @@ elif st.session_state.stage == 7:
             st.markdown(f"""
             <div class='compassion-board'>
             <b>🪨 Anonim Takım Arkadaşı Korku Cümlesi #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
-            <b>💌 Yazılan Şefkatli Yanıt (Sporcu #{entry['responder_id']}):</b> "{entry['response']}"
+            <b>💌 Takım Arkadaşının Şefkatli Yanıtı:</b> "{entry['response']}"
             </div>
             """, unsafe_allow_html=True)
 
@@ -622,7 +622,7 @@ elif st.session_state.stage == 6:
             st.markdown(f"""
             <div class='compassion-board'>
             <b>🪨 Anonim Takım Arkadaşı Korku Cümlesi #{idx}:</b> <i>"{entry['fear']}"</i><br><br>
-            <b>💌 Yazılan Şefkatli Yanıt (Sporcu #{entry['responder_id']}):</b> "{entry['response']}"
+            <b>💌 Takım Arkadaşının Şefkatli Yanıtı:</b> "{entry['response']}"
             </div>
             """, unsafe_allow_html=True)
             
