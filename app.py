@@ -234,35 +234,13 @@ elif st.session_state.stage == 2:
     """, unsafe_allow_html=True)
     
     game_tab1, game_tab2, game_tab3 = st.tabs([
-        "🌧️ 1. Tara Brach - RAIN Metodu", 
-        "🔴🔵🟢 2. Paul Gilbert - 3 Beyin Sistemi", 
-        "🛡️ 3. Kristin Neff - Kriz Senaryoları"
+        "🔴🔵🟢 1. Paul Gilbert - 3 Beyin Sistemi",
+        "🌧️ 2. Tara Brach - RAIN Metodu", 
+        "🏋️‍♂️ 3. Kristin Neff - Öz-Şefkat Kasları & Şampiyon Zihniyeti"
     ])
     
-    # MODÜL 1: TARA BRACH - RAIN METODU
+    # MODÜL 1: PAUL GILBERT - 3 BEYİN SİSTEMİ
     with game_tab1:
-        st.markdown("### 🌧️ Tara Brach'in RAIN Metodu (4 Adımlı Zihinsel Pratik)")
-        st.markdown("""
-        <div class='theory-box'>
-        <b>RAIN Tekniği Nedir?</b> Dünyaca ünlü psikolog Tara Brach tarafından geliştirilen bu yöntem, zorlu duygularla başa çıkmak için 4 adımdan oluşur:
-        <br><b>R</b>ecognize (Tanı) | <b>A</b>llow (İzin Ver) | <b>I</b>nvestigate (İncele) | <b>N</b>urture (Şefkatle Besle)
-        </div>
-        """, unsafe_allow_html=True)
-        
-        with st.form("rain_form"):
-            rain_r = st.text_area("1. Recognize (Tanı): Zor bir maç veya antrenman anında zihninde hangi duygu var?", placeholder="Örn: Yenilme korkusu, başarısızlık stresi...")
-            rain_a = st.text_area("2. Allow (İzin Ver): Bu duyguyla savaşmak yerine onun varlığına izin ver.", placeholder="Örn: Şu an korkuyorum ve bu hissin var olmasına izin veriyorum...")
-            rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor...")
-            rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun...")
-            
-            if st.form_submit_button("RAIN Egzersizini Kaydet 🌧️", type="primary"):
-                if rain_r and rain_a and rain_i and rain_n:
-                    st.success("RAIN Metodu Pratiği Kaydedildi: 4 adımlı zihinsel farkındalık süreci tamamlandı.")
-                else:
-                    st.warning("Lütfen 4 adımı da doldurun.")
-
-    # MODÜL 2: PAUL GILBERT - 3 BEYİN SİSTEMİ
-    with game_tab2:
         st.markdown("### 🔴🔵🟢 Paul Gilbert'in Şefkat Odaklı Terapi (CFT) 3 Beyin Sistemi")
         st.markdown("""
         <div class='theory-box'>
@@ -289,50 +267,55 @@ elif st.session_state.stage == 2:
             else:
                 st.markdown("<div class='success-box'>🟢 <b>Yatıştırıcı & Şefkat Sistemi Tespiti:</b> Bu modelleşme zihinsel güvenlik ve öz-şefkat alanını temsil eder.</div>", unsafe_allow_html=True)
 
-    # MODÜL 3: KRISTIN NEFF - KRIZ SENARYO BANKASI
-    with game_tab3:
-        st.markdown("### 🛡️ Kristin Neff'in 3 Boyutlu Kriz Simülatörü")
-        senaryo_secim = st.selectbox("Bir Kriz Senaryosu Seç:", [
-            "Senaryo 1: Kuşak sınavında hareketi unuttun.",
-            "Senaryo 2: Favori tekmende rakip kontradan puan aldı.",
-            "Senaryo 3: Sakatlık yüzünden turnuvadan çekilmek zorunda kaldın."
-        ])
+    # MODÜL 2: TARA BRACH - RAIN METODU
+    with game_tab2:
+        st.markdown("### 🌧️ Tara Brach'in RAIN Metodu (4 Adımlı Zihinsel Pratik)")
+        st.markdown("""
+        <div class='theory-box'>
+        <b>RAIN Tekniği Nedir?</b> Dünyaca ünlü psikolog Tara Brach tarafından geliştirilen bu yöntem, zorlu duygularla başa çıkmak için 4 adımdan oluşur:
+        <br><b>R</b>ecognize (Tanı) | <b>A</b>llow (İzin Ver) | <b>I</b>nvestigate (İncele) | <b>N</b>urture (Şefkatle Besle)
+        </div>
+        """, unsafe_allow_html=True)
         
-        if "Senaryo 1" in senaryo_secim:
-            st.markdown("<div class='card-box'>🥋 <b>Kuşak sınavında poomsae çizerken adımı unuttun ve salondaki herkes sana bakıyor.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepki Seçeneği:", [
-                "A) 'Rezil oldum, benden hiçbir şey olmaz.' (Öz Yargılama)",
-                "B) 'Derin bir nefes alıyorum. Heyecandan unutmak her sporcunun başına gelebilir, yalnız değilim.' (Öz Şefkat)"
-            ])
-            if st.button("Kuramsal Çerçeveyi İncele 1"):
-                if ans.startswith("B)"):
-                    st.success("Kuramsal Uygunluk: Kristin Neff'in (2003) Ortak İnsanlık boyutuna uygundur.")
+        with st.form("rain_form"):
+            rain_r = st.text_area("1. Recognize (Tanı): Zor bir maç veya antrenman anında zihninde hangi duygu var?", placeholder="Örn: Yenilme korkusu, başarısızlık stresi...")
+            rain_a = st.text_area("2. Allow (İzin Ver): Bu duyguyla savaşmak yerine onun varlığına izin ver.", placeholder="Örn: Şu an korkuyorum ve bu hissin var olmasına izin veriyorum...")
+            rain_i = st.text_area("3. Investigate (İncele): Bu duygu bedeninde nerede hissettiriyor?", placeholder="Örn: Göğsümde sıkışma var, karnıma ağrı giriyor...")
+            rain_n = st.text_area("4. Nurture (Şefkatle Besle): İçindeki sporcuya ihtiyacı olan şefkat cümlesini söyle.", placeholder="Örn: Güvendesin. Elinden gelenin en iyisini yapıyorsun...")
+            
+            if st.form_submit_button("RAIN Egzersizini Kaydet 🌧️", type="primary"):
+                if rain_r and rain_a and rain_i and rain_n:
+                    st.success("RAIN Metodu Pratiği Kaydedildi: 4 adımlı zihinsel farkındalık süreci tamamlandı.")
                 else:
-                    st.info("Kuramsal Analiz: 'Öz-Yargılama' boyutuna örnektir.")
-                    
-        elif "Senaryo 2" in senaryo_secim:
-            st.markdown("<div class='card-box'>🥋 <b>Dollyo Chagi tekmende puan alamadın ve kontradan kafana tekme yedin.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepki Seçeneği:", [
-                "A) 'Şu an canım yanıyor ama bu bir deneyim. Bir sonraki rauntta mesafemi ayarlayacağım.' (Öz Şefkat)",
-                "B) 'Ben aptalım, bunu nasıl yerim!' (Aşırı Özdeşleşme)"
-            ])
-            if st.button("Kuramsal Çerçeveyi İncele 2"):
-                if ans.startswith("A)"):
-                    st.success("Kuramsal Uygunluk: Bilinçli Farkındalık ve Kendine Nezaket boyutuna örnektir.")
-                else:
-                    st.info("Kuramsal Analiz: 'Aşırı Özdeşleşme' boyutuna örnektir.")
-                    
-        else:
-            st.markdown("<div class='card-box'>🥋 <b>Şampiyonaya 2 gün kala bileğin burkuldu ve turnuvadan çekilmen istendi.</b></div>", unsafe_allow_html=True)
-            ans = st.radio("Zihinsel Tepki Seçeneği:", [
-                "A) 'Bütün emeklerim çöp oldu, en şanssız insanım.' (İzolasyon)",
-                "B) 'Sağlığım önemli. Birçok sporcu sakatlık yaşar, daha güçlü döneceğim.' (Öz Şefkat)"
-            ])
-            if st.button("Kuramsal Çerçeveyi İncele 3"):
-                if ans.startswith("B)"):
-                    st.success("Kuramsal Uygunluk: Ortak İnsanlık boyutuna örnektir.")
-                else:
-                    st.info("Kuramsal Analiz: 'İzolasyon' boyutuna örnektir.")
+                    st.warning("Lütfen 4 adımı da doldurun.")
+
+    # MODÜL 3: KRISTIN NEFF - ÖZ-ŞEFKAT KASLARI & ŞAMPİYON ZİHNİYETİ
+    with game_tab3:
+        st.markdown("### 🏋️‍♂️ Kristin Neff - Öz-Şefkat Kasları & Şampiyon Zihniyeti")
+        st.markdown("""
+        <div class='theory-box'>
+        <b>Zihinsel Şampiyonluk Kasları Nedir? (Neff, 2003):</b> Spor psikolojisinde öz-şefkat kriz/yenilgi aracı değil, zihinsel dayanıklılığı zirveye taşıyan 3 ana kas grubudur:
+        <br>🧘 <b>Zihinsel Esneklik Kası (Bilinçli Farkındalık):</b> Hata veya puan kaybı anında zihni geçmişe/geleceğe dağıtmadan ana odaklama gücü.
+        <br>🤝 <b>Olimpik Bağ Kası (Ortak İnsanlık):</b> "Efsane şampiyonlar dahil her sporcu hata yapar ve öğrenir" diyebilme gücü.
+        <br>🛡️ <b>İçsel Kalkan Kası (Kendine Nezaket):</b> Zor anlarda zihninde acımasız düşman değil, destekçi şampiyon koç olma gücü.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        muscle_choice = st.radio(
+            "Bugün Taekwondo antrenmanında veya müsabakasında en çok hangi Zihinsel Kası çalıştırmak istersin?",
+            [
+                "🧘 Zihinsel Esneklik Kası (Mindfulness): Odak kaybettiğimde nefes alıp ana döneceğim.",
+                "🤝 Olimpik Bağ Kası (Ortak İnsanlık): Hata yaptığımda yalnız olmadığımı, sporda öğrenme sürecinde olduğumu hatırlatacağım.",
+                "🛡️ İçsel Kalkan Kası (Kendine Nezaket): Kendime bağırıp yargılamak yerine yapıcı ve güçlü bir zihinsel koç olacağım."
+            ]
+        )
+        if st.button("Zihinsel Kas Analizini Gör 🏋️‍♂️"):
+            if muscle_choice.startswith("🧘"):
+                st.markdown("<div class='success-box'>🧘 <b>Zihinsel Esneklik Kası Seçildi:</b> Bilinçli farkındalık, müsabakada anda kalmanı ve reaksiyon hızını maksimuma çıkarır.</div>", unsafe_allow_html=True)
+            elif muscle_choice.startswith("🤝"):
+                st.markdown("<div class='success-box'>🤝 <b>Olimpik Bağ Kası Seçildi:</b> Ortak insanlık bilinci, başarısızlık baskısını ortadan kaldırır ve zihinsel direnç sağlar.</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div class='success-box'>🛡️ <b>İçsel Kalkan Kası Seçildi:</b> Kendine nezaket, öz-eleştiri stresini nötralize eder ve özgüveni zirvede tutar.</div>", unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
     if st.button("Aşama 3'e Geç (Takım Şefkatle Yeniden İnşa Oyunu) ➡️", type="primary"):
