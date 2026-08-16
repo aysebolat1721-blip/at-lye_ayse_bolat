@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import sqlite3
 import datetime
@@ -55,7 +56,9 @@ def init_db():
         st.error(f"Veri tabanı başlatma hatası: {e}")
 
 def set_user_online(username: str):
-    """Kullanıcıyı Online olarak işaretler ve son aktiflik süresini günceller."""
+    """Kullanıcıyı Online olarak işaretler ve aktiflik süresini günceller."""
+    if not username:
+        return
     try:
         conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         c = conn.cursor()
@@ -71,7 +74,9 @@ def set_user_online(username: str):
         pass
 
 def set_user_offline(username: str):
-    """Sporcu testi bitirdiğinde veya çıkış yaptığında Online durumunu 0 yapar."""
+    """Sporcu turu bitirdiğinde veya ayrıldığında Online durumunu 0 yapar."""
+    if not username:
+        return
     try:
         conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         c = conn.cursor()
@@ -79,6 +84,27 @@ def set_user_offline(username: str):
         c.execute('''
             UPDATE users SET is_online = 0, last_active = ? WHERE username = ?
         ''', (now_str, username.strip()))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+def cleanup_inactive_users():
+    """6 saniyeden uzun süredir tura devam etmeyen tüm sporcuları Online listesinden çıkarır."""
+    try:
+        conn = sqlite3.connect(DB_NAME, check_same_thread=False)
+        c = conn.cursor()
+        now_dt = datetime.datetime.now()
+        c.execute("SELECT username, last_active FROM users WHERE is_online = 1")
+        rows = c.fetchall()
+        for uname, last_act in rows:
+            try:
+                act_dt = datetime.datetime.strptime(last_act, "%Y-%m-%d %H:%M:%S")
+                diff = (now_dt - act_dt).total_seconds()
+                if diff > 6:
+                    c.execute("UPDATE users SET is_online = 0 WHERE username = ?", (uname,))
+            except Exception:
+                pass
         conn.commit()
         conn.close()
     except Exception:
@@ -121,7 +147,8 @@ def save_trial_log(username: str, round_num: int, event_type: str, reaction_ms: 
         pass
 
 def get_online_users():
-    """Şu an aktif/online olan sporcuları getirir."""
+    """Sadece o an aktif oyunda/turda olan sporcuları getirir."""
+    cleanup_inactive_users()
     try:
         conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         c = conn.cursor()
@@ -290,40 +317,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    .shock-card-green {
-        background: radial-gradient(circle, #00FF66 0%, #059669 100%);
-        border: 5px solid #34D399;
-        border-radius: 24px;
-        padding: 45px 20px;
-        width: 100%;
-        min-height: 270px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        box-shadow: 0 0 60px #00FF66, 0 0 120px rgba(0, 255, 102, 0.8);
-        margin-bottom: 20px;
-        animation: flash-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .shock-card-red {
-        background: radial-gradient(circle, #FF0055 0%, #991B1B 100%);
-        border: 5px solid #F87171;
-        border-radius: 24px;
-        padding: 45px 20px;
-        width: 100%;
-        min-height: 270px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        box-shadow: 0 0 60px #FF0055, 0 0 120px rgba(255, 0, 85, 0.8);
-        margin-bottom: 20px;
-        animation: flash-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
     .shock-card-white {
         background: #FFFFFF;
         border: 5px solid #E2E8F0;
@@ -338,12 +331,6 @@ st.markdown("""
         text-align: center;
         box-shadow: 0 0 100px #FFFFFF;
         margin-bottom: 20px;
-    }
-
-    @keyframes flash-pop {
-        0% { transform: scale(0.35); opacity: 0; }
-        80% { transform: scale(1.06); opacity: 1; }
-        100% { transform: scale(1); }
     }
 
     /* MÜKEMMEL DENGELİ DEVE BUTONLAR */
@@ -363,13 +350,6 @@ st.markdown("""
         color: #000000 !important;
         border: 3px solid #34D399 !important;
         box-shadow: 0 0 35px rgba(0, 255, 102, 0.7) !important;
-    }
-
-    .btn-blue button {
-        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
-        color: #FFFFFF !important;
-        border: 3px solid #60A5FA !important;
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.5) !important;
     }
 
     div.stButton > button:active {
@@ -453,7 +433,7 @@ with st.sidebar:
         for u in online_list:
             st.markdown(f"🟢 **{u}**")
     else:
-        st.caption("Henüz aktif sporcu yok.")
+        st.caption("Henüz aktif turda olan sporcu yok.")
         
     st.markdown("---")
     st.markdown("### 🏆 CANLI SKOR (LEADERBOARD)")
@@ -485,6 +465,9 @@ with st.sidebar:
 # SAYFA 1: GİRİŞ VE BEKLEME LOBİSİ
 # ---------------------------------------------------------
 if st.session_state.page == 1:
+    if st.session_state.athlete_name:
+        set_user_offline(st.session_state.athlete_name)
+
     st.markdown("<div class='centered-title'>⚡ KARANLIK ODA ⚡</div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-subtitle'>REAKSİYON VE FREN SİMÜLASYONU</div>", unsafe_allow_html=True)
     
@@ -508,7 +491,6 @@ if st.session_state.page == 1:
         if btn_start:
             if name_in.strip():
                 st.session_state.athlete_name = name_in.strip()
-                set_user_online(name_in.strip())
                 start_new_game()
                 st.session_state.page = 2
                 st.rerun()
@@ -516,9 +498,12 @@ if st.session_state.page == 1:
                 st.warning("Lütfen bir rumuz giriniz.")
 
 # ---------------------------------------------------------
-# SAYFA 2: OYUN EKRANI (ANİ FLAŞ VE ŞOK MEKANİĞİ)
+# SAYFA 2: OYUN EKRANI (ANİ FLAŞ VE ŞOK MEKANİĞİ - AKTİF TUR)
 # ---------------------------------------------------------
 elif st.session_state.page == 2:
+    # Aktif turda sporcunun online kalp atışını güncelle
+    set_user_online(st.session_state.athlete_name)
+
     round_num = st.session_state.current_round + 1  # 1..10
     event_type = st.session_state.game_sequence[st.session_state.current_round]
     
@@ -558,73 +543,64 @@ elif st.session_state.page == 2:
         st.session_state.stimulus_time = time.time()
         st.rerun()
 
-    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı) + CANLI AKAN MİLİSANİYE SAYACI
+    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı) + 60 FPS CANLI KRONOMETRE
     elif st.session_state.round_phase == "active":
         if event_type == "NET_ATAK":
-            st.markdown("""
-                <div class='shock-card-green'>
-                    <h1 style='color: #000000; font-size: 3.5rem; font-weight: 900; margin: 0;'>VUR! ⚔️</h1>
-                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #000000; margin-top: 10px; text-shadow: 0 0 10px rgba(0,0,0,0.3);'>0 ms</div>
+            components.html("""
+                <div style="background: radial-gradient(circle, #00FF66 0%, #059669 100%); border: 5px solid #34D399; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #00FF66; font-family: sans-serif;">
+                    <h1 style="color: #000000; font-size: 3rem; font-weight: 900; margin: 0;">VUR! ⚔️</h1>
+                    <div id="live_ms" style="font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #000000; margin-top: 6px;">0 ms</div>
                 </div>
                 <script>
-                    (function() {
-                        var start = performance.now();
-                        function updateMs() {
-                            var el = document.getElementById('ms-counter');
-                            if (el) {
-                                var currentMs = Math.floor(performance.now() - start);
-                                el.innerText = currentMs + ' ms';
-                                requestAnimationFrame(updateMs);
-                            }
+                    var t0 = performance.now();
+                    var timerId = setInterval(function() {
+                        var el = document.getElementById("live_ms");
+                        if (el) {
+                            el.innerText = Math.floor(performance.now() - t0) + " ms";
+                        } else {
+                            clearInterval(timerId);
                         }
-                        requestAnimationFrame(updateMs);
-                    })();
+                    }, 16);
                 </script>
-            """, unsafe_allow_html=True)
+            """, height=185)
         elif event_type == "NET_BLOF":
-            st.markdown("""
-                <div class='shock-card-red'>
-                    <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
-                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 5px;'>NET BLÖF!</p>
-                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 10px; text-shadow: 0 0 15px rgba(255,255,255,0.6);'>0 ms</div>
+            components.html("""
+                <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
+                    <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
+                    <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">NET BLÖF!</p>
+                    <div id="live_ms" style="font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 6px;">0 ms</div>
                 </div>
                 <script>
-                    (function() {
-                        var start = performance.now();
-                        function updateMs() {
-                            var el = document.getElementById('ms-counter');
-                            if (el) {
-                                var currentMs = Math.floor(performance.now() - start);
-                                el.innerText = currentMs + ' ms';
-                                requestAnimationFrame(updateMs);
-                            }
+                    var t0 = performance.now();
+                    var timerId = setInterval(function() {
+                        var el = document.getElementById("live_ms");
+                        if (el) {
+                            el.innerText = Math.floor(performance.now() - t0) + " ms";
+                        } else {
+                            clearInterval(timerId);
                         }
-                        requestAnimationFrame(updateMs);
-                    })();
+                    }, 16);
                 </script>
-            """, unsafe_allow_html=True)
+            """, height=205)
         elif event_type == "TERS_KESE_BLOF":
-            st.markdown("""
-                <div class='shock-card-red'>
-                    <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
-                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 5px;'>⚡ TERS KÖŞE BLÖF!</p>
-                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 10px; text-shadow: 0 0 15px rgba(255,255,255,0.6);'>0 ms</div>
+            components.html("""
+                <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
+                    <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
+                    <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">⚡ TERS KÖŞE BLÖF!</p>
+                    <div id="live_ms" style="font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 6px;">0 ms</div>
                 </div>
                 <script>
-                    (function() {
-                        var start = performance.now();
-                        function updateMs() {
-                            var el = document.getElementById('ms-counter');
-                            if (el) {
-                                var currentMs = Math.floor(performance.now() - start);
-                                el.innerText = currentMs + ' ms';
-                                requestAnimationFrame(updateMs);
-                            }
+                    var t0 = performance.now();
+                    var timerId = setInterval(function() {
+                        var el = document.getElementById("live_ms");
+                        if (el) {
+                            el.innerText = Math.floor(performance.now() - t0) + " ms";
+                        } else {
+                            clearInterval(timerId);
                         }
-                        requestAnimationFrame(updateMs);
-                    })();
+                    }, 16);
                 </script>
-            """, unsafe_allow_html=True)
+            """, height=205)
             
         # TEK DEVASA VUR! BUTONU (BLÖFTE EKRANA DOKUNULMAZ!)
         st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
@@ -662,7 +638,6 @@ elif st.session_state.page == 2:
 
         # 2. EĞER BLÖF İSE VE SPORCU 1.5 SN EKRANA DOKUNMADAN BEKLEDİYSE (BAŞARILI FRENLEME)
         elif event_type in ["NET_BLOF", "TERS_KESE_BLOF"]:
-            # Blöfte 1.5 saniye ekrana dokunulmazsa otomatik başarılı geçiş yap
             if (click_time - st.session_state.stimulus_time) >= 1.5:
                 is_fault = 0
                 elapsed_ms = 0.0
@@ -682,21 +657,6 @@ elif st.session_state.page == 2:
                 else:
                     st.session_state.round_phase = "waiting"
                 st.rerun()
-                
-            save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
-            st.session_state.game_results.append({
-                "round": round_num,
-                "event": event_type,
-                "ms": elapsed_ms,
-                "is_fault": is_fault
-            })
-            
-            st.session_state.current_round += 1
-            if st.session_state.current_round >= 10:
-                st.session_state.page = 3
-            else:
-                st.session_state.round_phase = "waiting"
-            st.rerun()
 
     if st.session_state.last_feedback:
         st.markdown(f"<div class='feedback-banner'>{st.session_state.last_feedback}</div>", unsafe_allow_html=True)
@@ -705,6 +665,10 @@ elif st.session_state.page == 2:
 # SAYFA 3: BİTİŞ EKRANI
 # ---------------------------------------------------------
 elif st.session_state.page == 3:
+    # Test bittiği için sporcuyu Online listesinden temizle
+    if st.session_state.athlete_name:
+        set_user_offline(st.session_state.athlete_name)
+
     st.markdown("<div class='centered-title'>🏆 TUR TAMAMLANDI!</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
@@ -713,9 +677,8 @@ elif st.session_state.page == 3:
     
     total_faults = sum(r["is_fault"] for r in st.session_state.game_results)
     
-    # Skor tablosuna yaz ve sporcunun testi bittiği için Online durumunu kapat
+    # Skor tablosuna yaz
     save_score_summary(st.session_state.athlete_name, avg_speed_ms, total_faults, total_rounds=10)
-    set_user_offline(st.session_state.athlete_name)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -736,7 +699,6 @@ elif st.session_state.page == 3:
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
         if st.button("TEKRAR DENE 🔄", type="primary"):
-            set_user_online(st.session_state.athlete_name)
             start_new_game()
             st.session_state.page = 2
             st.rerun()
@@ -751,6 +713,9 @@ elif st.session_state.page == 3:
 # SAYFA 4: UZMAN DASHBOARD'U (GİZLİ PANEL)
 # ---------------------------------------------------------
 elif st.session_state.page == 4:
+    if st.session_state.athlete_name:
+        set_user_offline(st.session_state.athlete_name)
+
     st.markdown("<div class='centered-title'>📊 UZMAN DASHBOARD'U</div>", unsafe_allow_html=True)
     st.markdown("<div class='centered-subtitle'>Klinik Şok & Dürtü Kontrolü Veri Analizi</div>", unsafe_allow_html=True)
     
