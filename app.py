@@ -195,21 +195,29 @@ st.markdown("""
         color: #F8FAFC;
     }
     
-    /* Streamlit Üst Bar Arka Planını Şeffaf/Karanlık Yap ve Yan Paneli Açık Tut */
-    header[data-testid="stHeader"] {
-        background-color: transparent !important;
-        z-index: 100 !important;
+    /* Yan Panel (Sidebar) Görünürlüğü ve Stili */
+    section[data-testid="stSidebar"] {
+        background-color: #090D16 !important;
+        border-right: 2px solid #1E293B !important;
     }
 
-    [data-testid="collapsedControl"] {
-        display: block !important;
+    /* Streamlit Üst Bar ve Yan Panel Butonunu Açık/Görünür Tut */
+    header[data-testid="stHeader"] {
+        background-color: transparent !important;
+        z-index: 99 !important;
+    }
+
+    [data-testid="collapsedControl"], button[data-testid="baseButton-headerNoPadding"] {
+        display: flex !important;
         visibility: visible !important;
+        opacity: 1 !important;
+        color: #00FF66 !important;
     }
     
-    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Üstten dengeli boşluk) */
+    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Mobil & Masaüstü Üst Boşluk) */
     .block-container {
         max-width: 520px !important;
-        padding-top: 3.5rem !important;
+        padding-top: 3.2rem !important;
         padding-bottom: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
@@ -537,27 +545,72 @@ elif st.session_state.page == 2:
         st.session_state.stimulus_time = time.time()
         st.rerun()
 
-    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı)
+    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı) + CANLI AKAN MİLİSANİYE SAYACI
     elif st.session_state.round_phase == "active":
         if event_type == "NET_ATAK":
             st.markdown("""
                 <div class='shock-card-green'>
                     <h1 style='color: #000000; font-size: 3.5rem; font-weight: 900; margin: 0;'>VUR! ⚔️</h1>
+                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #000000; margin-top: 10px; text-shadow: 0 0 10px rgba(0,0,0,0.3);'>0 ms</div>
                 </div>
+                <script>
+                    (function() {
+                        var start = performance.now();
+                        function updateMs() {
+                            var el = document.getElementById('ms-counter');
+                            if (el) {
+                                var currentMs = Math.floor(performance.now() - start);
+                                el.innerText = currentMs + ' ms';
+                                requestAnimationFrame(updateMs);
+                            }
+                        }
+                        requestAnimationFrame(updateMs);
+                    })();
+                </script>
             """, unsafe_allow_html=True)
         elif event_type == "NET_BLOF":
             st.markdown("""
                 <div class='shock-card-red'>
                     <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
-                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 10px;'>NET BLÖF!</p>
+                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 5px;'>NET BLÖF!</p>
+                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 10px; text-shadow: 0 0 15px rgba(255,255,255,0.6);'>0 ms</div>
                 </div>
+                <script>
+                    (function() {
+                        var start = performance.now();
+                        function updateMs() {
+                            var el = document.getElementById('ms-counter');
+                            if (el) {
+                                var currentMs = Math.floor(performance.now() - start);
+                                el.innerText = currentMs + ' ms';
+                                requestAnimationFrame(updateMs);
+                            }
+                        }
+                        requestAnimationFrame(updateMs);
+                    })();
+                </script>
             """, unsafe_allow_html=True)
         elif event_type == "TERS_KESE_BLOF":
             st.markdown("""
                 <div class='shock-card-red'>
                     <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
-                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 10px;'>⚡ TERS KÖŞE BLÖF!</p>
+                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 5px;'>⚡ TERS KÖŞE BLÖF!</p>
+                    <div id='ms-counter' style='font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin-top: 10px; text-shadow: 0 0 15px rgba(255,255,255,0.6);'>0 ms</div>
                 </div>
+                <script>
+                    (function() {
+                        var start = performance.now();
+                        function updateMs() {
+                            var el = document.getElementById('ms-counter');
+                            if (el) {
+                                var currentMs = Math.floor(performance.now() - start);
+                                el.innerText = currentMs + ' ms';
+                                requestAnimationFrame(updateMs);
+                            }
+                        }
+                        requestAnimationFrame(updateMs);
+                    })();
+                </script>
             """, unsafe_allow_html=True)
             
         # TAM ORTALANMIŞ SİMETRİK BUTONLAR
