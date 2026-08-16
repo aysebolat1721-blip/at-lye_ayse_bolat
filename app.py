@@ -255,6 +255,21 @@ st.markdown("""
         color: #00FF66 !important;
     }
     
+    /* GİZLİ OTOMATİK İLERLEME BUTONUNU EKRANDAN %100 SİL VE GİZLE */
+    div.element-container:has(button[key*="autopass"]),
+    div[data-testid="stElementContainer"]:has(button[key*="autopass"]),
+    .autopass-hidden-box {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0px !important;
+        width: 0px !important;
+        opacity: 0 !important;
+        position: absolute !important;
+        left: -99999px !important;
+        top: -99999px !important;
+        pointer-events: none !important;
+    }
+
     /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Mobil & Masaüstü Üst Boşluk) */
     .block-container {
         max-width: 520px !important;
@@ -543,7 +558,7 @@ elif st.session_state.page == 2:
     st.markdown(f"<div class='centered-title'>TUR {round_num} / 20</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ
+    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ (0.4 - 3.2 sn KAFA KARIŞTIRICI TAHMİN EDİLEMEZ SÜRE)
     if st.session_state.round_phase == "waiting":
         st.markdown("""
             <div class='shock-card-black'>
@@ -551,7 +566,8 @@ elif st.session_state.page == 2:
             </div>
         """, unsafe_allow_html=True)
         
-        delay = random.uniform(0.8, 2.2)
+        # 0.4 - 3.2 saniye arası tamamen belirsiz, aniden patlayan süre
+        delay = random.uniform(0.4, 3.2)
         time.sleep(delay)
         
         if event_type in ["TERS_KESE_BLOF", "NET_BLOF"]:
@@ -576,39 +592,42 @@ elif st.session_state.page == 2:
 
     # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + ANINDA TEPKİ VEREN SIFIR GECİKME BUTON
     elif st.session_state.round_phase == "active":
+        # Dynamic random signal duration per round (650ms to 1350ms)
+        auto_timeout_ms = random.randint(650, 1350)
+
         if event_type == "NET_ATAK":
-            components.html("""
+            components.html(f"""
                 <div style="background: radial-gradient(circle, #00FF66 0%, #059669 100%); border: 5px solid #34D399; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #00FF66; font-family: sans-serif;">
                     <h1 style="color: #000000; font-size: 3rem; font-weight: 900; margin: 0;">VUR! ⚔️</h1>
                     <div id="live_ms" style="font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #000000; margin-top: 6px;">0 ms</div>
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {
+                    var timerId = setInterval(function() {{
                         var el = document.getElementById("live_ms");
-                        if (el) {
+                        if (el) {{
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        } else {
+                        }} else {{
                             clearInterval(timerId);
-                        }
-                    }, 16);
+                        }}
+                    }}, 16);
 
-                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
-                    setTimeout(function() {
-                        try {
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    setTimeout(function() {{
+                        try {{
                             var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {
-                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                            for (var i = 0; i < btns.length; i++) {{
+                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
                                     btns[i].click();
                                     break;
-                                }
-                            }
-                        } catch(e) {}
-                    }, 1200);
+                                }}
+                            }}
+                        }} catch(e) {{}}
+                    }}, {auto_timeout_ms});
                 </script>
             """, height=185)
         elif event_type == "NET_BLOF":
-            components.html("""
+            components.html(f"""
                 <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
                     <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
                     <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">NET BLÖF!</p>
@@ -616,31 +635,31 @@ elif st.session_state.page == 2:
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {
+                    var timerId = setInterval(function() {{
                         var el = document.getElementById("live_ms");
-                        if (el) {
+                        if (el) {{
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        } else {
+                        }} else {{
                             clearInterval(timerId);
-                        }
-                    }, 16);
+                        }}
+                    }}, 16);
 
-                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
-                    setTimeout(function() {
-                        try {
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    setTimeout(function() {{
+                        try {{
                             var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {
-                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                            for (var i = 0; i < btns.length; i++) {{
+                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
                                     btns[i].click();
                                     break;
-                                }
-                            }
-                        } catch(e) {}
-                    }, 1200);
+                                }}
+                            }}
+                        }} catch(e) {{}}
+                    }}, {auto_timeout_ms});
                 </script>
             """, height=205)
         elif event_type == "TERS_KESE_BLOF":
-            components.html("""
+            components.html(f"""
                 <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
                     <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
                     <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">⚡ TERS KÖŞE BLÖF!</p>
@@ -648,27 +667,27 @@ elif st.session_state.page == 2:
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {
+                    var timerId = setInterval(function() {{
                         var el = document.getElementById("live_ms");
-                        if (el) {
+                        if (el) {{
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        } else {
+                        }} else {{
                             clearInterval(timerId);
-                        }
-                    }, 16);
+                        }}
+                    }}, 16);
 
-                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
-                    setTimeout(function() {
-                        try {
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    setTimeout(function() {{
+                        try {{
                             var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {
-                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                            for (var i = 0; i < btns.length; i++) {{
+                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
                                     btns[i].click();
                                     break;
-                                }
-                            }
-                        } catch(e) {}
-                    }, 1200);
+                                }}
+                            }}
+                        }} catch(e) {{}}
+                    }}, {auto_timeout_ms});
                 </script>
             """, height=205)
             
@@ -677,9 +696,9 @@ elif st.session_state.page == 2:
         vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Gizli Otomatik İlerleme Butonu
-        st.markdown("<div style='display:none;'>", unsafe_allow_html=True)
-        auto_pass_btn = st.button("AUTO_PASS_SIGNAL", key=f"autopass_{round_num}")
+        # TAMAMEN GİZLİ OTOMATİK İLERLEME BUTONU (%100 GÖRÜNMEZ)
+        st.markdown("<div class='autopass-hidden-box'>", unsafe_allow_html=True)
+        auto_pass_btn = st.button(" ", key=f"autopass_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
             
         click_time = time.time()
