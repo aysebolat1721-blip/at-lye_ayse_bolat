@@ -70,6 +70,20 @@ def set_user_online(username: str):
     except Exception:
         pass
 
+def set_user_offline(username: str):
+    """Sporcu testi bitirdiğinde veya çıkış yaptığında Online durumunu 0 yapar."""
+    try:
+        conn = sqlite3.connect(DB_NAME, check_same_thread=False)
+        c = conn.cursor()
+        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        c.execute('''
+            UPDATE users SET is_online = 0, last_active = ? WHERE username = ?
+        ''', (now_str, username.strip()))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
 def save_score_summary(username: str, avg_speed: float, faults: int, total_rounds: int = 10):
     """Sporcunun genel oyun özetini skor tablosuna işler."""
     try:
@@ -695,8 +709,9 @@ elif st.session_state.page == 3:
     
     total_faults = sum(r["is_fault"] for r in st.session_state.game_results)
     
-    # Skor tablosuna yaz
+    # Skor tablosuna yaz ve sporcunun testi bittiği için Online durumunu kapat
     save_score_summary(st.session_state.athlete_name, avg_speed_ms, total_faults, total_rounds=10)
+    set_user_offline(st.session_state.athlete_name)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -713,11 +728,20 @@ elif st.session_state.page == 3:
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    if st.button("TEKRAR DENE (PİSTE ÇIK) 🔄", type="primary"):
-        start_new_game()
-        st.session_state.page = 2
-        st.rerun()
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        if st.button("TEKRAR DENE 🔄", type="primary"):
+            set_user_online(st.session_state.athlete_name)
+            start_new_game()
+            st.session_state.page = 2
+            st.rerun()
+    with col_btn2:
+        if st.button("ÇIKIŞ YAP 🛑"):
+            set_user_offline(st.session_state.athlete_name)
+            st.session_state.athlete_name = ""
+            st.session_state.page = 1
+            st.rerun()
 
 # ---------------------------------------------------------
 # SAYFA 4: UZMAN DASHBOARD'U (GİZLİ PANEL)
