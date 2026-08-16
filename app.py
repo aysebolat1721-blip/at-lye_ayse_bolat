@@ -476,7 +476,7 @@ if st.session_state.page == 1:
             <p style='font-size: 1.15rem; font-weight: 800; color: #F8FAFC; line-height: 1.6; margin: 0;'>
                 🟢 <b>NEON YEŞİL</b> = EN HIZLI ŞEKİLDE <b>VUR!</b><br>
                 🔴 <b>NEON KIRMIZI / BEYAZ FLAŞ</b> = BLÖF! <b>EKRANA SAKIN DOKUNMA!</b><br><br>
-                <i>Blöfte ekrana dokunmazsan 1.5 saniye sonra tur otomatik geçilir. Soğukkanlı ol, hazırsan piste çık!</i>
+                <i>Blöfte ekrana dokunmazsan sinyal aniden kaybolur ve otomatik geçer. Soğukkanlı ol, hazırsan piste çık!</i>
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -510,7 +510,7 @@ elif st.session_state.page == 2:
     st.markdown(f"<div class='centered-title'>TUR {round_num} / 10</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ (1.5 - 5.0 sn Tahmin Edilemez)
+    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ (1.2 - 3.2 sn Tahmin Edilemez)
     if st.session_state.round_phase == "waiting":
         st.markdown("""
             <div class='shock-card-black'>
@@ -518,8 +518,8 @@ elif st.session_state.page == 2:
             </div>
         """, unsafe_allow_html=True)
         
-        # 1.5 - 5.0 saniye arası tamamen belirsiz rastgele süre
-        delay = random.uniform(1.5, 5.0)
+        # 1.2 - 3.2 saniye arası tamamen belirsiz rastgele süre
+        delay = random.uniform(1.2, 3.2)
         time.sleep(delay)
         
         # Eğer Ters Köşe Blöf ise önce 0.18s Beyaz Flaş yap
@@ -609,7 +609,7 @@ elif st.session_state.page == 2:
             
         click_time = time.time()
         
-        # 1. SPORCU VUR! BUTONUNA BASTIYSA (ANINDA SONUÇLANDIR)
+        # A) SPORCU VUR! BUTONUNA BASTIYSA (ANINDA DEĞERLENDİR VE İLERLE)
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
@@ -636,8 +636,9 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # 2. ANİ FLAŞ SÜRESİ DOLDU (0.8 SN BASILMADIYSA ANINDA KAYBOL VE BEKLE EKRANINA DÖN)
-        elif (click_time - st.session_state.stimulus_time) >= 0.8:
+        # B) SPORCU VUR! BUTONUNA BASMADIYSA (SİNYALİ 0.65 SN GÖSTER VE OTOMATİK İLERLE)
+        else:
+            time.sleep(0.65)
             if event_type == "NET_ATAK":
                 is_fault = 1
                 elapsed_ms = 999.0
