@@ -609,7 +609,7 @@ elif st.session_state.page == 2:
             
         click_time = time.time()
         
-        # 1. SPORCU VUR! BUTONUNA BASTIYSA
+        # 1. SPORCU VUR! BUTONUNA BASTIYSA (ANINDA SONUÇLANDIR)
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
@@ -636,27 +636,31 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # 2. EĞER BLÖF İSE VE SPORCU 1.5 SN EKRANA DOKUNMADAN BEKLEDİYSE (BAŞARILI FRENLEME)
-        elif event_type in ["NET_BLOF", "TERS_KESE_BLOF"]:
-            if (click_time - st.session_state.stimulus_time) >= 1.5:
+        # 2. ANİ FLAŞ SÜRESİ DOLDU (0.8 SN BASILMADIYSA ANINDA KAYBOL VE BEKLE EKRANINA DÖN)
+        elif (click_time - st.session_state.stimulus_time) >= 0.8:
+            if event_type == "NET_ATAK":
+                is_fault = 1
+                elapsed_ms = 999.0
+                st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
+            else:
                 is_fault = 0
                 elapsed_ms = 0.0
                 st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
                 
-                save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
-                st.session_state.game_results.append({
-                    "round": round_num,
-                    "event": event_type,
-                    "ms": elapsed_ms,
-                    "is_fault": is_fault
-                })
-                
-                st.session_state.current_round += 1
-                if st.session_state.current_round >= 10:
-                    st.session_state.page = 3
-                else:
-                    st.session_state.round_phase = "waiting"
-                st.rerun()
+            save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
+            st.session_state.game_results.append({
+                "round": round_num,
+                "event": event_type,
+                "ms": elapsed_ms,
+                "is_fault": is_fault
+            })
+            
+            st.session_state.current_round += 1
+            if st.session_state.current_round >= 10:
+                st.session_state.page = 3
+            else:
+                st.session_state.round_phase = "waiting"
+            st.rerun()
 
     if st.session_state.last_feedback:
         st.markdown(f"<div class='feedback-banner'>{st.session_state.last_feedback}</div>", unsafe_allow_html=True)
