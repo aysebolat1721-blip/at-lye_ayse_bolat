@@ -67,7 +67,7 @@ def set_user_online(username: str):
         ''', (username.strip(), now_str, now_str))
         conn.commit()
         conn.close()
-    except Exception as e:
+    except Exception:
         pass
 
 def save_score_summary(username: str, avg_speed: float, faults: int, total_rounds: int = 10):
@@ -103,7 +103,7 @@ def save_trial_log(username: str, round_num: int, color: str, reaction_ms: float
         ''', (username.strip(), round_num, color, reaction_ms, is_fault, now_str))
         conn.commit()
         conn.close()
-    except Exception as e:
+    except Exception:
         pass
 
 def get_online_users():
@@ -177,16 +177,16 @@ def clear_db():
 init_db()
 
 # ---------------------------------------------------------
-# 2. SAYFA YAPILANDIRMASI VE NEON E-SPORTS CSS TASARIMI
+# 2. SAYFA YAPILANDIRMASI VE DENGELİ E-SPORTS CSS TASARIMI
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Go/No-Go Motor Frenleme Simülasyonu",
+    page_title="Go/No-Go Ani Dürtü Kontrolü",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# E-Spor Dark Mode & Neon CSS Injection
+# Mükemmel Ortalı, Dengeli & Ani Efektli Neon CSS Injection
 st.markdown("""
     <style>
     /* Global E-Sports Dark Mode Background */
@@ -195,12 +195,14 @@ st.markdown("""
         color: #F8FAFC;
     }
     
+    /* Mükemmel Ortalı Ana Konteyner */
     .block-container {
-        max-width: 600px !important;
-        padding-top: 1rem !important;
+        max-width: 540px !important;
+        padding-top: 1.2rem !important;
         padding-bottom: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
+        margin: 0 auto !important;
     }
     
     /* E-Sports Neon Başlık */
@@ -210,8 +212,8 @@ st.markdown("""
         text-align: center;
         color: #FFFFFF;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        text-shadow: 0 0 15px rgba(0, 255, 102, 0.6), 0 0 30px rgba(0, 255, 102, 0.3);
+        letter-spacing: 1.2px;
+        text-shadow: 0 0 20px rgba(0, 255, 102, 0.7), 0 0 40px rgba(0, 255, 102, 0.4);
         margin-bottom: 0.2rem;
     }
 
@@ -224,121 +226,106 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
 
-    /* KURAL KARTLARI */
-    .rule-card {
-        background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%);
-        border: 2px solid #00FF66;
-        box-shadow: 0 0 25px rgba(0, 255, 102, 0.25);
-        border-radius: 18px;
-        padding: 22px 18px;
-        margin-bottom: 24px;
+    /* MÜKEMMEL DENGELİ OYUN KARTI */
+    .centered-game-card {
+        background: linear-gradient(145deg, #0F172A 0%, #090D16 100%);
+        border: 2px solid #1E293B;
+        border-radius: 24px;
+        padding: 25px 18px;
+        text-align: center;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        margin-bottom: 20px;
     }
 
-    .rule-text {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #F8FAFC;
-        line-height: 1.55;
-        margin: 0;
-    }
-
-    /* NEON DAİRELER */
-    .circle-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 25px 0;
-    }
-
+    /* ANİDEN PATLAYAN ŞAŞIRTICI NEON DAİRELER */
     .circle-gray {
         width: 210px;
         height: 210px;
         border-radius: 50%;
         background: radial-gradient(circle, #334155 0%, #0F172A 100%);
-        border: 4px solid #64748B;
-        box-shadow: 0 0 25px rgba(100, 116, 139, 0.4);
+        border: 4px solid #475569;
+        box-shadow: 0 0 25px rgba(71, 85, 105, 0.3);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #94A3B8;
         font-size: 1.4rem;
         font-weight: 900;
+        margin: 20px auto;
     }
 
-    .circle-green {
+    .circle-green-pop {
         width: 220px;
         height: 220px;
         border-radius: 50%;
         background: radial-gradient(circle, #00FF66 0%, #059669 100%);
-        border: 5px solid #34D399;
-        box-shadow: 0 0 50px #00FF66, 0 0 100px rgba(0, 255, 102, 0.6);
+        border: 6px solid #34D399;
+        box-shadow: 0 0 60px #00FF66, 0 0 120px rgba(0, 255, 102, 0.8);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #000000;
-        font-size: 2.2rem;
+        font-size: 2.6rem;
         font-weight: 900;
-        animation: pulse-green 0.2s ease-in-out;
+        margin: 20px auto;
+        animation: sudden-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .circle-red {
+    .circle-red-pop {
         width: 220px;
         height: 220px;
         border-radius: 50%;
         background: radial-gradient(circle, #FF0055 0%, #991B1B 100%);
-        border: 5px solid #F87171;
-        box-shadow: 0 0 50px #FF0055, 0 0 100px rgba(255, 0, 85, 0.6);
+        border: 6px solid #F87171;
+        box-shadow: 0 0 60px #FF0055, 0 0 120px rgba(255, 0, 85, 0.8);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #FFFFFF;
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 900;
-        animation: pulse-red 0.2s ease-in-out;
+        margin: 20px auto;
+        animation: sudden-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes pulse-green {
-        0% { transform: scale(0.9); }
+    @keyframes sudden-pop {
+        0% { transform: scale(0.3); opacity: 0; }
+        80% { transform: scale(1.08); opacity: 1; }
         100% { transform: scale(1); }
     }
 
-    @keyframes pulse-red {
-        0% { transform: scale(0.9); }
-        100% { transform: scale(1); }
+    /* MÜKEMMEL DENGELİ YAN YANA İKİ BUTON */
+    div[data-testid="stHorizontalBlock"] {
+        gap: 12px !important;
+        align-items: center !important;
     }
 
-    /* NEON VUR BUTONU */
     .btn-attack button {
         width: 100% !important;
-        height: 90px !important;
+        height: 85px !important;
         background: linear-gradient(135deg, #00FF66 0%, #059669 100%) !important;
         color: #000000 !important;
-        font-size: 2.2rem !important;
-        font-weight: 900 !important;
-        border-radius: 20px !important;
-        border: 3px solid #34D399 !important;
-        box-shadow: 0 0 35px rgba(0, 255, 102, 0.7) !important;
-        margin-top: 10px !important;
-        margin-bottom: 10px !important;
-        letter-spacing: 1px !important;
-    }
-    
-    .btn-attack button:active {
-        transform: scale(0.93) !important;
-    }
-
-    /* BEKLE / PAS BUTONU */
-    .btn-wait button {
-        width: 100% !important;
-        height: 75px !important;
-        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
-        color: #FFFFFF !important;
-        font-size: 1.4rem !important;
+        font-size: 2rem !important;
         font-weight: 900 !important;
         border-radius: 18px !important;
-        border: 2px solid #60A5FA !important;
+        border: 3px solid #34D399 !important;
+        box-shadow: 0 0 30px rgba(0, 255, 102, 0.6) !important;
+    }
+
+    .btn-wait button {
+        width: 100% !important;
+        height: 85px !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
+        color: #FFFFFF !important;
+        font-size: 1.5rem !important;
+        font-weight: 900 !important;
+        border-radius: 18px !important;
+        border: 3px solid #60A5FA !important;
         box-shadow: 0 0 25px rgba(59, 130, 246, 0.5) !important;
-        margin-top: 5px !important;
+    }
+
+    div.stButton > button:active {
+        transform: scale(0.94) !important;
     }
 
     /* DEVASA INPUT */
@@ -354,29 +341,15 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 102, 0.3) !important;
     }
 
-    /* BİTİŞ KARTI */
-    .finish-card {
-        background: linear-gradient(135deg, #0F172A 0%, #022C22 100%);
-        border: 2px solid #00FF66;
-        box-shadow: 0 0 35px rgba(0, 255, 102, 0.4);
-        border-radius: 20px;
-        padding: 30px 20px;
-        text-align: center;
-        margin-top: 15px;
-    }
-
-    /* HATA UYARI KARTI */
-    .alert-fault-box {
-        background: linear-gradient(90deg, #DC2626, #991B1B);
-        border: 2px solid #F87171;
-        box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+    /* Geri Bildirim Kutusu */
+    .feedback-banner {
+        background: #1E293B;
         border-radius: 14px;
-        padding: 14px;
+        padding: 12px;
         text-align: center;
-        color: #FFFFFF;
-        font-size: 1.3rem;
-        font-weight: 900;
-        margin-bottom: 15px;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-top: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -397,19 +370,19 @@ if "current_round" not in st.session_state:
     st.session_state.current_round = 0
 
 if "round_phase" not in st.session_state:
-    st.session_state.round_phase = "ready"  # "ready", "waiting", "active", "evaluated"
+    st.session_state.round_phase = "ready"  # "ready", "waiting", "active"
 
 if "stimulus_time" not in st.session_state:
     st.session_state.stimulus_time = None
 
 if "game_results" not in st.session_state:
-    st.session_state.game_results = []  # List of dicts per round
+    st.session_state.game_results = []
 
 if "last_feedback" not in st.session_state:
     st.session_state.last_feedback = ""
 
 def start_new_game():
-    """10 turluk yeni oyun dizilimi oluşturur (7 Yeşil, 3 Kırmızı)."""
+    """10 turluk şaşırtıcı dizilim oluşturur (7 Yeşil, 3 Kırmızı)."""
     seq = ["YEŞİL"] * 7 + ["KIRMIZI"] * 3
     random.shuffle(seq)
     st.session_state.game_sequence = seq
@@ -436,7 +409,6 @@ with st.sidebar:
     
     df_lb = get_leaderboard_df()
     if not df_lb.empty:
-        # İkonlu derece ekleme
         df_lb_display = df_lb.copy()
         ranks = []
         for i in range(len(df_lb_display)):
@@ -461,15 +433,15 @@ with st.sidebar:
 # SAYFA 1: GİRİŞ VE OYUN KURALLARI
 # ---------------------------------------------------------
 if st.session_state.page == 1:
-    st.markdown("<div class='esports-title'>⚡ DÜRTÜ KONTROLÜ & MOTOR FRENLEME</div>", unsafe_allow_html=True)
+    st.markdown("<div class='esports-title'>⚡ ANİ DÜRTÜ KONTROLÜ</div>", unsafe_allow_html=True)
     st.markdown("<div class='esports-subtitle'>CANLI REKABETÇİ VUR / BEKLE OYUNU</div>", unsafe_allow_html=True)
     
     st.markdown("""
-        <div class='rule-card'>
-            <p class='rule-text'>
+        <div class='centered-game-card' style='border-color: #00FF66;'>
+            <p style='font-size: 1.15rem; font-weight: 800; color: #F8FAFC; line-height: 1.55; margin: 0;'>
                 🔥 <b>KURAL BASİT:</b><br><br>
-                🟢 Daire <b>YEŞİL</b> yanınca en hızlı şekilde <b>VUR!</b><br>
-                🔴 Daire <b>KIRMIZI</b> yanarsa blöftür, <b>SAKIN BASMA!</b><br><br>
+                🟢 Daire ANİDEN <b>YEŞİL</b> yanınca en hızlı şekilde <b>VUR!</b><br>
+                🔴 Daire ANİDEN <b>KIRMIZI</b> yanarsa blöftür, <b>SAKIN BASMA!</b><br><br>
                 ⚡ Erken basarsan yanarsın. Sadece hızlı olan değil, soğukkanlı olan kazanır. Hazırsan piste çık!
             </p>
         </div>
@@ -502,50 +474,50 @@ elif st.session_state.page == 2:
     st.markdown(f"<div class='esports-title'>TUR {round_num} / 10</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='esports-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # 1. BEKLEME EVRESİ (Rastgele 1.0 - 2.5 sn Gri Daire)
+    # 1. ŞAŞIRTICI BEKLEME EVRESİ (Rastgele 0.7 - 3.2 sn Tahmin Edilemez Süre)
     if st.session_state.round_phase == "waiting":
         st.markdown("""
-            <div class='circle-container'>
+            <div class='centered-game-card'>
                 <div class='circle-gray'>
-                    HAZIRLAN...
+                    ODAKLAN... 🎯
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # Erken basış engelleme / bekleme süresi
-        delay = random.uniform(1.0, 2.5)
+        # Tahmin edilemez rastgele beklenilmeyen süre
+        delay = random.uniform(0.7, 3.2)
         time.sleep(delay)
         
-        # Aktif renge geç
+        # ANİDEN AKTİF EVREYE GEÇ!
         st.session_state.round_phase = "active"
         st.session_state.stimulus_time = time.time()
         st.rerun()
         
-    # 2. AKTİF EVRE (Yeşil veya Kırmızı Daire Görünümü)
+    # 2. ANİDEN PATLAYAN AKTİF EVRE (Yeşil veya Kırmızı Daire)
     elif st.session_state.round_phase == "active":
+        st.markdown("<div class='centered-game-card'>", unsafe_allow_html=True)
+        
         if target_color == "YEŞİL":
             st.markdown("""
-                <div class='circle-container'>
-                    <div class='circle-green'>
-                        VUR! ⚔️
-                    </div>
+                <div class='circle-green-pop'>
+                    VUR! ⚡
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div class='circle-container'>
-                    <div class='circle-red'>
-                        BLÖF! 🛑
-                    </div>
+                <div class='circle-red-pop'>
+                    BLÖF! 🛑
                 </div>
             """, unsafe_allow_html=True)
             
-        # Butonlar
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        # MÜKEMMEL ORTALI & DENGELİ İKİ BUTON
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("<div class='btn-attack'>", unsafe_allow_html=True)
-            vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
+            vur_btn = st.button("VUR! ⚡", key=f"vur_{round_num}")
             st.markdown("</div>", unsafe_allow_html=True)
             
         with col2:
@@ -560,9 +532,9 @@ elif st.session_state.page == 2:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
             if target_color == "YEŞİL":
-                # Başarılı Vuruş!
+                # Başarılı Şimşek Vuruş!
                 is_fault = 0
-                st.session_state.last_feedback = f"⚡ Harika Vuruş! Süre: {elapsed_ms} ms"
+                st.session_state.last_feedback = f"⚡ ŞİMŞEK VURUŞ! Süre: {elapsed_ms} ms"
             else:
                 # Kırmızıya Basıldı -> Blöfü Yedi (HATA)
                 is_fault = 1
@@ -590,12 +562,12 @@ elif st.session_state.page == 2:
                 # Başarılı Frenleme / Motor İnhibisyon!
                 is_fault = 0
                 elapsed_ms = 0.0
-                st.session_state.last_feedback = "🛡️ Harika Soğukkanlılık! Blöfe Kanmadın!"
+                st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
             else:
                 # Yeşilde Basmadı -> Kaçırılan Fırsat (HATA)
                 is_fault = 1
                 elapsed_ms = 999.0
-                st.session_state.last_feedback = "⚠️ Yeşili Kaçırdın! (HATA ❌)"
+                st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
                 
             save_trial_log(st.session_state.athlete_name, round_num, target_color, elapsed_ms, is_fault)
             st.session_state.game_results.append({
@@ -611,6 +583,9 @@ elif st.session_state.page == 2:
             else:
                 st.session_state.round_phase = "waiting"
             st.rerun()
+            
+    if st.session_state.last_feedback:
+        st.markdown(f"<div class='feedback-banner'>{st.session_state.last_feedback}</div>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # SAYFA 3: SPORCU BİTİŞ EKRANI
@@ -635,7 +610,7 @@ elif st.session_state.page == 3:
         st.metric("🚨 Yediğin Blöf / Hata", f"{total_faults} Adet")
         
     st.markdown("""
-        <div class='finish-card'>
+        <div class='centered-game-card' style='border-color: #00FF66;'>
             <h2 style='color: #00FF66; margin-bottom: 10px;'>⚡ SKORUN CANLI TABLOYA YAZILDI!</h2>
             <p style='color: #CBD5E1; font-size: 1.15rem; font-weight: 700;'>
                 Rakiplerini ve salondaki dereceni <b>sol menüdeki (Sidebar) CANLI SKOR TABLOSUNDAN</b> anlık takip et!
