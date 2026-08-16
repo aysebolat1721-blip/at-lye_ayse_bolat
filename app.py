@@ -255,10 +255,10 @@ st.markdown("""
         color: #00FF66 !important;
     }
     
-    /* GİZLİ OTOMATİK İLERLEME BUTONUNU EKRANDAN %100 SİL VE GİZLE */
-    div.element-container:has(button[key*="autopass"]),
-    div[data-testid="stElementContainer"]:has(button[key*="autopass"]),
-    .autopass-hidden-box {
+    /* GİZLİ OTOMATİK İLERLEME CONTAINER'I (%100 GÖRÜNMEZ) */
+    #autopass_wrapper,
+    .autopass-hidden-box,
+    div[data-testid="stElementContainer"]:has(#autopass_wrapper) {
         display: none !important;
         visibility: hidden !important;
         height: 0px !important;
@@ -592,8 +592,8 @@ elif st.session_state.page == 2:
 
     # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + ANINDA TEPKİ VEREN SIFIR GECİKME BUTON
     elif st.session_state.round_phase == "active":
-        # Dynamic random signal duration per round (650ms to 1350ms)
-        auto_timeout_ms = random.randint(650, 1350)
+        # Dynamic random signal duration per round (450ms to 1400ms)
+        auto_timeout_ms = random.randint(450, 1400)
 
         if event_type == "NET_ATAK":
             components.html(f"""
@@ -612,15 +612,13 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
                     setTimeout(function() {{
                         try {{
-                            var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {{
-                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
-                                    btns[i].click();
-                                    break;
-                                }}
+                            var wrap = window.parent.document.getElementById('autopass_wrapper');
+                            if (wrap) {{
+                                var btn = wrap.querySelector('button');
+                                if (btn) btn.click();
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
@@ -644,15 +642,13 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
                     setTimeout(function() {{
                         try {{
-                            var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {{
-                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
-                                    btns[i].click();
-                                    break;
-                                }}
+                            var wrap = window.parent.document.getElementById('autopass_wrapper');
+                            if (wrap) {{
+                                var btn = wrap.querySelector('button');
+                                if (btn) btn.click();
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
@@ -676,15 +672,13 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali gönder
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
                     setTimeout(function() {{
                         try {{
-                            var btns = window.parent.document.querySelectorAll('button');
-                            for (var i = 0; i < btns.length; i++) {{
-                                if (btns[i].getAttribute('key') && btns[i].getAttribute('key').indexOf('autopass') !== -1) {{
-                                    btns[i].click();
-                                    break;
-                                }}
+                            var wrap = window.parent.document.getElementById('autopass_wrapper');
+                            if (wrap) {{
+                                var btn = wrap.querySelector('button');
+                                if (btn) btn.click();
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
@@ -696,9 +690,9 @@ elif st.session_state.page == 2:
         vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # TAMAMEN GİZLİ OTOMATİK İLERLEME BUTONU (%100 GÖRÜNMEZ)
-        st.markdown("<div class='autopass-hidden-box'>", unsafe_allow_html=True)
-        auto_pass_btn = st.button(" ", key=f"autopass_{round_num}")
+        # TAMAMEN GİZLİ OTOMATİK İLERLEME CONTAINER'I (DOM'DA BİLE GÖRÜNMEZ)
+        st.markdown("<div id='autopass_wrapper' class='autopass-hidden-box'>", unsafe_allow_html=True)
+        auto_pass_btn = st.button("PASS_TRIG", key=f"autopass_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
             
         click_time = time.time()
@@ -730,7 +724,7 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # B) ZAMAN AŞIMI (JS TIMEOUT AUTO-PASS GELİRSE)
+        # B) ZAMAN AŞIMI (RASTGELE SÜRE DOLUNCA DUR/BLÖF KENDİLİĞİNDEN KAYBOLUR VE GEÇER)
         elif auto_pass_btn:
             if event_type == "NET_ATAK":
                 is_fault = 1
