@@ -492,9 +492,8 @@ if st.session_state.page == 1:
         <div class='shock-card-black' style='min-height: auto; padding: 25px;'>
             <p style='font-size: 1.15rem; font-weight: 800; color: #F8FAFC; line-height: 1.6; margin: 0;'>
                 🟢 <b>NEON YEŞİL</b> = EN HIZLI ŞEKİLDE <b>VUR!</b><br>
-                🔴 <b>NEON KIRMIZI</b> = BLÖF! <b>SAKIN BASMA!</b><br>
-                ⚡ <b>BEYAZ FLAŞ</b> = TERS KÖŞE BLÖF! SAKIN KANMA!<br><br>
-                <i>Zifiri karanlıkta ne zaman geleceğini tahmin edemezsin. Hazırsan piste çık!</i>
+                🔴 <b>NEON KIRMIZI / BEYAZ FLAŞ</b> = BLÖF! <b>EKRANA SAKIN DOKUNMA!</b><br><br>
+                <i>Blöfte ekrana dokunmazsan 1.5 saniye sonra tur otomatik geçilir. Soğukkanlı ol, hazırsan piste çık!</i>
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -627,22 +626,14 @@ elif st.session_state.page == 2:
                 </script>
             """, unsafe_allow_html=True)
             
-        # TAM ORTALANMIŞ SİMETRİK BUTONLAR
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
-            vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-        with col2:
-            st.markdown("<div class='btn-blue'>", unsafe_allow_html=True)
-            pas_btn = st.button("PAS / BEKLE 🛡️", key=f"pas_{round_num}")
-            st.markdown("</div>", unsafe_allow_html=True)
+        # TEK DEVASA VUR! BUTONU (BLÖFTE EKRANA DOKUNULMAZ!)
+        st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
+        vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
+        st.markdown("</div>", unsafe_allow_html=True)
             
         click_time = time.time()
         
-        # BUTON ETKİLEŞİM HESAPLAMALARI
+        # 1. SPORCU VUR! BUTONUNA BASTIYSA
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
@@ -668,16 +659,29 @@ elif st.session_state.page == 2:
             else:
                 st.session_state.round_phase = "waiting"
             st.rerun()
-            
-        elif pas_btn:
-            if event_type in ["NET_BLOF", "TERS_KESE_BLOF"]:
+
+        # 2. EĞER BLÖF İSE VE SPORCU 1.5 SN EKRANA DOKUNMADAN BEKLEDİYSE (BAŞARILI FRENLEME)
+        elif event_type in ["NET_BLOF", "TERS_KESE_BLOF"]:
+            # Blöfte 1.5 saniye ekrana dokunulmazsa otomatik başarılı geçiş yap
+            if (click_time - st.session_state.stimulus_time) >= 1.5:
                 is_fault = 0
                 elapsed_ms = 0.0
-                st.session_state.last_feedback = "🛡️ EFSANE SOĞUKKANLILIK! Blöfe Kanmadın!"
-            else:
-                is_fault = 1
-                elapsed_ms = 999.0
-                st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
+                st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
+                
+                save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
+                st.session_state.game_results.append({
+                    "round": round_num,
+                    "event": event_type,
+                    "ms": elapsed_ms,
+                    "is_fault": is_fault
+                })
+                
+                st.session_state.current_round += 1
+                if st.session_state.current_round >= 10:
+                    st.session_state.page = 3
+                else:
+                    st.session_state.round_phase = "waiting"
+                st.rerun()
                 
             save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
             st.session_state.game_results.append({
