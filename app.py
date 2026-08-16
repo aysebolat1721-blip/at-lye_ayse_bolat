@@ -333,7 +333,7 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* MOBİL VE MASAÜSTÜ DEVE BUTONLAR (KRİSTAL NETLİKTE YAZILAR) */
+    /* MOBİL VE MASAÜSTÜ DEVE BUTONLAR (ANINDA TEPKİ VEREN DOKUNMA) */
     div.stButton > button {
         width: 100% !important;
         min-height: 75px !important;
@@ -350,6 +350,7 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        touch-action: manipulation !important;
     }
 
     /* VUR! Butonu (Neon Yeşil arka plan - KAPKARANLIK NET YAZI) */
@@ -380,7 +381,8 @@ st.markdown("""
     }
 
     div.stButton > button:active {
-        transform: scale(0.94) !important;
+        transform: scale(0.92) !important;
+        filter: brightness(1.2) !important;
     }
 
     /* ORTALANMIŞ İNPUT */
@@ -439,7 +441,6 @@ if "last_feedback" not in st.session_state:
 
 def generate_shock_sequence():
     """20 turluk dengeli ve rastgele şok olasılık dizilimi üretir (20 Tur: %55 Blöf/Flaş, %45 Net Atak)."""
-    # 20 Tur: 9 Net Atak (VUR!), 7 Ters Köşe Blöf (Flaş+DUR!), 4 Net Blöf (Flaş+DUR!)
     pool = ["NET_ATAK"] * 9 + ["TERS_KESE_BLOF"] * 7 + ["NET_BLOF"] * 4
     random.shuffle(pool)
     return pool
@@ -534,7 +535,6 @@ if st.session_state.page == 1:
 # SAYFA 2: OYUN EKRANI (ANİ FLAŞ VE ŞOK MEKANİĞİ - 20 TUR)
 # ---------------------------------------------------------
 elif st.session_state.page == 2:
-    # Aktif turda sporcunun online kalp atışını güncelle
     set_user_online(st.session_state.athlete_name)
 
     round_num = st.session_state.current_round + 1  # 1..20
@@ -543,7 +543,7 @@ elif st.session_state.page == 2:
     st.markdown(f"<div class='centered-title'>TUR {round_num} / 20</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ (0.8 - 2.2 sn Tahmin Edilemez)
+    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ
     if st.session_state.round_phase == "waiting":
         st.markdown("""
             <div class='shock-card-black'>
@@ -551,11 +551,9 @@ elif st.session_state.page == 2:
             </div>
         """, unsafe_allow_html=True)
         
-        # 0.8 - 2.2 saniye arası seri ve hızlı belirsiz süre
         delay = random.uniform(0.8, 2.2)
         time.sleep(delay)
         
-        # TÜM BLÖFLERDE (TERS_KESE_BLOF veya NET_BLOF) ÖNCE BEYAZ FLAŞ ŞOK PARLAMASI YAP
         if event_type in ["TERS_KESE_BLOF", "NET_BLOF"]:
             st.session_state.round_phase = "flashing_white"
         else:
@@ -563,7 +561,7 @@ elif st.session_state.page == 2:
             st.session_state.stimulus_time = time.time()
         st.rerun()
 
-    # 1.5 BEYAZ FLAŞ EKRANI (Tüm blöflerde 0.18 saniye yüksek şiddetli şok parlaması)
+    # 1.5 BEYAZ FLAŞ EKRANI
     elif st.session_state.round_phase == "flashing_white":
         st.markdown("""
             <div class='shock-card-white'>
@@ -576,7 +574,7 @@ elif st.session_state.page == 2:
         st.session_state.stimulus_time = time.time()
         st.rerun()
 
-    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı) + 60 FPS CANLI KRONOMETRE
+    # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + ANINDA TEPKİ VEREN SIFIR GECİKME BUTON
     elif st.session_state.round_phase == "active":
         if event_type == "NET_ATAK":
             components.html("""
@@ -594,6 +592,19 @@ elif st.session_state.page == 2:
                             clearInterval(timerId);
                         }
                     }, 16);
+
+                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
+                    setTimeout(function() {
+                        try {
+                            var btns = window.parent.document.querySelectorAll('button');
+                            for (var i = 0; i < btns.length; i++) {
+                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                                    btns[i].click();
+                                    break;
+                                }
+                            }
+                        } catch(e) {}
+                    }, 1200);
                 </script>
             """, height=185)
         elif event_type == "NET_BLOF":
@@ -613,6 +624,19 @@ elif st.session_state.page == 2:
                             clearInterval(timerId);
                         }
                     }, 16);
+
+                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
+                    setTimeout(function() {
+                        try {
+                            var btns = window.parent.document.querySelectorAll('button');
+                            for (var i = 0; i < btns.length; i++) {
+                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                                    btns[i].click();
+                                    break;
+                                }
+                            }
+                        } catch(e) {}
+                    }, 1200);
                 </script>
             """, height=205)
         elif event_type == "TERS_KESE_BLOF":
@@ -632,17 +656,35 @@ elif st.session_state.page == 2:
                             clearInterval(timerId);
                         }
                     }, 16);
+
+                    // Tıklama yapılmazsa 1.2s sonra otomatik pas sinyali gönder
+                    setTimeout(function() {
+                        try {
+                            var btns = window.parent.document.querySelectorAll('button');
+                            for (var i = 0; i < btns.length; i++) {
+                                if (btns[i].textContent.indexOf('AUTO_PASS_SIGNAL') !== -1) {
+                                    btns[i].click();
+                                    break;
+                                }
+                            }
+                        } catch(e) {}
+                    }, 1200);
                 </script>
             """, height=205)
             
-        # TEK DEVASA VUR! BUTONU (BLÖFTE EKRANA DOKUNULMAZ!)
+        # TEK DEVASA VUR! BUTONU (SIFIR KİLİTLENME GECİKMESİ)
         st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
         vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # Gizli Otomatik İlerleme Butonu
+        st.markdown("<div style='display:none;'>", unsafe_allow_html=True)
+        auto_pass_btn = st.button("AUTO_PASS_SIGNAL", key=f"autopass_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
             
         click_time = time.time()
         
-        # A) SPORCU VUR! BUTONUNA BASTIYSA (ANINDA DEĞERLENDİR VE İLERLE)
+        # A) SPORCU VUR! BUTONUNA BASTIYSA (SIFIR GECİKME İLE ANINDA DEĞERLENDİR)
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
@@ -669,10 +711,8 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # B) SPORCU VUR! BUTONUNA BASMADIYSA (MAÇ TEMPOSUNU SİMÜLE EDEN RASTGELE 0.7 - 1.5 SN SÜRE)
-        else:
-            flash_window = random.uniform(0.7, 1.5)
-            time.sleep(flash_window)
+        # B) ZAMAN AŞIMI (JS TIMEOUT AUTO-PASS GELİRSE)
+        elif auto_pass_btn:
             if event_type == "NET_ATAK":
                 is_fault = 1
                 elapsed_ms = 999.0
@@ -704,7 +744,6 @@ elif st.session_state.page == 2:
 # SAYFA 3: BİTİŞ EKRANI (20 TUR ÖZETİ)
 # ---------------------------------------------------------
 elif st.session_state.page == 3:
-    # Test bittiği için sporcuyu Online listesinden temizle
     if st.session_state.athlete_name:
         set_user_offline(st.session_state.athlete_name)
 
