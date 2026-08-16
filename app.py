@@ -6,9 +6,9 @@ import time
 import random
 
 # ---------------------------------------------------------
-# 1. VERİ TABANI YÖNETİMİ (SQLite3 - gonogo.db)
+# 1. VERİ TABANI YÖNETİMİ (SQLite3 - sok_testi.db)
 # ---------------------------------------------------------
-DB_NAME = "gonogo.db"
+DB_NAME = "sok_testi.db"
 
 def init_db():
     """sqlite3 veri tabanı tablolarını otomatik oluşturur."""
@@ -42,7 +42,7 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL,
                 round_num INTEGER NOT NULL,
-                target_color TEXT NOT NULL,
+                event_type TEXT NOT NULL,
                 reaction_ms REAL,
                 is_fault INTEGER NOT NULL,
                 timestamp TEXT NOT NULL
@@ -91,16 +91,16 @@ def save_score_summary(username: str, avg_speed: float, faults: int, total_round
     except Exception as e:
         st.error(f"Skor kaydetme hatası: {e}")
 
-def save_trial_log(username: str, round_num: int, color: str, reaction_ms: float, is_fault: int):
+def save_trial_log(username: str, round_num: int, event_type: str, reaction_ms: float, is_fault: int):
     """Her tur detayını klinik veri tabanına ekler."""
     try:
         conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         c = conn.cursor()
         now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         c.execute('''
-            INSERT INTO trial_logs (username, round_num, target_color, reaction_ms, is_fault, timestamp)
+            INSERT INTO trial_logs (username, round_num, event_type, reaction_ms, is_fault, timestamp)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''', (username.strip(), round_num, color, reaction_ms, is_fault, now_str))
+        ''', (username.strip(), round_num, event_type, reaction_ms, is_fault, now_str))
         conn.commit()
         conn.close()
     except Exception:
@@ -121,7 +121,7 @@ def get_online_users():
 def get_leaderboard_df():
     """
     Canlı Skor Tablosu (Leaderboard):
-    Sıralama: Önce En Az Kırmızıya Basanlar (fault_count ASC), sonra En Düşük Ortalama Milisaniye (avg_speed_ms ASC).
+    Sıralama: Önce En Az Hata Yapanlar (fault_count ASC), sonra En Düşük MS Hızına Sahip Olanlar (avg_speed_ms ASC).
     """
     try:
         conn = sqlite3.connect(DB_NAME, check_same_thread=False)
@@ -147,7 +147,7 @@ def get_all_trials_df():
                 id AS 'ID',
                 username AS 'Sporcu',
                 round_num AS 'Tur No',
-                target_color AS 'Hedef Renk',
+                event_type AS 'Olay Tipi',
                 ROUND(reaction_ms, 1) AS 'Reaksiyon (ms)',
                 is_fault AS 'Hata Var Mı',
                 timestamp AS 'Tarih / Saat'
@@ -177,149 +177,164 @@ def clear_db():
 init_db()
 
 # ---------------------------------------------------------
-# 2. SAYFA YAPILANDIRMASI VE DENGELİ E-SPORTS CSS TASARIMI
+# 2. MÜKEMMEL ORTALANMIŞ CSS ENJEKSİYONU & DARK MODE
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Go/No-Go Ani Dürtü Kontrolü",
+    page_title="Karanlık Oda: Reaksiyon ve Fren",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# Mükemmel Ortalı, Dengeli & Ani Efektli Neon CSS Injection
+# TAM ORTALANMIŞ VE SİMETRİK CSS
 st.markdown("""
     <style>
-    /* Global E-Sports Dark Mode Background */
+    /* Global Background */
     .stApp {
-        background-color: #080A10;
+        background-color: #030712;
         color: #F8FAFC;
     }
     
-    /* Mükemmel Ortalı Ana Konteyner */
+    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I */
     .block-container {
-        max-width: 540px !important;
+        max-width: 520px !important;
         padding-top: 1.2rem !important;
         padding-bottom: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
         margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
     }
     
-    /* E-Sports Neon Başlık */
-    .esports-title {
+    [data-testid="stVerticalBlock"] {
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* Mükemmel Ortalanmış Başlıklar */
+    .centered-title {
         font-size: 2.1rem;
         font-weight: 900;
         text-align: center;
         color: #FFFFFF;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        text-shadow: 0 0 20px rgba(0, 255, 102, 0.7), 0 0 40px rgba(0, 255, 102, 0.4);
-        margin-bottom: 0.2rem;
+        letter-spacing: 1.5px;
+        text-shadow: 0 0 25px rgba(0, 255, 102, 0.8);
+        margin-bottom: 0.3rem;
+        width: 100%;
     }
 
-    .esports-subtitle {
+    .centered-subtitle {
         font-size: 0.95rem;
         text-align: center;
         color: #94A3B8;
         font-weight: 700;
         margin-bottom: 1.5rem;
         letter-spacing: 0.5px;
+        width: 100%;
     }
 
-    /* MÜKEMMEL DENGELİ OYUN KARTI */
-    .centered-game-card {
-        background: linear-gradient(145deg, #0F172A 0%, #090D16 100%);
-        border: 2px solid #1E293B;
+    /* ANİ FLAŞ VE ŞOK KARTLARI */
+    .shock-card-black {
+        background: #000000;
+        border: 3px solid #1E293B;
         border-radius: 24px;
-        padding: 25px 18px;
+        padding: 45px 20px;
+        width: 100%;
+        min-height: 270px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
         margin-bottom: 20px;
     }
 
-    /* ANİDEN PATLAYAN ŞAŞIRTICI NEON DAİRELER */
-    .circle-gray {
-        width: 210px;
-        height: 210px;
-        border-radius: 50%;
-        background: radial-gradient(circle, #334155 0%, #0F172A 100%);
-        border: 4px solid #475569;
-        box-shadow: 0 0 25px rgba(71, 85, 105, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #94A3B8;
-        font-size: 1.4rem;
-        font-weight: 900;
-        margin: 20px auto;
-    }
-
-    .circle-green-pop {
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
+    .shock-card-green {
         background: radial-gradient(circle, #00FF66 0%, #059669 100%);
-        border: 6px solid #34D399;
+        border: 5px solid #34D399;
+        border-radius: 24px;
+        padding: 45px 20px;
+        width: 100%;
+        min-height: 270px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         box-shadow: 0 0 60px #00FF66, 0 0 120px rgba(0, 255, 102, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #000000;
-        font-size: 2.6rem;
-        font-weight: 900;
-        margin: 20px auto;
-        animation: sudden-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-bottom: 20px;
+        animation: flash-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .circle-red-pop {
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
+    .shock-card-red {
         background: radial-gradient(circle, #FF0055 0%, #991B1B 100%);
-        border: 6px solid #F87171;
-        box-shadow: 0 0 60px #FF0055, 0 0 120px rgba(255, 0, 85, 0.8);
+        border: 5px solid #F87171;
+        border-radius: 24px;
+        padding: 45px 20px;
+        width: 100%;
+        min-height: 270px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #FFFFFF;
-        font-size: 2.2rem;
-        font-weight: 900;
-        margin: 20px auto;
-        animation: sudden-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        box-shadow: 0 0 60px #FF0055, 0 0 120px rgba(255, 0, 85, 0.8);
+        margin-bottom: 20px;
+        animation: flash-pop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes sudden-pop {
-        0% { transform: scale(0.3); opacity: 0; }
-        80% { transform: scale(1.08); opacity: 1; }
+    .shock-card-white {
+        background: #FFFFFF;
+        border: 5px solid #E2E8F0;
+        border-radius: 24px;
+        padding: 45px 20px;
+        width: 100%;
+        min-height: 270px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0 0 100px #FFFFFF;
+        margin-bottom: 20px;
+    }
+
+    @keyframes flash-pop {
+        0% { transform: scale(0.35); opacity: 0; }
+        80% { transform: scale(1.06); opacity: 1; }
         100% { transform: scale(1); }
     }
 
-    /* MÜKEMMEL DENGELİ YAN YANA İKİ BUTON */
-    div[data-testid="stHorizontalBlock"] {
-        gap: 12px !important;
-        align-items: center !important;
-    }
-
-    .btn-attack button {
+    /* MÜKEMMEL DENGELİ DEVE BUTONLAR */
+    div.stButton > button {
         width: 100% !important;
         height: 85px !important;
+        font-size: 1.8rem !important;
+        font-weight: 900 !important;
+        border-radius: 20px !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        letter-spacing: 1px !important;
+    }
+
+    .btn-green button {
         background: linear-gradient(135deg, #00FF66 0%, #059669 100%) !important;
         color: #000000 !important;
-        font-size: 2rem !important;
-        font-weight: 900 !important;
-        border-radius: 18px !important;
         border: 3px solid #34D399 !important;
-        box-shadow: 0 0 30px rgba(0, 255, 102, 0.6) !important;
+        box-shadow: 0 0 35px rgba(0, 255, 102, 0.7) !important;
     }
 
-    .btn-wait button {
-        width: 100% !important;
-        height: 85px !important;
+    .btn-blue button {
         background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
         color: #FFFFFF !important;
-        font-size: 1.5rem !important;
-        font-weight: 900 !important;
-        border-radius: 18px !important;
         border: 3px solid #60A5FA !important;
         box-shadow: 0 0 25px rgba(59, 130, 246, 0.5) !important;
     }
@@ -328,7 +343,7 @@ st.markdown("""
         transform: scale(0.94) !important;
     }
 
-    /* DEVASA INPUT */
+    /* ORTALANMIŞ İNPUT */
     div.stTextInput > div > div > input {
         height: 70px !important;
         font-size: 1.6rem !important;
@@ -341,7 +356,7 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 255, 102, 0.3) !important;
     }
 
-    /* Geri Bildirim Kutusu */
+    /* Geri Bildirim Metni */
     .feedback-banner {
         background: #1E293B;
         border-radius: 14px;
@@ -350,6 +365,7 @@ st.markdown("""
         font-size: 1.2rem;
         font-weight: 800;
         margin-top: 15px;
+        width: 100%;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -358,7 +374,7 @@ st.markdown("""
 # 3. STATE YÖNETİMİ (SESSION STATE)
 # ---------------------------------------------------------
 if "page" not in st.session_state:
-    st.session_state.page = 1  # 1: Giriş, 2: Oyun Ekranı, 3: Bitiş Ekranı, 4: Uzman Dashboard
+    st.session_state.page = 1  # 1: Giriş, 2: Oyun, 3: Bitiş, 4: Uzman Dashboard
 
 if "athlete_name" not in st.session_state:
     st.session_state.athlete_name = ""
@@ -370,7 +386,7 @@ if "current_round" not in st.session_state:
     st.session_state.current_round = 0
 
 if "round_phase" not in st.session_state:
-    st.session_state.round_phase = "ready"  # "ready", "waiting", "active"
+    st.session_state.round_phase = "ready"  # "waiting", "flashing_white", "active"
 
 if "stimulus_time" not in st.session_state:
     st.session_state.stimulus_time = None
@@ -381,11 +397,14 @@ if "game_results" not in st.session_state:
 if "last_feedback" not in st.session_state:
     st.session_state.last_feedback = ""
 
+def generate_shock_sequence():
+    """10 turluk şok olasılık dizilimi üretir (50% Atak, 30% Blöf, 20% Ters Köşe Blöf)."""
+    pool = ["NET_ATAK"] * 5 + ["NET_BLOF"] * 3 + ["TERS_KESE_BLOF"] * 2
+    random.shuffle(pool)
+    return pool
+
 def start_new_game():
-    """10 turluk şaşırtıcı dizilim oluşturur (7 Yeşil, 3 Kırmızı)."""
-    seq = ["YEŞİL"] * 7 + ["KIRMIZI"] * 3
-    random.shuffle(seq)
-    st.session_state.game_sequence = seq
+    st.session_state.game_sequence = generate_shock_sequence()
     st.session_state.current_round = 0
     st.session_state.round_phase = "waiting"
     st.session_state.game_results = []
@@ -395,7 +414,7 @@ def start_new_game():
 # 4. SİDEBAR: CANLI SALON VE LEADERBOARD (TÜM SAYFALARDA)
 # ---------------------------------------------------------
 with st.sidebar:
-    st.markdown("### 🟢 Salonda Olanlar (Online)")
+    st.markdown("### 🟢 Salondakiler (Online)")
     online_list = get_online_users()
     if online_list:
         for u in online_list:
@@ -404,8 +423,8 @@ with st.sidebar:
         st.caption("Henüz aktif sporcu yok.")
         
     st.markdown("---")
-    st.markdown("### 🏆 CANLI SKOR TABLOSU")
-    st.caption("🥇 Öncelik: En Az Blöf/Hata | 🥈 İkincil: En Düşük Ortalama (ms)")
+    st.markdown("### 🏆 CANLI SKOR (LEADERBOARD)")
+    st.caption("🥇 Öncelik: En Az Blöf/Hata | 🥈 İkincil: En Düşük MS Hızı")
     
     df_lb = get_leaderboard_df()
     if not df_lb.empty:
@@ -419,10 +438,10 @@ with st.sidebar:
         df_lb_display.insert(0, "Sıra", ranks)
         st.dataframe(df_lb_display, use_container_width=True, hide_index=True)
     else:
-        st.info("Henüz tamamlanan skor yok.")
+        st.info("Henüz skor yok.")
         
     st.markdown("---")
-    with st.expander("🔒 Uzman Girişi"):
+    with st.expander("🔒 Admin Girişi"):
         admin_pass = st.text_input("Şifre:", type="password")
         if admin_pass == "tohm2026":
             if st.button("📊 Uzman Dashboard'una Git", use_container_width=True):
@@ -430,26 +449,26 @@ with st.sidebar:
                 st.rerun()
 
 # ---------------------------------------------------------
-# SAYFA 1: GİRİŞ VE OYUN KURALLARI
+# SAYFA 1: GİRİŞ VE BEKLEME LOBİSİ
 # ---------------------------------------------------------
 if st.session_state.page == 1:
-    st.markdown("<div class='esports-title'>⚡ ANİ DÜRTÜ KONTROLÜ</div>", unsafe_allow_html=True)
-    st.markdown("<div class='esports-subtitle'>CANLI REKABETÇİ VUR / BEKLE OYUNU</div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-title'>⚡ KARANLIK ODA ⚡</div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-subtitle'>REAKSİYON VE FREN SİMÜLASYONU</div>", unsafe_allow_html=True)
     
     st.markdown("""
-        <div class='centered-game-card' style='border-color: #00FF66;'>
-            <p style='font-size: 1.15rem; font-weight: 800; color: #F8FAFC; line-height: 1.55; margin: 0;'>
-                🔥 <b>KURAL BASİT:</b><br><br>
-                🟢 Daire ANİDEN <b>YEŞİL</b> yanınca en hızlı şekilde <b>VUR!</b><br>
-                🔴 Daire ANİDEN <b>KIRMIZI</b> yanarsa blöftür, <b>SAKIN BASMA!</b><br><br>
-                ⚡ Erken basarsan yanarsın. Sadece hızlı olan değil, soğukkanlı olan kazanır. Hazırsan piste çık!
+        <div class='shock-card-black' style='min-height: auto; padding: 25px;'>
+            <p style='font-size: 1.15rem; font-weight: 800; color: #F8FAFC; line-height: 1.6; margin: 0;'>
+                🟢 <b>NEON YEŞİL</b> = EN HIZLI ŞEKİLDE <b>VUR!</b><br>
+                🔴 <b>NEON KIRMIZI</b> = BLÖF! <b>SAKIN BASMA!</b><br>
+                ⚡ <b>BEYAZ FLAŞ</b> = TERS KÖŞE BLÖF! SAKIN KANMA!<br><br>
+                <i>Zifiri karanlıkta ne zaman geleceğini tahmin edemezsin. Hazırsan piste çık!</i>
             </p>
         </div>
     """, unsafe_allow_html=True)
     
     with st.form("login_form"):
-        st.markdown("<p style='font-size: 1.2rem; font-weight: 800; color: #00FF66; text-align: center; margin-bottom: 5px;'>SPORCU RUMUZU</p>", unsafe_allow_html=True)
-        name_in = st.text_input("Sporcu Rumuzu", label_visibility="collapsed", placeholder="Rumuzunuzu yazın")
+        st.markdown("<p style='font-size: 1.2rem; font-weight: 800; color: #00FF66; text-align: center;'>SPORCU RUMUZU</p>", unsafe_allow_html=True)
+        name_in = st.text_input("Rumuz", label_visibility="collapsed", placeholder="Rumuzunuzu yazın")
         
         st.markdown("<br>", unsafe_allow_html=True)
         btn_start = st.form_submit_button("PİSTE ÇIK ⚡", type="primary")
@@ -465,64 +484,82 @@ if st.session_state.page == 1:
                 st.warning("Lütfen bir rumuz giriniz.")
 
 # ---------------------------------------------------------
-# SAYFA 2: OYUN EKRANI (GO / NO-GO SİMÜLASYONU)
+# SAYFA 2: OYUN EKRANI (ANİ FLAŞ VE ŞOK MEKANİĞİ)
 # ---------------------------------------------------------
 elif st.session_state.page == 2:
     round_num = st.session_state.current_round + 1  # 1..10
-    target_color = st.session_state.game_sequence[st.session_state.current_round]
+    event_type = st.session_state.game_sequence[st.session_state.current_round]
     
-    st.markdown(f"<div class='esports-title'>TUR {round_num} / 10</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='esports-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='centered-title'>TUR {round_num} / 10</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # 1. ŞAŞIRTICI BEKLEME EVRESİ (Rastgele 0.7 - 3.2 sn Tahmin Edilemez Süre)
+    # 1. ZİFİRİ KARANLIK BEKLEME EVRESİ (1.5 - 5.0 sn Tahmin Edilemez)
     if st.session_state.round_phase == "waiting":
         st.markdown("""
-            <div class='centered-game-card'>
-                <div class='circle-gray'>
-                    ODAKLAN... 🎯
-                </div>
+            <div class='shock-card-black'>
+                <h2 style='color: #64748B; font-weight: 900; letter-spacing: 2px;'>BEKLE... 🛑</h2>
             </div>
         """, unsafe_allow_html=True)
         
-        # Tahmin edilemez rastgele beklenilmeyen süre
-        delay = random.uniform(0.7, 3.2)
+        # 1.5 - 5.0 saniye arası tamamen belirsiz rastgele süre
+        delay = random.uniform(1.5, 5.0)
         time.sleep(delay)
         
-        # ANİDEN AKTİF EVREYE GEÇ!
+        # Eğer Ters Köşe Blöf ise önce 0.18s Beyaz Flaş yap
+        if event_type == "TERS_KESE_BLOF":
+            st.session_state.round_phase = "flashing_white"
+        else:
+            st.session_state.round_phase = "active"
+            st.session_state.stimulus_time = time.time()
+        st.rerun()
+
+    # 1.5 BEYAZ FLAŞ EKRANI (Ters Köşe Blöf için 0.18 saniye şok parlaması)
+    elif st.session_state.round_phase == "flashing_white":
+        st.markdown("""
+            <div class='shock-card-white'>
+                <h1 style='color: #000000; font-size: 3rem; font-weight: 900;'>⚡ FLASH! ⚡</h1>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        time.sleep(0.18)
         st.session_state.round_phase = "active"
         st.session_state.stimulus_time = time.time()
         st.rerun()
-        
-    # 2. ANİDEN PATLAYAN AKTİF EVRE (Yeşil veya Kırmızı Daire)
+
+    # 2. ANİDEN PATLAYAN ŞOK EKRANI (Yeşil veya Kırmızı)
     elif st.session_state.round_phase == "active":
-        st.markdown("<div class='centered-game-card'>", unsafe_allow_html=True)
-        
-        if target_color == "YEŞİL":
+        if event_type == "NET_ATAK":
             st.markdown("""
-                <div class='circle-green-pop'>
-                    VUR! ⚡
+                <div class='shock-card-green'>
+                    <h1 style='color: #000000; font-size: 3.5rem; font-weight: 900; margin: 0;'>VUR! ⚔️</h1>
                 </div>
             """, unsafe_allow_html=True)
-        else:
+        elif event_type == "NET_BLOF":
             st.markdown("""
-                <div class='circle-red-pop'>
-                    BLÖF! 🛑
+                <div class='shock-card-red'>
+                    <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
+                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 10px;'>NET BLÖF!</p>
+                </div>
+            """, unsafe_allow_html=True)
+        elif event_type == "TERS_KESE_BLOF":
+            st.markdown("""
+                <div class='shock-card-red'>
+                    <h1 style='color: #FFFFFF; font-size: 3.2rem; font-weight: 900; margin: 0;'>DUR! 🛑</h1>
+                    <p style='color: #FFD1D1; font-weight: 800; font-size: 1.2rem; margin-top: 10px;'>⚡ TERS KÖŞE BLÖF!</p>
                 </div>
             """, unsafe_allow_html=True)
             
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # MÜKEMMEL ORTALI & DENGELİ İKİ BUTON
+        # TAM ORTALANMIŞ SİMETRİK BUTONLAR
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("<div class='btn-attack'>", unsafe_allow_html=True)
-            vur_btn = st.button("VUR! ⚡", key=f"vur_{round_num}")
+            st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
+            vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
             st.markdown("</div>", unsafe_allow_html=True)
             
         with col2:
-            st.markdown("<div class='btn-wait'>", unsafe_allow_html=True)
-            bekle_btn = st.button("PAS / BEKLE 🛡️", key=f"bekle_{round_num}")
+            st.markdown("<div class='btn-blue'>", unsafe_allow_html=True)
+            pas_btn = st.button("PAS / BEKLE 🛡️", key=f"pas_{round_num}")
             st.markdown("</div>", unsafe_allow_html=True)
             
         click_time = time.time()
@@ -531,21 +568,18 @@ elif st.session_state.page == 2:
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
-            if target_color == "YEŞİL":
-                # Başarılı Şimşek Vuruş!
+            if event_type == "NET_ATAK":
                 is_fault = 0
-                st.session_state.last_feedback = f"⚡ ŞİMŞEK VURUŞ! Süre: {elapsed_ms} ms"
+                st.session_state.last_feedback = f"⚡ ŞİMŞEK GİBİ VURUŞ! Süre: {elapsed_ms} ms"
             else:
-                # Kırmızıya Basıldı -> Blöfü Yedi (HATA)
                 is_fault = 1
-                elapsed_ms = 999.0  # Cezalı süre
+                elapsed_ms = 999.0
                 st.session_state.last_feedback = "🚨 BLÖFÜ YEDİN! (HATA ❌)"
                 
-            # Log ve tur kaydı
-            save_trial_log(st.session_state.athlete_name, round_num, target_color, elapsed_ms, is_fault)
+            save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
             st.session_state.game_results.append({
                 "round": round_num,
-                "color": target_color,
+                "event": event_type,
                 "ms": elapsed_ms,
                 "is_fault": is_fault
             })
@@ -557,22 +591,20 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
             
-        elif bekle_btn:
-            if target_color == "KIRMIZI":
-                # Başarılı Frenleme / Motor İnhibisyon!
+        elif pas_btn:
+            if event_type in ["NET_BLOF", "TERS_KESE_BLOF"]:
                 is_fault = 0
                 elapsed_ms = 0.0
-                st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
+                st.session_state.last_feedback = "🛡️ EFSANE SOĞUKKANLILIK! Blöfe Kanmadın!"
             else:
-                # Yeşilde Basmadı -> Kaçırılan Fırsat (HATA)
                 is_fault = 1
                 elapsed_ms = 999.0
                 st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
                 
-            save_trial_log(st.session_state.athlete_name, round_num, target_color, elapsed_ms, is_fault)
+            save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
             st.session_state.game_results.append({
                 "round": round_num,
-                "color": target_color,
+                "event": event_type,
                 "ms": elapsed_ms,
                 "is_fault": is_fault
             })
@@ -583,53 +615,52 @@ elif st.session_state.page == 2:
             else:
                 st.session_state.round_phase = "waiting"
             st.rerun()
-            
+
     if st.session_state.last_feedback:
         st.markdown(f"<div class='feedback-banner'>{st.session_state.last_feedback}</div>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# SAYFA 3: SPORCU BİTİŞ EKRANI
+# SAYFA 3: BİTİŞ EKRANI
 # ---------------------------------------------------------
 elif st.session_state.page == 3:
-    st.markdown("<div class='esports-title'>🏆 TUR TAMAMLANDI!</div>", unsafe_allow_html=True)
-    st.markdown(f"<div class='esports-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-title'>🏆 TUR TAMAMLANDI!</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='centered-subtitle'>Sporcu: {st.session_state.athlete_name}</div>", unsafe_allow_html=True)
     
-    # Ortalama hız ve Hata hesabı
-    valid_speeds = [r["ms"] for r in st.session_state.game_results if r["is_fault"] == 0 and r["color"] == "YEŞİL"]
+    valid_speeds = [r["ms"] for r in st.session_state.game_results if r["is_fault"] == 0 and r["event"] == "NET_ATAK"]
     avg_speed_ms = round(sum(valid_speeds) / len(valid_speeds), 1) if valid_speeds else 999.0
     
     total_faults = sum(r["is_fault"] for r in st.session_state.game_results)
     
-    # Skorları DB'ye yaz (Canlı Leaderboard anında güncellenir)
+    # Skor tablosuna yaz
     save_score_summary(st.session_state.athlete_name, avg_speed_ms, total_faults, total_rounds=10)
     
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("🎯 Ort. Reaksiyon Hızı", f"{avg_speed_ms} ms")
+        st.metric("🎯 Ortalama Hızın", f"{avg_speed_ms} ms")
     with col2:
-        st.metric("🚨 Yediğin Blöf / Hata", f"{total_faults} Adet")
+        st.metric("🚨 Yediğin Blöf", f"{total_faults} Adet")
         
     st.markdown("""
-        <div class='centered-game-card' style='border-color: #00FF66;'>
+        <div class='shock-card-black' style='border-color: #00FF66;'>
             <h2 style='color: #00FF66; margin-bottom: 10px;'>⚡ SKORUN CANLI TABLOYA YAZILDI!</h2>
-            <p style='color: #CBD5E1; font-size: 1.15rem; font-weight: 700;'>
-                Rakiplerini ve salondaki dereceni <b>sol menüdeki (Sidebar) CANLI SKOR TABLOSUNDAN</b> anlık takip et!
+            <p style='color: #CBD5E1; font-size: 1.1rem; font-weight: 700;'>
+                Rakiplerinin durumunu sol menüdeki <b>CANLI SKOR TABLOSUNDAN</b> anlık takip et!
             </p>
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("<br><br>", unsafe_allow_html=True)
-    if st.button("YENİDEN PİSTE ÇIK (TEKRAR DENE) 🔄", type="primary"):
+    if st.button("TEKRAR DENE (PİSTE ÇIK) 🔄", type="primary"):
         start_new_game()
         st.session_state.page = 2
         st.rerun()
 
 # ---------------------------------------------------------
-# SAYFA 4: UZMAN DASHBOARD'U (YÖNETİCİ EKRANI)
+# SAYFA 4: UZMAN DASHBOARD'U (GİZLİ PANEL)
 # ---------------------------------------------------------
 elif st.session_state.page == 4:
-    st.markdown("<div class='esports-title'>📊 UZMAN DASHBOARD'U</div>", unsafe_allow_html=True)
-    st.markdown("<div class='esports-subtitle'>Klinik Go/No-Go Dürtü Kontrolü Veri Analizi</div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-title'>📊 UZMAN DASHBOARD'U</div>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-subtitle'>Klinik Şok & Dürtü Kontrolü Veri Analizi</div>", unsafe_allow_html=True)
     
     df_trials = get_all_trials_df()
     
@@ -638,12 +669,11 @@ elif st.session_state.page == 4:
         st.dataframe(df_trials, use_container_width=True, hide_index=True)
         
         st.markdown("---")
-        # CSV İndirme Butonu
         csv_bytes = df_trials.to_csv(index=False).encode('utf-8-sig')
         st.download_button(
             label="📥 Tüm Verileri CSV Olarak İndir",
             data=csv_bytes,
-            file_name=f"durtsel_kontrol_verileri_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.csv",
+            file_name=f"sok_testi_verileri_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.csv",
             mime="text/csv",
             type="primary",
             use_container_width=True
