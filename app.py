@@ -195,10 +195,19 @@ st.markdown("""
         color: #F8FAFC;
     }
     
-    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I */
+    /* Streamlit Üst Barları Gizle ve Yeterli Üst Boşluk Bırak */
+    header[data-testid="stHeader"] {
+        visibility: hidden !important;
+        height: 0px !important;
+    }
+
+    #MainMenu { visibility: hidden !important; }
+    footer { visibility: hidden !important; }
+    
+    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Mobil Odaklı Üst Boşluk) */
     .block-container {
         max-width: 520px !important;
-        padding-top: 1.2rem !important;
+        padding-top: 3.8rem !important;
         padding-bottom: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
