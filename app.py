@@ -411,8 +411,8 @@ if "last_feedback" not in st.session_state:
     st.session_state.last_feedback = ""
 
 def generate_shock_sequence():
-    """10 turluk şok olasılık dizilimi üretir (50% Atak, 30% Blöf, 20% Ters Köşe Blöf)."""
-    pool = ["NET_ATAK"] * 5 + ["NET_BLOF"] * 3 + ["TERS_KESE_BLOF"] * 2
+    """10 turluk yüksek frekanslı şok olasılık dizilimi üretir (%50 Beyaz Flaş Parlaması)."""
+    pool = ["TERS_KESE_BLOF"] * 5 + ["NET_ATAK"] * 4 + ["NET_BLOF"] * 1
     random.shuffle(pool)
     return pool
 
@@ -523,8 +523,8 @@ elif st.session_state.page == 2:
             </div>
         """, unsafe_allow_html=True)
         
-        # 1.2 - 3.2 saniye arası tamamen belirsiz rastgele süre
-        delay = random.uniform(1.2, 3.2)
+        # 0.8 - 2.2 saniye arası seri ve hızlı belirsiz süre
+        delay = random.uniform(0.8, 2.2)
         time.sleep(delay)
         
         # Eğer Ters Köşe Blöf ise önce 0.18s Beyaz Flaş yap
