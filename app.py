@@ -457,9 +457,14 @@ with st.sidebar:
     with st.expander("🔒 Admin Girişi"):
         admin_pass = st.text_input("Şifre:", type="password")
         if admin_pass == "tohm2026":
+            st.success("✅ Yetkili Admin")
             if st.button("📊 Uzman Dashboard'una Git", use_container_width=True):
                 st.session_state.page = 4
                 st.rerun()
+            if st.button("🗑️ Canlı Skor Tablosunu Sıfırla", use_container_width=True):
+                if clear_db():
+                    st.success("Tüm Skor Tablosu Temizlendi! 🗑️")
+                    st.rerun()
 
 # ---------------------------------------------------------
 # SAYFA 1: GİRİŞ VE BEKLEME LOBİSİ
@@ -636,9 +641,10 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # B) SPORCU VUR! BUTONUNA BASMADIYSA (SİNYALİ 0.65 SN GÖSTER VE OTOMATİK İLERLE)
+        # B) SPORCU VUR! BUTONUNA BASMADIYSA (MAÇ TEMPOSUNU SİMÜLE EDEN RASTGELE 0.7 - 1.5 SN SÜRE)
         else:
-            time.sleep(0.65)
+            flash_window = random.uniform(0.7, 1.5)
+            time.sleep(flash_window)
             if event_type == "NET_ATAK":
                 is_fault = 1
                 elapsed_ms = 999.0
