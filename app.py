@@ -255,10 +255,11 @@ st.markdown("""
         color: #00FF66 !important;
     }
     
-    /* GİZLİ OTOMATİK İLERLEME CONTAINER'I (%100 GÖRÜNMEZ) */
+    /* TAMAMEN GİZLİ OTOMATİK İLERLEME FORMU VE BUTONU (%100 GÖRÜNMEZ) */
+    form[data-testid="stForm"]:has(button[key*="autopass"]),
+    div[data-testid="stForm"]:has(button[key*="autopass"]),
     #autopass_wrapper,
-    .autopass-hidden-box,
-    div[data-testid="stElementContainer"]:has(#autopass_wrapper) {
+    .autopass-hidden-box {
         display: none !important;
         visibility: hidden !important;
         height: 0px !important;
@@ -592,7 +593,7 @@ elif st.session_state.page == 2:
 
     # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + ANINDA TEPKİ VEREN SIFIR GECİKME BUTON
     elif st.session_state.round_phase == "active":
-        # Dynamic random signal duration per round (450ms to 1400ms)
+        # Her turda 450ms ile 1400ms arası tamamen rastgele sinyal kalma süresi
         auto_timeout_ms = random.randint(450, 1400)
 
         if event_type == "NET_ATAK":
@@ -612,13 +613,16 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
                     setTimeout(function() {{
                         try {{
-                            var wrap = window.parent.document.getElementById('autopass_wrapper');
-                            if (wrap) {{
-                                var btn = wrap.querySelector('button');
-                                if (btn) btn.click();
+                            var forms = window.parent.document.querySelectorAll('form');
+                            for (var i = 0; i < forms.length; i++) {{
+                                var btn = forms[i].querySelector('button');
+                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
+                                    btn.click();
+                                    break;
+                                }}
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
@@ -642,13 +646,16 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
                     setTimeout(function() {{
                         try {{
-                            var wrap = window.parent.document.getElementById('autopass_wrapper');
-                            if (wrap) {{
-                                var btn = wrap.querySelector('button');
-                                if (btn) btn.click();
+                            var forms = window.parent.document.querySelectorAll('form');
+                            for (var i = 0; i < forms.length; i++) {{
+                                var btn = forms[i].querySelector('button');
+                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
+                                    btn.click();
+                                    break;
+                                }}
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
@@ -672,28 +679,30 @@ elif st.session_state.page == 2:
                         }}
                     }}, 16);
 
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra gizli pas sinyali tetikle
+                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
                     setTimeout(function() {{
                         try {{
-                            var wrap = window.parent.document.getElementById('autopass_wrapper');
-                            if (wrap) {{
-                                var btn = wrap.querySelector('button');
-                                if (btn) btn.click();
+                            var forms = window.parent.document.querySelectorAll('form');
+                            for (var i = 0; i < forms.length; i++) {{
+                                var btn = forms[i].querySelector('button');
+                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
+                                    btn.click();
+                                    break;
+                                }}
                             }}
                         }} catch(e) {{}}
                     }}, {auto_timeout_ms});
                 </script>
             """, height=205)
             
-        # TEK DEVASA VUR! BUTONU (SIFIR KİLİTLENME GECİKMESİ)
+        # EKRANDAKİ TEK VE DEVASA "VUR! ⚔️" BUTONU (SIFIR GECİKME)
         st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
         vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # TAMAMEN GİZLİ OTOMATİK İLERLEME CONTAINER'I (DOM'DA BİLE GÖRÜNMEZ)
-        st.markdown("<div id='autopass_wrapper' class='autopass-hidden-box'>", unsafe_allow_html=True)
-        auto_pass_btn = st.button("PASS_TRIG", key=f"autopass_{round_num}")
-        st.markdown("</div>", unsafe_allow_html=True)
+        # TAMAMEN GİZLİ VE EKRANDAN %100 UZAKLAŞTIRILMIŞ OTOMATİK PAS FORMU
+        with st.form(f"autopass_form_{round_num}"):
+            auto_pass_btn = st.form_submit_button("PASS_TRIG", key=f"autopass_{round_num}")
             
         click_time = time.time()
         
