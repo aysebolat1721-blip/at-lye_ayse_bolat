@@ -195,19 +195,21 @@ st.markdown("""
         color: #F8FAFC;
     }
     
-    /* Streamlit Üst Barları Gizle ve Yeterli Üst Boşluk Bırak */
+    /* Streamlit Üst Bar Arka Planını Şeffaf/Karanlık Yap ve Yan Paneli Açık Tut */
     header[data-testid="stHeader"] {
-        visibility: hidden !important;
-        height: 0px !important;
+        background-color: transparent !important;
+        z-index: 100 !important;
     }
 
-    #MainMenu { visibility: hidden !important; }
-    footer { visibility: hidden !important; }
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+    }
     
-    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Mobil Odaklı Üst Boşluk) */
+    /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Üstten dengeli boşluk) */
     .block-container {
         max-width: 520px !important;
-        padding-top: 3.8rem !important;
+        padding-top: 3.5rem !important;
         padding-bottom: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
