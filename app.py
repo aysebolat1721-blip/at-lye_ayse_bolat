@@ -254,22 +254,6 @@ st.markdown("""
         opacity: 1 !important;
         color: #00FF66 !important;
     }
-    
-    /* TAMAMEN GİZLİ OTOMATİK İLERLEME FORMU VE BUTONU (%100 GÖRÜNMEZ) */
-    form[data-testid="stForm"]:has(button[key*="autopass"]),
-    div[data-testid="stForm"]:has(button[key*="autopass"]),
-    #autopass_wrapper,
-    .autopass-hidden-box {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0px !important;
-        width: 0px !important;
-        opacity: 0 !important;
-        position: absolute !important;
-        left: -99999px !important;
-        top: -99999px !important;
-        pointer-events: none !important;
-    }
 
     /* MÜKEMMEL TAM MERKEZLEME CONTAINER'I (Mobil & Masaüstü Üst Boşluk) */
     .block-container {
@@ -449,6 +433,9 @@ if "round_phase" not in st.session_state:
 if "stimulus_time" not in st.session_state:
     st.session_state.stimulus_time = None
 
+if "round_duration" not in st.session_state:
+    st.session_state.round_duration = 1.0
+
 if "game_results" not in st.session_state:
     st.session_state.game_results = []
 
@@ -576,6 +563,7 @@ elif st.session_state.page == 2:
         else:
             st.session_state.round_phase = "active"
             st.session_state.stimulus_time = time.time()
+            st.session_state.round_duration = random.uniform(0.45, 1.25)
         st.rerun()
 
     # 1.5 BEYAZ FLAŞ EKRANI
@@ -589,47 +577,31 @@ elif st.session_state.page == 2:
         time.sleep(0.18)
         st.session_state.round_phase = "active"
         st.session_state.stimulus_time = time.time()
+        st.session_state.round_duration = random.uniform(0.45, 1.25)
         st.rerun()
 
-    # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + ANINDA TEPKİ VEREN SIFIR GECİKME BUTON
+    # 2. ANİDEN PATLAYAN ŞOK EKRANI + CANLI MİLİSANİYE + EKRANDAKİ TEK "VUR!" BUTONU
     elif st.session_state.round_phase == "active":
-        # Her turda 450ms ile 1400ms arası tamamen rastgele sinyal kalma süresi
-        auto_timeout_ms = random.randint(450, 1400)
-
         if event_type == "NET_ATAK":
-            components.html(f"""
+            components.html("""
                 <div style="background: radial-gradient(circle, #00FF66 0%, #059669 100%); border: 5px solid #34D399; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #00FF66; font-family: sans-serif;">
                     <h1 style="color: #000000; font-size: 3rem; font-weight: 900; margin: 0;">VUR! ⚔️</h1>
                     <div id="live_ms" style="font-family: monospace; font-size: 2.2rem; font-weight: 900; color: #000000; margin-top: 6px;">0 ms</div>
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {{
+                    var timerId = setInterval(function() {
                         var el = document.getElementById("live_ms");
-                        if (el) {{
+                        if (el) {
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        }} else {{
+                        } else {
                             clearInterval(timerId);
-                        }}
-                    }}, 16);
-
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
-                    setTimeout(function() {{
-                        try {{
-                            var forms = window.parent.document.querySelectorAll('form');
-                            for (var i = 0; i < forms.length; i++) {{
-                                var btn = forms[i].querySelector('button');
-                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
-                                    btn.click();
-                                    break;
-                                }}
-                            }}
-                        }} catch(e) {{}}
-                    }}, {auto_timeout_ms});
+                        }
+                    }, 16);
                 </script>
             """, height=185)
         elif event_type == "NET_BLOF":
-            components.html(f"""
+            components.html("""
                 <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
                     <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
                     <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">NET BLÖF!</p>
@@ -637,32 +609,18 @@ elif st.session_state.page == 2:
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {{
+                    var timerId = setInterval(function() {
                         var el = document.getElementById("live_ms");
-                        if (el) {{
+                        if (el) {
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        }} else {{
+                        } else {
                             clearInterval(timerId);
-                        }}
-                    }}, 16);
-
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
-                    setTimeout(function() {{
-                        try {{
-                            var forms = window.parent.document.querySelectorAll('form');
-                            for (var i = 0; i < forms.length; i++) {{
-                                var btn = forms[i].querySelector('button');
-                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
-                                    btn.click();
-                                    break;
-                                }}
-                            }}
-                        }} catch(e) {{}}
-                    }}, {auto_timeout_ms});
+                        }
+                    }, 16);
                 </script>
             """, height=205)
         elif event_type == "TERS_KESE_BLOF":
-            components.html(f"""
+            components.html("""
                 <div style="background: radial-gradient(circle, #FF0055 0%, #991B1B 100%); border: 5px solid #F87171; border-radius: 20px; padding: 25px 10px; text-align: center; box-shadow: 0 0 50px #FF0055; font-family: sans-serif;">
                     <h1 style="color: #FFFFFF; font-size: 2.8rem; font-weight: 900; margin: 0;">DUR! 🛑</h1>
                     <p style="color: #FFD1D1; font-weight: 800; font-size: 1.1rem; margin-top: 4px; margin-bottom: 4px;">⚡ TERS KÖŞE BLÖF!</p>
@@ -670,43 +628,25 @@ elif st.session_state.page == 2:
                 </div>
                 <script>
                     var t0 = performance.now();
-                    var timerId = setInterval(function() {{
+                    var timerId = setInterval(function() {
                         var el = document.getElementById("live_ms");
-                        if (el) {{
+                        if (el) {
                             el.innerText = Math.floor(performance.now() - t0) + " ms";
-                        }} else {{
+                        } else {
                             clearInterval(timerId);
-                        }}
-                    }}, 16);
-
-                    // Tıklama yapılmazsa {auto_timeout_ms}ms sonra otomatik gizli pas sinyali gönder
-                    setTimeout(function() {{
-                        try {{
-                            var forms = window.parent.document.querySelectorAll('form');
-                            for (var i = 0; i < forms.length; i++) {{
-                                var btn = forms[i].querySelector('button');
-                                if (btn && btn.textContent.indexOf('PASS_TRIG') !== -1) {{
-                                    btn.click();
-                                    break;
-                                }}
-                            }}
-                        }} catch(e) {{}}
-                    }}, {auto_timeout_ms});
+                        }
+                    }, 16);
                 </script>
             """, height=205)
             
-        # EKRANDAKİ TEK VE DEVASA "VUR! ⚔️" BUTONU (SIFIR GECİKME)
+        # EKRANDAKİ TEK VE DEVASA "VUR! ⚔️" BUTONU (SAYFADA BAŞKA HİÇBİR BUTON VEYA YAZI YOKTUR)
         st.markdown("<div class='btn-green'>", unsafe_allow_html=True)
         vur_btn = st.button("VUR! ⚔️", key=f"vur_{round_num}")
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # TAMAMEN GİZLİ VE EKRANDAN %100 UZAKLAŞTIRILMIŞ OTOMATİK PAS FORMU
-        with st.form(f"autopass_form_{round_num}"):
-            auto_pass_btn = st.form_submit_button("PASS_TRIG", key=f"autopass_{round_num}")
-            
         click_time = time.time()
         
-        # A) SPORCU VUR! BUTONUNA BASTIYSA (SIFIR GECİKME İLE ANINDA DEĞERLENDİR)
+        # A) SPORCU VUR! BUTONUNA BASTIYSA (ANINDA SIFIR GECİKME İLE DEĞERLENDİR)
         if vur_btn:
             elapsed_ms = round((click_time - st.session_state.stimulus_time) * 1000, 1)
             
@@ -733,31 +673,40 @@ elif st.session_state.page == 2:
                 st.session_state.round_phase = "waiting"
             st.rerun()
 
-        # B) ZAMAN AŞIMI (RASTGELE SÜRE DOLUNCA DUR/BLÖF KENDİLİĞİNDEN KAYBOLUR VE GEÇER)
-        elif auto_pass_btn:
-            if event_type == "NET_ATAK":
-                is_fault = 1
-                elapsed_ms = 999.0
-                st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
-            else:
-                is_fault = 0
-                elapsed_ms = 0.0
-                st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
-                
-            save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
-            st.session_state.game_results.append({
-                "round": round_num,
-                "event": event_type,
-                "ms": elapsed_ms,
-                "is_fault": is_fault
-            })
+        # B) SPORCU VUR! BUTONUNA BASMADIYSA (SİNYAL RASTGELE SÜREDE OTOMATİK DÜŞER VE GEÇER)
+        else:
+            elapsed_time = click_time - st.session_state.stimulus_time
+            target_duration = st.session_state.round_duration
             
-            st.session_state.current_round += 1
-            if st.session_state.current_round >= 20:
-                st.session_state.page = 3
+            if elapsed_time >= target_duration:
+                # Sinyal süresi doldu!
+                if event_type == "NET_ATAK":
+                    is_fault = 1
+                    elapsed_ms = 999.0
+                    st.session_state.last_feedback = "⚠️ YEŞİLİ KAÇIRDIN! (HATA ❌)"
+                else:
+                    is_fault = 0
+                    elapsed_ms = 0.0
+                    st.session_state.last_feedback = "🛡️ HARİKA SOĞUKKANLILIK! Blöfe Kanmadın!"
+                    
+                save_trial_log(st.session_state.athlete_name, round_num, event_type, elapsed_ms, is_fault)
+                st.session_state.game_results.append({
+                    "round": round_num,
+                    "event": event_type,
+                    "ms": elapsed_ms,
+                    "is_fault": is_fault
+                })
+                
+                st.session_state.current_round += 1
+                if st.session_state.current_round >= 20:
+                    st.session_state.page = 3
+                else:
+                    st.session_state.round_phase = "waiting"
+                st.rerun()
             else:
-                st.session_state.round_phase = "waiting"
-            st.rerun()
+                # Kalan süreyi bekle ve anında yenile
+                time.sleep(target_duration - elapsed_time)
+                st.rerun()
 
     if st.session_state.last_feedback:
         st.markdown(f"<div class='feedback-banner'>{st.session_state.last_feedback}</div>", unsafe_allow_html=True)
